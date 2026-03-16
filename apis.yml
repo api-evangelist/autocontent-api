@@ -1,32 +1,49 @@
 aid: autocontent-api
 name: AutoContent API
 description: >-
-  Generate NotebookLM podcasts using our API. Perfect for creators, educators,
-  and content teams. The best AI podcast generator on the market. 
+  AutoContent API enables developers to generate AI-powered podcasts using
+  NotebookLM technology via API. It is designed for creators, educators, and
+  content teams who want to programmatically generate audio content from text
+  sources.
 type: Index
-position: Consumer
-access: 3rd-Party
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
-  - API
-created: '2025-05-02'
-modified: '2025-05-02'
+  - AI
+  - Podcasts
+  - Content Generation
+  - Audio
 url: >-
   https://raw.githubusercontent.com/api-evangelist/autocontent-api/refs/heads/main/apis.yml
+created: '2025-05-02'
+modified: '2026-03-16'
 specificationVersion: '0.19'
 apis:
   - aid: autocontent-api:autocontent-api
     name: AutoContent API
     description: >-
-      Generate NotebookLM podcasts using our API. Perfect for creators,
-      educators, and content teams. The best AI podcast generator on the
-      market. 
-    humanURL: ' https://autocontentapi.com/'
+      The AutoContent API generates NotebookLM-powered podcasts programmatically,
+      enabling content creators and educators to produce AI-generated audio
+      content at scale.
+    humanURL: https://autocontentapi.com/
+    baseURL: https://api.autocontentapi.com
     tags:
-      - API
+      - AI
+      - Podcasts
+      - Content Generation
     properties:
       - type: Documentation
-        url: ' https://autocontentapi.com/'
+        url: https://autocontentapi.com/docs
+      - type: Getting Started
+        url: https://autocontentapi.com/docs
+common:
+  - type: Website
+    url: https://autocontentapi.com/
+  - type: Documentation
+    url: https://autocontentapi.com/docs
+  - type: Sign Up
+    url: https://autocontentapi.com/
+  - type: Pricing
+    url: https://autocontentapi.com/pricing
 maintainers:
   - FN: Kin Lane
-    email: info@apievangelist.com
+    email: kin@apievangelist.com
