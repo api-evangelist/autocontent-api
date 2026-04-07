@@ -9,9 +9,9 @@ type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
   - AI
-  - Podcasts
-  - Content Generation
   - Audio
+  - Content Generation
+  - Podcasts
 url: >-
   https://raw.githubusercontent.com/api-evangelist/autocontent-api/refs/heads/main/apis.yml
 created: '2025-05-02'
@@ -28,8 +28,8 @@ apis:
     baseURL: https://api.autocontentapi.com
     tags:
       - AI
-      - Podcasts
       - Content Generation
+      - Podcasts
     properties:
       - type: Documentation
         url: https://autocontentapi.com/docs
