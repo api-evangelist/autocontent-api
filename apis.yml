@@ -185,6 +185,8 @@ common:
         description: >-
           WordPress plugin or REST API integration for automatically publishing
           AI-generated content directly to WordPress sites.
+  - type: LLMsTxt
+    url: https://autocontentapi.com/llms.txt
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
