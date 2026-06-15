@@ -1,0 +1,726 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AutoContent API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Content",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get credit usage and limits",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/content/Usage"
+          },
+          "docs": "Get credit usage and limits"
+        },
+        {
+          "info": {
+            "name": "Get queue stats",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/content/QueueStats"
+          },
+          "docs": "Get queue stats"
+        },
+        {
+          "info": {
+            "name": "List queued or processing requests",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/content/QueueRequests"
+          },
+          "docs": "List queued or processing requests"
+        },
+        {
+          "info": {
+            "name": "List podcasts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/content/Podcasts"
+          },
+          "docs": "List podcasts"
+        },
+        {
+          "info": {
+            "name": "List transcripts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/content/Transcripts"
+          },
+          "docs": "List transcripts"
+        },
+        {
+          "info": {
+            "name": "Create content",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/content/Create"
+          },
+          "docs": "Generate new content (audio, video, infographic, etc.)."
+        },
+        {
+          "info": {
+            "name": "Repurpose existing content",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/content/Repurpose"
+          },
+          "docs": "Repurpose existing content"
+        },
+        {
+          "info": {
+            "name": "Get request status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/content/Status/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get request status"
+        },
+        {
+          "info": {
+            "name": "List content requests",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/content/List"
+          },
+          "docs": "List content requests"
+        },
+        {
+          "info": {
+            "name": "List voices",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/content/GetVoices"
+          },
+          "docs": "List voices"
+        },
+        {
+          "info": {
+            "name": "Get current client",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/content/Me"
+          },
+          "docs": "Get current client"
+        },
+        {
+          "info": {
+            "name": "Register webhook",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/content/Webhook"
+          },
+          "docs": "Register webhook"
+        },
+        {
+          "info": {
+            "name": "Remove webhook",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/content/RemoveWebhook"
+          },
+          "docs": "Remove webhook"
+        },
+        {
+          "info": {
+            "name": "List webhooks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/content/Webhooks"
+          },
+          "docs": "List webhooks"
+        },
+        {
+          "info": {
+            "name": "Modify podcast",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/content/ModifyPodcast"
+          },
+          "docs": "Modify podcast"
+        },
+        {
+          "info": {
+            "name": "Separate speakers in audio",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/content/SeparateSpeakersAudio"
+          },
+          "docs": "Separate speakers in audio"
+        },
+        {
+          "info": {
+            "name": "Clone voice",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/content/CloneVoice"
+          },
+          "docs": "Clone voice"
+        },
+        {
+          "info": {
+            "name": "Generate transcript",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/content/GetTranscript"
+          },
+          "docs": "Generate transcript"
+        },
+        {
+          "info": {
+            "name": "Get transcript by episode ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/content/GetTranscript/:episodeId",
+            "params": [
+              {
+                "name": "episodeId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get transcript by episode ID"
+        },
+        {
+          "info": {
+            "name": "Create podcast from custom script",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/content/CreatePodcastCustomScript"
+          },
+          "docs": "Create podcast from custom script"
+        },
+        {
+          "info": {
+            "name": "Create podcast with custom voices",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/content/CreatePodcastCustomVoices"
+          },
+          "docs": "Create podcast with custom voices"
+        },
+        {
+          "info": {
+            "name": "Remove cloned voice",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/content/RemoveVoice"
+          },
+          "docs": "Remove cloned voice"
+        },
+        {
+          "info": {
+            "name": "Delete a request",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/content/DeleteRequest"
+          },
+          "docs": "Delete a request"
+        },
+        {
+          "info": {
+            "name": "Schedule multiple podcasts",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/content/Schedule"
+          },
+          "docs": "Schedule multiple podcasts"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Video",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List avatars",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/video/GetAvatars"
+          },
+          "docs": "List avatars"
+        },
+        {
+          "info": {
+            "name": "List shorts videos",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/video/GetShorts"
+          },
+          "docs": "List shorts videos"
+        },
+        {
+          "info": {
+            "name": "Create shorts from audio or feeds",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/CreateShorts"
+          },
+          "docs": "Create shorts from audio or feeds"
+        },
+        {
+          "info": {
+            "name": "Create shorts from text content",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/CreateShortsFromContent"
+          },
+          "docs": "Create shorts from text content"
+        },
+        {
+          "info": {
+            "name": "Create shorts from custom script",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/CreateShortsFromScript"
+          },
+          "docs": "Create shorts from custom script"
+        },
+        {
+          "info": {
+            "name": "Create shorts from deep research",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/CreateShortsFromDeepResearch"
+          },
+          "docs": "Create shorts from deep research"
+        },
+        {
+          "info": {
+            "name": "Create custom avatar",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/CreateAvatar"
+          },
+          "docs": "Create custom avatar"
+        },
+        {
+          "info": {
+            "name": "Update avatar voice",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/UpdateAvatarVoice"
+          },
+          "docs": "Update avatar voice"
+        },
+        {
+          "info": {
+            "name": "List explainer videos",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/video/GetExplainerVideos"
+          },
+          "docs": "List explainer videos"
+        },
+        {
+          "info": {
+            "name": "Transcribe video",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/Transcribe"
+          },
+          "docs": "Transcribe video"
+        },
+        {
+          "info": {
+            "name": "Get explainer video transcript",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/video/Transcript/:videoId",
+            "params": [
+              {
+                "name": "videoId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get explainer video transcript"
+        },
+        {
+          "info": {
+            "name": "Generate intro image",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/video/GenerateIntroImage"
+          },
+          "docs": "Generate intro image"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Podcast",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get podcast RSS feed",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/podcast/rss/:podcastId",
+            "params": [
+              {
+                "name": "podcastId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get podcast RSS feed"
+        },
+        {
+          "info": {
+            "name": "List podcast shows",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/podcast/shows"
+          },
+          "docs": "List podcast shows"
+        },
+        {
+          "info": {
+            "name": "Create podcast show",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/podcast/shows"
+          },
+          "docs": "Create podcast show"
+        },
+        {
+          "info": {
+            "name": "Get podcast show",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/podcast/shows/:podcastId",
+            "params": [
+              {
+                "name": "podcastId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get podcast show"
+        },
+        {
+          "info": {
+            "name": "Update podcast show",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.autocontentapi.com/podcast/shows/:podcastId",
+            "params": [
+              {
+                "name": "podcastId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Update podcast show"
+        },
+        {
+          "info": {
+            "name": "Delete podcast show",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.autocontentapi.com/podcast/shows/:podcastId",
+            "params": [
+              {
+                "name": "podcastId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete podcast show"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Dedicated Account",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Test dedicated account API",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/dedicated-account"
+          },
+          "docs": "Test dedicated account API"
+        },
+        {
+          "info": {
+            "name": "Create notebook",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/dedicated-account/createNotebook"
+          },
+          "docs": "Create notebook"
+        },
+        {
+          "info": {
+            "name": "Delete notebook",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/dedicated-account/deleteNotebook"
+          },
+          "docs": "Delete notebook"
+        },
+        {
+          "info": {
+            "name": "List notebooks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/dedicated-account/getNotebooks"
+          },
+          "docs": "List notebooks"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Share",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get shared podcast",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/share/podcast/:requestId/:t",
+            "params": [
+              {
+                "name": "requestId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "t",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get shared podcast"
+        },
+        {
+          "info": {
+            "name": "Get shared video",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/share/video/:requestId/:t",
+            "params": [
+              {
+                "name": "requestId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "t",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get shared video"
+        },
+        {
+          "info": {
+            "name": "Get shared infographic",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/share/infographic/:requestId/:t",
+            "params": [
+              {
+                "name": "requestId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "t",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get shared infographic"
+        },
+        {
+          "info": {
+            "name": "Get shared slide deck",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/share/slide-deck/:requestId/:t",
+            "params": [
+              {
+                "name": "requestId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "t",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get shared slide deck"
+        },
+        {
+          "info": {
+            "name": "Get shared quiz",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/share/quiz/:requestId/:t",
+            "params": [
+              {
+                "name": "requestId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "t",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get shared quiz"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
