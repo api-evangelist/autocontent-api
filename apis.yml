@@ -9,7 +9,7 @@ description: >-
   API endpoints with a credit-based pricing model and integrations with Make.com,
   Zapier, and WordPress.
 type: Index
-image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 tags:
   - AI
   - Audio
