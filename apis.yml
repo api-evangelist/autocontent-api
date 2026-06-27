@@ -101,7 +101,7 @@ common:
     url: https://autocontentapi.com
   - type: Documentation
     url: https://autocontentapi.com/docs
-  - type: SignUp
+  - type: Signup
     url: https://autocontentapi.com
   - type: Pricing
     url: https://autocontentapi.com/pricing
@@ -185,7 +185,7 @@ common:
         description: >-
           WordPress plugin or REST API integration for automatically publishing
           AI-generated content directly to WordPress sites.
-  - type: LLMsTxt
+  - type: LlmsText
     url: https://autocontentapi.com/llms.txt
 maintainers:
   - FN: Kin Lane
