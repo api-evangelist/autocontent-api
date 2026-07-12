@@ -97,6 +97,12 @@ apis:
         url: https://autocontentapi.com/docs
 
 common:
+  - type: DomainSecurity
+    url: security/autocontent-api-domain-security.yml
+  - type: Authentication
+    url: authentication/autocontent-api-authentication.yml
+  - url: https://autocontentapi.com/blog
+    type: Blog
   - type: Website
     url: https://autocontentapi.com
   - type: Documentation
