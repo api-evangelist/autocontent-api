@@ -97,6 +97,8 @@ apis:
         url: https://autocontentapi.com/docs
 
 common:
+  - type: AgenticAccess
+    url: agentic-access/autocontent-api-agentic-access.yml
   - type: DomainSecurity
     url: security/autocontent-api-domain-security.yml
   - type: Authentication
