@@ -1,0 +1,147 @@
+openapi: 3.1.0
+info:
+  title: AutoContent Content Video API
+  description: 'Best-effort OpenAPI 3.1 description of the AutoContent API for generating
+
+    podcasts, videos, slide decks, infographics, transcripts and other content
+
+    types. Derived from the public documentation index at
+
+    https://docs.autocontentapi.com/llms-full.txt and the developer portal at
+
+    https://autocontentapi.com/docs.
+
+    '
+  version: '1'
+  contact:
+    name: AutoContent API Docs
+    url: https://docs.autocontentapi.com/
+servers:
+- url: https://api.autocontentapi.com
+  description: AutoContent API production
+security:
+- bearerAuth: []
+tags:
+- name: Video
+paths:
+  /video/GetAvatars:
+    get:
+      tags:
+      - Video
+      summary: List avatars
+      operationId: getAvatars
+      responses:
+        '200':
+          description: Avatars returned
+  /video/GetShorts:
+    get:
+      tags:
+      - Video
+      summary: List shorts videos
+      operationId: getShorts
+      responses:
+        '200':
+          description: Shorts returned
+  /video/CreateShorts:
+    post:
+      tags:
+      - Video
+      summary: Create shorts from audio or feeds
+      operationId: createShorts
+      responses:
+        '200':
+          description: Job started
+  /video/CreateShortsFromContent:
+    post:
+      tags:
+      - Video
+      summary: Create shorts from text content
+      operationId: createShortsFromContent
+      responses:
+        '200':
+          description: Job started
+  /video/CreateShortsFromScript:
+    post:
+      tags:
+      - Video
+      summary: Create shorts from custom script
+      operationId: createShortsFromScript
+      responses:
+        '200':
+          description: Job started
+  /video/CreateShortsFromDeepResearch:
+    post:
+      tags:
+      - Video
+      summary: Create shorts from deep research
+      operationId: createShortsFromDeepResearch
+      responses:
+        '200':
+          description: Job started
+  /video/CreateAvatar:
+    post:
+      tags:
+      - Video
+      summary: Create custom avatar
+      operationId: createAvatar
+      responses:
+        '200':
+          description: Avatar created
+  /video/UpdateAvatarVoice:
+    post:
+      tags:
+      - Video
+      summary: Update avatar voice
+      operationId: updateAvatarVoice
+      responses:
+        '200':
+          description: Avatar voice updated
+  /video/GetExplainerVideos:
+    get:
+      tags:
+      - Video
+      summary: List explainer videos
+      operationId: getExplainerVideos
+      responses:
+        '200':
+          description: Explainer videos returned
+  /video/Transcribe:
+    post:
+      tags:
+      - Video
+      summary: Transcribe video
+      operationId: transcribeVideo
+      responses:
+        '200':
+          description: Transcription job started
+  /video/Transcript/{videoId}:
+    parameters:
+    - in: path
+      name: videoId
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Video
+      summary: Get explainer video transcript
+      operationId: getVideoTranscript
+      responses:
+        '200':
+          description: Transcript returned
+  /video/GenerateIntroImage:
+    get:
+      tags:
+      - Video
+      summary: Generate intro image
+      operationId: generateIntroImage
+      responses:
+        '200':
+          description: Intro image returned
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: AutoContent API key as a Bearer token in the Authorization header.

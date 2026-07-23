@@ -1,0 +1,262 @@
+openapi: 3.1.0
+info:
+  title: AutoContent Content API
+  description: 'Best-effort OpenAPI 3.1 description of the AutoContent API for generating
+
+    podcasts, videos, slide decks, infographics, transcripts and other content
+
+    types. Derived from the public documentation index at
+
+    https://docs.autocontentapi.com/llms-full.txt and the developer portal at
+
+    https://autocontentapi.com/docs.
+
+    '
+  version: '1'
+  contact:
+    name: AutoContent API Docs
+    url: https://docs.autocontentapi.com/
+servers:
+- url: https://api.autocontentapi.com
+  description: AutoContent API production
+security:
+- bearerAuth: []
+tags:
+- name: Content
+paths:
+  /content/Usage:
+    get:
+      tags:
+      - Content
+      summary: Get credit usage and limits
+      operationId: getUsage
+      responses:
+        '200':
+          description: Usage returned
+  /content/QueueStats:
+    get:
+      tags:
+      - Content
+      summary: Get queue stats
+      operationId: getQueueStats
+      responses:
+        '200':
+          description: Queue stats returned
+  /content/QueueRequests:
+    get:
+      tags:
+      - Content
+      summary: List queued or processing requests
+      operationId: getQueueRequests
+      responses:
+        '200':
+          description: Queue requests returned
+  /content/Podcasts:
+    get:
+      tags:
+      - Content
+      summary: List podcasts
+      operationId: getPodcasts
+      responses:
+        '200':
+          description: Podcasts returned
+  /content/Transcripts:
+    get:
+      tags:
+      - Content
+      summary: List transcripts
+      operationId: getTranscripts
+      responses:
+        '200':
+          description: Transcripts returned
+  /content/Create:
+    post:
+      tags:
+      - Content
+      summary: Create content
+      description: Generate new content (audio, video, infographic, etc.).
+      operationId: createContent
+      responses:
+        '200':
+          description: Content creation started
+  /content/Repurpose:
+    post:
+      tags:
+      - Content
+      summary: Repurpose existing content
+      operationId: repurposeContent
+      responses:
+        '200':
+          description: Repurpose started
+  /content/Status/{id}:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Content
+      summary: Get request status
+      operationId: getStatus
+      responses:
+        '200':
+          description: Status returned
+  /content/List:
+    get:
+      tags:
+      - Content
+      summary: List content requests
+      operationId: listContent
+      responses:
+        '200':
+          description: Requests returned
+  /content/GetVoices:
+    get:
+      tags:
+      - Content
+      summary: List voices
+      operationId: getVoices
+      responses:
+        '200':
+          description: Voices returned
+  /content/Me:
+    get:
+      tags:
+      - Content
+      summary: Get current client
+      operationId: getMe
+      responses:
+        '200':
+          description: Client identity returned
+  /content/Webhook:
+    post:
+      tags:
+      - Content
+      summary: Register webhook
+      operationId: registerWebhook
+      responses:
+        '200':
+          description: Webhook registered
+  /content/RemoveWebhook:
+    post:
+      tags:
+      - Content
+      summary: Remove webhook
+      operationId: removeWebhook
+      responses:
+        '200':
+          description: Webhook removed
+  /content/Webhooks:
+    get:
+      tags:
+      - Content
+      summary: List webhooks
+      operationId: listWebhooks
+      responses:
+        '200':
+          description: Webhooks returned
+  /content/ModifyPodcast:
+    post:
+      tags:
+      - Content
+      summary: Modify podcast
+      operationId: modifyPodcast
+      responses:
+        '200':
+          description: Podcast modified
+  /content/SeparateSpeakersAudio:
+    post:
+      tags:
+      - Content
+      summary: Separate speakers in audio
+      operationId: separateSpeakers
+      responses:
+        '200':
+          description: Job started
+  /content/CloneVoice:
+    post:
+      tags:
+      - Content
+      summary: Clone voice
+      operationId: cloneVoice
+      responses:
+        '200':
+          description: Voice clone job started
+  /content/GetTranscript:
+    post:
+      tags:
+      - Content
+      summary: Generate transcript
+      operationId: generateTranscript
+      responses:
+        '200':
+          description: Transcript job started
+  /content/GetTranscript/{episodeId}:
+    parameters:
+    - in: path
+      name: episodeId
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Content
+      summary: Get transcript by episode ID
+      operationId: getTranscriptByEpisode
+      responses:
+        '200':
+          description: Transcript returned
+  /content/CreatePodcastCustomScript:
+    post:
+      tags:
+      - Content
+      summary: Create podcast from custom script
+      operationId: createPodcastCustomScript
+      responses:
+        '200':
+          description: Job started
+  /content/CreatePodcastCustomVoices:
+    post:
+      tags:
+      - Content
+      summary: Create podcast with custom voices
+      operationId: createPodcastCustomVoices
+      responses:
+        '200':
+          description: Job started
+  /content/RemoveVoice:
+    post:
+      tags:
+      - Content
+      summary: Remove cloned voice
+      operationId: removeVoice
+      responses:
+        '200':
+          description: Voice removed
+  /content/DeleteRequest:
+    post:
+      tags:
+      - Content
+      summary: Delete a request
+      operationId: deleteRequest
+      responses:
+        '200':
+          description: Request deleted
+  /content/Schedule:
+    post:
+      tags:
+      - Content
+      summary: Schedule multiple podcasts
+      operationId: schedulePodcasts
+      responses:
+        '200':
+          description: Schedule created
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: AutoContent API key as a Bearer token in the Authorization header.

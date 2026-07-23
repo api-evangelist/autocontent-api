@@ -1,0 +1,69 @@
+openapi: 3.1.0
+info:
+  title: AutoContent Content Dedicated Account API
+  description: 'Best-effort OpenAPI 3.1 description of the AutoContent API for generating
+
+    podcasts, videos, slide decks, infographics, transcripts and other content
+
+    types. Derived from the public documentation index at
+
+    https://docs.autocontentapi.com/llms-full.txt and the developer portal at
+
+    https://autocontentapi.com/docs.
+
+    '
+  version: '1'
+  contact:
+    name: AutoContent API Docs
+    url: https://docs.autocontentapi.com/
+servers:
+- url: https://api.autocontentapi.com
+  description: AutoContent API production
+security:
+- bearerAuth: []
+tags:
+- name: Dedicated Account
+paths:
+  /dedicated-account:
+    get:
+      tags:
+      - Dedicated Account
+      summary: Test dedicated account API
+      operationId: dedicatedAccountTest
+      responses:
+        '200':
+          description: OK
+  /dedicated-account/createNotebook:
+    post:
+      tags:
+      - Dedicated Account
+      summary: Create notebook
+      operationId: createNotebook
+      responses:
+        '200':
+          description: Notebook created
+  /dedicated-account/deleteNotebook:
+    post:
+      tags:
+      - Dedicated Account
+      summary: Delete notebook
+      operationId: deleteNotebook
+      responses:
+        '200':
+          description: Notebook deleted
+  /dedicated-account/getNotebooks:
+    get:
+      tags:
+      - Dedicated Account
+      summary: List notebooks
+      operationId: getNotebooks
+      responses:
+        '200':
+          description: Notebooks returned
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: AutoContent API key as a Bearer token in the Authorization header.

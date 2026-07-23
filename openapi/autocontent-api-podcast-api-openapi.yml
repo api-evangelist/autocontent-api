@@ -1,0 +1,96 @@
+openapi: 3.1.0
+info:
+  title: AutoContent Content Podcast API
+  description: 'Best-effort OpenAPI 3.1 description of the AutoContent API for generating
+
+    podcasts, videos, slide decks, infographics, transcripts and other content
+
+    types. Derived from the public documentation index at
+
+    https://docs.autocontentapi.com/llms-full.txt and the developer portal at
+
+    https://autocontentapi.com/docs.
+
+    '
+  version: '1'
+  contact:
+    name: AutoContent API Docs
+    url: https://docs.autocontentapi.com/
+servers:
+- url: https://api.autocontentapi.com
+  description: AutoContent API production
+security:
+- bearerAuth: []
+tags:
+- name: Podcast
+paths:
+  /podcast/rss/{podcastId}:
+    parameters:
+    - in: path
+      name: podcastId
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Podcast
+      summary: Get podcast RSS feed
+      operationId: getPodcastRss
+      responses:
+        '200':
+          description: RSS XML returned
+  /podcast/shows:
+    get:
+      tags:
+      - Podcast
+      summary: List podcast shows
+      operationId: listShows
+      responses:
+        '200':
+          description: Shows returned
+    post:
+      tags:
+      - Podcast
+      summary: Create podcast show
+      operationId: createShow
+      responses:
+        '201':
+          description: Show created
+  /podcast/shows/{podcastId}:
+    parameters:
+    - in: path
+      name: podcastId
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Podcast
+      summary: Get podcast show
+      operationId: getShow
+      responses:
+        '200':
+          description: Show returned
+    put:
+      tags:
+      - Podcast
+      summary: Update podcast show
+      operationId: updateShow
+      responses:
+        '200':
+          description: Show updated
+    delete:
+      tags:
+      - Podcast
+      summary: Delete podcast show
+      operationId: deleteShow
+      responses:
+        '204':
+          description: Show deleted
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: AutoContent API key as a Bearer token in the Authorization header.

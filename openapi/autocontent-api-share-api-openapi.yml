@@ -1,0 +1,138 @@
+openapi: 3.1.0
+info:
+  title: AutoContent Content Share API
+  description: 'Best-effort OpenAPI 3.1 description of the AutoContent API for generating
+
+    podcasts, videos, slide decks, infographics, transcripts and other content
+
+    types. Derived from the public documentation index at
+
+    https://docs.autocontentapi.com/llms-full.txt and the developer portal at
+
+    https://autocontentapi.com/docs.
+
+    '
+  version: '1'
+  contact:
+    name: AutoContent API Docs
+    url: https://docs.autocontentapi.com/
+servers:
+- url: https://api.autocontentapi.com
+  description: AutoContent API production
+security:
+- bearerAuth: []
+tags:
+- name: Share
+paths:
+  /share/podcast/{requestId}/{t}:
+    parameters:
+    - in: path
+      name: requestId
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: t
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Share
+      summary: Get shared podcast
+      operationId: sharePodcast
+      security: []
+      responses:
+        '200':
+          description: Shared podcast returned
+  /share/video/{requestId}/{t}:
+    parameters:
+    - in: path
+      name: requestId
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: t
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Share
+      summary: Get shared video
+      operationId: shareVideo
+      security: []
+      responses:
+        '200':
+          description: Shared video returned
+  /share/infographic/{requestId}/{t}:
+    parameters:
+    - in: path
+      name: requestId
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: t
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Share
+      summary: Get shared infographic
+      operationId: shareInfographic
+      security: []
+      responses:
+        '200':
+          description: Shared infographic returned
+  /share/slide-deck/{requestId}/{t}:
+    parameters:
+    - in: path
+      name: requestId
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: t
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Share
+      summary: Get shared slide deck
+      operationId: shareSlideDeck
+      security: []
+      responses:
+        '200':
+          description: Shared slide deck returned
+  /share/quiz/{requestId}/{t}:
+    parameters:
+    - in: path
+      name: requestId
+      required: true
+      schema:
+        type: string
+    - in: path
+      name: t
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Share
+      summary: Get shared quiz
+      operationId: shareQuiz
+      security: []
+      responses:
+        '200':
+          description: Shared quiz returned
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: AutoContent API key as a Bearer token in the Authorization header.
