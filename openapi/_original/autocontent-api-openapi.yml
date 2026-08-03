@@ -1,0 +1,513 @@
+openapi: 3.1.0
+info:
+  title: AutoContent API
+  description: |
+    Best-effort OpenAPI 3.1 description of the AutoContent API for generating
+    podcasts, videos, slide decks, infographics, transcripts and other content
+    types. Derived from the public documentation index at
+    https://docs.autocontentapi.com/llms-full.txt and the developer portal at
+    https://autocontentapi.com/docs.
+  version: "1"
+  contact:
+    name: AutoContent API Docs
+    url: https://docs.autocontentapi.com/
+servers:
+  - url: https://api.autocontentapi.com
+    description: AutoContent API production
+tags:
+  - name: Content
+  - name: Video
+  - name: Podcast
+  - name: Dedicated Account
+  - name: Share
+paths:
+  /content/Usage:
+    get:
+      tags: [Content]
+      summary: Get credit usage and limits
+      operationId: getUsage
+      responses:
+        '200':
+          description: Usage returned
+  /content/QueueStats:
+    get:
+      tags: [Content]
+      summary: Get queue stats
+      operationId: getQueueStats
+      responses:
+        '200':
+          description: Queue stats returned
+  /content/QueueRequests:
+    get:
+      tags: [Content]
+      summary: List queued or processing requests
+      operationId: getQueueRequests
+      responses:
+        '200':
+          description: Queue requests returned
+  /content/Podcasts:
+    get:
+      tags: [Content]
+      summary: List podcasts
+      operationId: getPodcasts
+      responses:
+        '200':
+          description: Podcasts returned
+  /content/Transcripts:
+    get:
+      tags: [Content]
+      summary: List transcripts
+      operationId: getTranscripts
+      responses:
+        '200':
+          description: Transcripts returned
+  /content/Create:
+    post:
+      tags: [Content]
+      summary: Create content
+      description: Generate new content (audio, video, infographic, etc.).
+      operationId: createContent
+      responses:
+        '200':
+          description: Content creation started
+  /content/Repurpose:
+    post:
+      tags: [Content]
+      summary: Repurpose existing content
+      operationId: repurposeContent
+      responses:
+        '200':
+          description: Repurpose started
+  /content/Status/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Content]
+      summary: Get request status
+      operationId: getStatus
+      responses:
+        '200':
+          description: Status returned
+  /content/List:
+    get:
+      tags: [Content]
+      summary: List content requests
+      operationId: listContent
+      responses:
+        '200':
+          description: Requests returned
+  /content/GetVoices:
+    get:
+      tags: [Content]
+      summary: List voices
+      operationId: getVoices
+      responses:
+        '200':
+          description: Voices returned
+  /content/Me:
+    get:
+      tags: [Content]
+      summary: Get current client
+      operationId: getMe
+      responses:
+        '200':
+          description: Client identity returned
+  /content/Webhook:
+    post:
+      tags: [Content]
+      summary: Register webhook
+      operationId: registerWebhook
+      responses:
+        '200':
+          description: Webhook registered
+  /content/RemoveWebhook:
+    post:
+      tags: [Content]
+      summary: Remove webhook
+      operationId: removeWebhook
+      responses:
+        '200':
+          description: Webhook removed
+  /content/Webhooks:
+    get:
+      tags: [Content]
+      summary: List webhooks
+      operationId: listWebhooks
+      responses:
+        '200':
+          description: Webhooks returned
+  /content/ModifyPodcast:
+    post:
+      tags: [Content]
+      summary: Modify podcast
+      operationId: modifyPodcast
+      responses:
+        '200':
+          description: Podcast modified
+  /content/SeparateSpeakersAudio:
+    post:
+      tags: [Content]
+      summary: Separate speakers in audio
+      operationId: separateSpeakers
+      responses:
+        '200':
+          description: Job started
+  /content/CloneVoice:
+    post:
+      tags: [Content]
+      summary: Clone voice
+      operationId: cloneVoice
+      responses:
+        '200':
+          description: Voice clone job started
+  /content/GetTranscript:
+    post:
+      tags: [Content]
+      summary: Generate transcript
+      operationId: generateTranscript
+      responses:
+        '200':
+          description: Transcript job started
+  /content/GetTranscript/{episodeId}:
+    parameters:
+      - in: path
+        name: episodeId
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Content]
+      summary: Get transcript by episode ID
+      operationId: getTranscriptByEpisode
+      responses:
+        '200':
+          description: Transcript returned
+  /content/CreatePodcastCustomScript:
+    post:
+      tags: [Content]
+      summary: Create podcast from custom script
+      operationId: createPodcastCustomScript
+      responses:
+        '200':
+          description: Job started
+  /content/CreatePodcastCustomVoices:
+    post:
+      tags: [Content]
+      summary: Create podcast with custom voices
+      operationId: createPodcastCustomVoices
+      responses:
+        '200':
+          description: Job started
+  /content/RemoveVoice:
+    post:
+      tags: [Content]
+      summary: Remove cloned voice
+      operationId: removeVoice
+      responses:
+        '200':
+          description: Voice removed
+  /content/DeleteRequest:
+    post:
+      tags: [Content]
+      summary: Delete a request
+      operationId: deleteRequest
+      responses:
+        '200':
+          description: Request deleted
+  /content/Schedule:
+    post:
+      tags: [Content]
+      summary: Schedule multiple podcasts
+      operationId: schedulePodcasts
+      responses:
+        '200':
+          description: Schedule created
+  /video/GetAvatars:
+    get:
+      tags: [Video]
+      summary: List avatars
+      operationId: getAvatars
+      responses:
+        '200':
+          description: Avatars returned
+  /video/GetShorts:
+    get:
+      tags: [Video]
+      summary: List shorts videos
+      operationId: getShorts
+      responses:
+        '200':
+          description: Shorts returned
+  /video/CreateShorts:
+    post:
+      tags: [Video]
+      summary: Create shorts from audio or feeds
+      operationId: createShorts
+      responses:
+        '200':
+          description: Job started
+  /video/CreateShortsFromContent:
+    post:
+      tags: [Video]
+      summary: Create shorts from text content
+      operationId: createShortsFromContent
+      responses:
+        '200':
+          description: Job started
+  /video/CreateShortsFromScript:
+    post:
+      tags: [Video]
+      summary: Create shorts from custom script
+      operationId: createShortsFromScript
+      responses:
+        '200':
+          description: Job started
+  /video/CreateShortsFromDeepResearch:
+    post:
+      tags: [Video]
+      summary: Create shorts from deep research
+      operationId: createShortsFromDeepResearch
+      responses:
+        '200':
+          description: Job started
+  /video/CreateAvatar:
+    post:
+      tags: [Video]
+      summary: Create custom avatar
+      operationId: createAvatar
+      responses:
+        '200':
+          description: Avatar created
+  /video/UpdateAvatarVoice:
+    post:
+      tags: [Video]
+      summary: Update avatar voice
+      operationId: updateAvatarVoice
+      responses:
+        '200':
+          description: Avatar voice updated
+  /video/GetExplainerVideos:
+    get:
+      tags: [Video]
+      summary: List explainer videos
+      operationId: getExplainerVideos
+      responses:
+        '200':
+          description: Explainer videos returned
+  /video/Transcribe:
+    post:
+      tags: [Video]
+      summary: Transcribe video
+      operationId: transcribeVideo
+      responses:
+        '200':
+          description: Transcription job started
+  /video/Transcript/{videoId}:
+    parameters:
+      - in: path
+        name: videoId
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Video]
+      summary: Get explainer video transcript
+      operationId: getVideoTranscript
+      responses:
+        '200':
+          description: Transcript returned
+  /video/GenerateIntroImage:
+    get:
+      tags: [Video]
+      summary: Generate intro image
+      operationId: generateIntroImage
+      responses:
+        '200':
+          description: Intro image returned
+  /podcast/rss/{podcastId}:
+    parameters:
+      - in: path
+        name: podcastId
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Podcast]
+      summary: Get podcast RSS feed
+      operationId: getPodcastRss
+      responses:
+        '200':
+          description: RSS XML returned
+  /podcast/shows:
+    get:
+      tags: [Podcast]
+      summary: List podcast shows
+      operationId: listShows
+      responses:
+        '200':
+          description: Shows returned
+    post:
+      tags: [Podcast]
+      summary: Create podcast show
+      operationId: createShow
+      responses:
+        '201':
+          description: Show created
+  /podcast/shows/{podcastId}:
+    parameters:
+      - in: path
+        name: podcastId
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Podcast]
+      summary: Get podcast show
+      operationId: getShow
+      responses:
+        '200':
+          description: Show returned
+    put:
+      tags: [Podcast]
+      summary: Update podcast show
+      operationId: updateShow
+      responses:
+        '200':
+          description: Show updated
+    delete:
+      tags: [Podcast]
+      summary: Delete podcast show
+      operationId: deleteShow
+      responses:
+        '204':
+          description: Show deleted
+  /dedicated-account:
+    get:
+      tags: [Dedicated Account]
+      summary: Test dedicated account API
+      operationId: dedicatedAccountTest
+      responses:
+        '200':
+          description: OK
+  /dedicated-account/createNotebook:
+    post:
+      tags: [Dedicated Account]
+      summary: Create notebook
+      operationId: createNotebook
+      responses:
+        '200':
+          description: Notebook created
+  /dedicated-account/deleteNotebook:
+    post:
+      tags: [Dedicated Account]
+      summary: Delete notebook
+      operationId: deleteNotebook
+      responses:
+        '200':
+          description: Notebook deleted
+  /dedicated-account/getNotebooks:
+    get:
+      tags: [Dedicated Account]
+      summary: List notebooks
+      operationId: getNotebooks
+      responses:
+        '200':
+          description: Notebooks returned
+  /share/podcast/{requestId}/{t}:
+    parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema: { type: string }
+      - in: path
+        name: t
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Share]
+      summary: Get shared podcast
+      operationId: sharePodcast
+      security: []
+      responses:
+        '200':
+          description: Shared podcast returned
+  /share/video/{requestId}/{t}:
+    parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema: { type: string }
+      - in: path
+        name: t
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Share]
+      summary: Get shared video
+      operationId: shareVideo
+      security: []
+      responses:
+        '200':
+          description: Shared video returned
+  /share/infographic/{requestId}/{t}:
+    parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema: { type: string }
+      - in: path
+        name: t
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Share]
+      summary: Get shared infographic
+      operationId: shareInfographic
+      security: []
+      responses:
+        '200':
+          description: Shared infographic returned
+  /share/slide-deck/{requestId}/{t}:
+    parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema: { type: string }
+      - in: path
+        name: t
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Share]
+      summary: Get shared slide deck
+      operationId: shareSlideDeck
+      security: []
+      responses:
+        '200':
+          description: Shared slide deck returned
+  /share/quiz/{requestId}/{t}:
+    parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema: { type: string }
+      - in: path
+        name: t
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Share]
+      summary: Get shared quiz
+      operationId: shareQuiz
+      security: []
+      responses:
+        '200':
+          description: Shared quiz returned
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: AutoContent API key as a Bearer token in the Authorization header.
+security:
+  - bearerAuth: []

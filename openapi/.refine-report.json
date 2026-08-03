@@ -1,0 +1,22 @@
+{
+  "provider": "autocontent-api",
+  "sources": [
+    "autocontent-api-content-api-openapi.yml",
+    "autocontent-api-dedicated-account-api-openapi.yml",
+    "autocontent-api-podcast-api-openapi.yml",
+    "autocontent-api-share-api-openapi.yml",
+    "autocontent-api-video-api-openapi.yml"
+  ],
+  "outputs": [
+    "autocontent-api-content-api-openapi.yml",
+    "autocontent-api-dedicated-account-api-openapi.yml",
+    "autocontent-api-podcast-api-openapi.yml",
+    "autocontent-api-share-api-openapi.yml",
+    "autocontent-api-video-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
