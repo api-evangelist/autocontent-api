@@ -1,0 +1,863 @@
+{
+  "item": [
+    {
+      "id": "04356d2f-cf90-43f6-be1c-f79a39cb5c27",
+      "name": "Video",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "de958b75-f813-4a10-9d78-e030a032e98a",
+          "name": "List avatars",
+          "request": {
+            "name": "List avatars",
+            "description": {},
+            "url": {
+              "path": [
+                "video",
+                "GetAvatars"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "43a5b4cb-aee9-4fb2-aef1-96c7634da662",
+              "name": "Avatars returned",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "video",
+                    "GetAvatars"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "f0a5cbdf-fd9a-4cd7-b726-961865e82189",
+          "name": "List shorts videos",
+          "request": {
+            "name": "List shorts videos",
+            "description": {},
+            "url": {
+              "path": [
+                "video",
+                "GetShorts"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "610d71f0-fa92-4e37-85f1-45c9f9863a4c",
+              "name": "Shorts returned",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "video",
+                    "GetShorts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "2a1d6cb2-2b8d-45a9-96c1-84f3f8df391b",
+          "name": "Create shorts from audio or feeds",
+          "request": {
+            "name": "Create shorts from audio or feeds",
+            "description": {},
+            "url": {
+              "path": [
+                "video",
+                "CreateShorts"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "0e14f3d5-be71-4ad6-83a0-a067c59500ee",
+              "name": "Job started",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "video",
+                    "CreateShorts"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "cf8541eb-d04e-4e78-be2e-e4d8dc73b1ab",
+          "name": "Create shorts from text content",
+          "request": {
+            "name": "Create shorts from text content",
+            "description": {},
+            "url": {
+              "path": [
+                "video",
+                "CreateShortsFromContent"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "9d0ef5af-de79-4883-8b60-acf1fada5d6f",
+              "name": "Job started",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "video",
+                    "CreateShortsFromContent"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "c04feadd-f271-4d34-9b63-7b2a95caca42",
+          "name": "Create shorts from custom script",
+          "request": {
+            "name": "Create shorts from custom script",
+            "description": {},
+            "url": {
+              "path": [
+                "video",
+                "CreateShortsFromScript"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "3c158a3f-5961-4a07-8e00-3d9322619f82",
+              "name": "Job started",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "video",
+                    "CreateShortsFromScript"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "c51f3bd0-53f8-4b71-90e6-90f6537ba345",
+          "name": "Create shorts from deep research",
+          "request": {
+            "name": "Create shorts from deep research",
+            "description": {},
+            "url": {
+              "path": [
+                "video",
+                "CreateShortsFromDeepResearch"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "e530ffb6-b2eb-4358-a32d-0e600e8630be",
+              "name": "Job started",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "video",
+                    "CreateShortsFromDeepResearch"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "7c297c2d-8024-4ee6-b847-3c2b431626f2",
+          "name": "Create custom avatar",
+          "request": {
+            "name": "Create custom avatar",
+            "description": {},
+            "url": {
+              "path": [
+                "video",
+                "CreateAvatar"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "3ed7b63b-e547-4141-a58f-61724c26eeff",
+              "name": "Avatar created",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "video",
+                    "CreateAvatar"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "372a0995-df51-44da-8a4c-267487d9cd2c",
+          "name": "Update avatar voice",
+          "request": {
+            "name": "Update avatar voice",
+            "description": {},
+            "url": {
+              "path": [
+                "video",
+                "UpdateAvatarVoice"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "07077138-54cd-4fee-8363-e1807eeb3004",
+              "name": "Avatar voice updated",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "video",
+                    "UpdateAvatarVoice"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "78c2007a-c8a6-4e0d-97f4-95186725f363",
+          "name": "List explainer videos",
+          "request": {
+            "name": "List explainer videos",
+            "description": {},
+            "url": {
+              "path": [
+                "video",
+                "GetExplainerVideos"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "04e718a2-e86d-4c85-892b-5347ce0fc7e9",
+              "name": "Explainer videos returned",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "video",
+                    "GetExplainerVideos"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a4f28044-ca58-4045-b956-13556a343239",
+          "name": "Transcribe video",
+          "request": {
+            "name": "Transcribe video",
+            "description": {},
+            "url": {
+              "path": [
+                "video",
+                "Transcribe"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "41301a06-a2e0-49e2-b7e6-835d328d8d9b",
+              "name": "Transcription job started",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "video",
+                    "Transcribe"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "6426f86b-d64c-41f4-b8e4-351166c6e52a",
+          "name": "Get explainer video transcript",
+          "request": {
+            "name": "Get explainer video transcript",
+            "description": {},
+            "url": {
+              "path": [
+                "video",
+                "Transcript",
+                ":videoId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "videoId",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "325e8488-e2ac-4468-bc0d-b9c500f84de5",
+              "name": "Transcript returned",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "video",
+                    "Transcript",
+                    ":videoId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "videoId",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "434d295a-16c5-4343-939f-978ec0b9e25a",
+          "name": "Generate intro image",
+          "request": {
+            "name": "Generate intro image",
+            "description": {},
+            "url": {
+              "path": [
+                "video",
+                "GenerateIntroImage"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "59d30ab3-860c-45d1-8e47-5b37418d6cf7",
+              "name": "Intro image returned",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "video",
+                    "GenerateIntroImage"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.autocontentapi.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "147f1845-e026-4cf7-8aa7-6108a3727a0a",
+    "name": "AutoContent Content Video API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Best-effort OpenAPI 3.1 description of the AutoContent API for generating\npodcasts, videos, slide decks, infographics, transcripts and other content\ntypes. Derived from the public documentation index at\nhttps://docs.autocontentapi.com/llms-full.txt and the developer portal at\nhttps://autocontentapi.com/docs.\n\n\nContact Support:\n Name: AutoContent API Docs",
+      "type": "text/plain"
+    }
+  }
+}

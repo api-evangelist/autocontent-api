@@ -1,0 +1,139 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AutoContent Content Share API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Share",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get shared podcast",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/share/podcast/:requestId/:t",
+            "params": [
+              {
+                "name": "requestId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "t",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get shared podcast"
+        },
+        {
+          "info": {
+            "name": "Get shared video",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/share/video/:requestId/:t",
+            "params": [
+              {
+                "name": "requestId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "t",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get shared video"
+        },
+        {
+          "info": {
+            "name": "Get shared infographic",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/share/infographic/:requestId/:t",
+            "params": [
+              {
+                "name": "requestId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "t",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get shared infographic"
+        },
+        {
+          "info": {
+            "name": "Get shared slide deck",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/share/slide-deck/:requestId/:t",
+            "params": [
+              {
+                "name": "requestId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "t",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get shared slide deck"
+        },
+        {
+          "info": {
+            "name": "Get shared quiz",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/share/quiz/:requestId/:t",
+            "params": [
+              {
+                "name": "requestId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "t",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get shared quiz"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

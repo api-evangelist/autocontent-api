@@ -1,0 +1,68 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AutoContent Content Dedicated Account API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Dedicated Account",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Test dedicated account API",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/dedicated-account"
+          },
+          "docs": "Test dedicated account API"
+        },
+        {
+          "info": {
+            "name": "Create notebook",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/dedicated-account/createNotebook"
+          },
+          "docs": "Create notebook"
+        },
+        {
+          "info": {
+            "name": "Delete notebook",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/dedicated-account/deleteNotebook"
+          },
+          "docs": "Delete notebook"
+        },
+        {
+          "info": {
+            "name": "List notebooks",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/dedicated-account/getNotebooks"
+          },
+          "docs": "List notebooks"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

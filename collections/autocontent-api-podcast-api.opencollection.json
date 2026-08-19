@@ -1,0 +1,118 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AutoContent Content Podcast API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Podcast",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get podcast RSS feed",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/podcast/rss/:podcastId",
+            "params": [
+              {
+                "name": "podcastId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get podcast RSS feed"
+        },
+        {
+          "info": {
+            "name": "List podcast shows",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/podcast/shows"
+          },
+          "docs": "List podcast shows"
+        },
+        {
+          "info": {
+            "name": "Create podcast show",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/podcast/shows"
+          },
+          "docs": "Create podcast show"
+        },
+        {
+          "info": {
+            "name": "Get podcast show",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/podcast/shows/:podcastId",
+            "params": [
+              {
+                "name": "podcastId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get podcast show"
+        },
+        {
+          "info": {
+            "name": "Update podcast show",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.autocontentapi.com/podcast/shows/:podcastId",
+            "params": [
+              {
+                "name": "podcastId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Update podcast show"
+        },
+        {
+          "info": {
+            "name": "Delete podcast show",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.autocontentapi.com/podcast/shows/:podcastId",
+            "params": [
+              {
+                "name": "podcastId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete podcast show"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

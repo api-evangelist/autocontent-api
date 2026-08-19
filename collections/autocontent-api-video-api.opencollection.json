@@ -1,0 +1,163 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "AutoContent Content Video API",
+    "version": "1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Video",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List avatars",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/video/GetAvatars"
+          },
+          "docs": "List avatars"
+        },
+        {
+          "info": {
+            "name": "List shorts videos",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/video/GetShorts"
+          },
+          "docs": "List shorts videos"
+        },
+        {
+          "info": {
+            "name": "Create shorts from audio or feeds",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/CreateShorts"
+          },
+          "docs": "Create shorts from audio or feeds"
+        },
+        {
+          "info": {
+            "name": "Create shorts from text content",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/CreateShortsFromContent"
+          },
+          "docs": "Create shorts from text content"
+        },
+        {
+          "info": {
+            "name": "Create shorts from custom script",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/CreateShortsFromScript"
+          },
+          "docs": "Create shorts from custom script"
+        },
+        {
+          "info": {
+            "name": "Create shorts from deep research",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/CreateShortsFromDeepResearch"
+          },
+          "docs": "Create shorts from deep research"
+        },
+        {
+          "info": {
+            "name": "Create custom avatar",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/CreateAvatar"
+          },
+          "docs": "Create custom avatar"
+        },
+        {
+          "info": {
+            "name": "Update avatar voice",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/UpdateAvatarVoice"
+          },
+          "docs": "Update avatar voice"
+        },
+        {
+          "info": {
+            "name": "List explainer videos",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/video/GetExplainerVideos"
+          },
+          "docs": "List explainer videos"
+        },
+        {
+          "info": {
+            "name": "Transcribe video",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.autocontentapi.com/video/Transcribe"
+          },
+          "docs": "Transcribe video"
+        },
+        {
+          "info": {
+            "name": "Get explainer video transcript",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/video/Transcript/:videoId",
+            "params": [
+              {
+                "name": "videoId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get explainer video transcript"
+        },
+        {
+          "info": {
+            "name": "Generate intro image",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.autocontentapi.com/video/GenerateIntroImage"
+          },
+          "docs": "Generate intro image"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,307 @@
+{
+  "item": [
+    {
+      "id": "79a99531-eb20-42c8-9687-bcc48fdbbf64",
+      "name": "Dedicated Account",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "422153da-3fd2-4e7f-9b7c-9429b7e28e5c",
+          "name": "Test dedicated account API",
+          "request": {
+            "name": "Test dedicated account API",
+            "description": {},
+            "url": {
+              "path": [
+                "dedicated-account"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "a0cedd47-6ebe-4857-86da-7513103a7701",
+              "name": "OK",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "dedicated-account"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "503e8b87-53cb-48f3-b1ab-f6feb716d5b6",
+          "name": "Create notebook",
+          "request": {
+            "name": "Create notebook",
+            "description": {},
+            "url": {
+              "path": [
+                "dedicated-account",
+                "createNotebook"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "3c51b71f-dc72-46aa-8314-e98e968ce642",
+              "name": "Notebook created",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "dedicated-account",
+                    "createNotebook"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "ff556675-d494-4118-a29a-e612461369e8",
+          "name": "Delete notebook",
+          "request": {
+            "name": "Delete notebook",
+            "description": {},
+            "url": {
+              "path": [
+                "dedicated-account",
+                "deleteNotebook"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "45c3b984-bbca-487e-af21-96c4223f9f23",
+              "name": "Notebook deleted",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "dedicated-account",
+                    "deleteNotebook"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "d35e07d2-f1a2-4940-9c14-2b38392d2b98",
+          "name": "List notebooks",
+          "request": {
+            "name": "List notebooks",
+            "description": {},
+            "url": {
+              "path": [
+                "dedicated-account",
+                "getNotebooks"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "f5aadff5-0002-415f-b812-22bb0e618979",
+              "name": "Notebooks returned",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "dedicated-account",
+                    "getNotebooks"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.autocontentapi.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "883ac11f-7112-4142-9de9-e994bcbdf425",
+    "name": "AutoContent Content Dedicated Account API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Best-effort OpenAPI 3.1 description of the AutoContent API for generating\npodcasts, videos, slide decks, infographics, transcripts and other content\ntypes. Derived from the public documentation index at\nhttps://docs.autocontentapi.com/llms-full.txt and the developer portal at\nhttps://autocontentapi.com/docs.\n\n\nContact Support:\n Name: AutoContent API Docs",
+      "type": "text/plain"
+    }
+  }
+}

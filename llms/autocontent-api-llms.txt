@@ -1,0 +1,298 @@
+# AutoContent API - AI Podcast Generation Platform
+
+## About AutoContent API 🌟
+
+**Transform Content into Podcasts**
+
+AutoContent API is a professional AI-powered platform that transforms any content into high-quality podcasts, Q&A sessions, study guides, and other audio content. We provide a complete API solution for automated podcast generation, perfect for creators, educators, businesses, and content teams.
+
+### Key Features:
+- AI-powered podcast generation in 50+ languages
+- One-click distribution to Spotify, Apple Music, and major platforms
+- Multi-voice conversations and custom voice cloning
+- Automated scheduling and bulk content processing
+- Professional API with comprehensive documentation
+
+## Hero Section 🎯
+
+**AI Podcast Generator**
+High-quality podcasts automated from your content at mass scale, instantly live on Spotify and all leading platforms.
+
+Transform Content into:
+- Podcasts
+- Q&A Sessions
+- Study Guides
+- Table of Contents
+- Timelines
+- Briefing Documents
+
+**Global Language Support:**
+Available in 50+ languages including English, Spanish, Russian, Chinese, Hindi, Portuguese, and many more.
+
+**Trusted by 400+ businesses worldwide**
+
+## NotebookLM-Style Content APIs and Private Notebooks 📚
+
+**Public content-generation APIs with an optional dedicated notebook plan**
+
+Google now documents NotebookLM Enterprise APIs for enterprise notebook workflows, while the standalone Google Cloud Podcast API is deprecated and not accepting new customers. AutoContent API provides a public REST API for teams that need NotebookLM-style audio generation and content automation:
+
+- **Complete API Solution**: Comprehensive document analysis API that delivers intelligent note-taking capabilities
+- **Purpose-Built for Developers**: Production-ready API with advanced document processing and developer-friendly integration
+- **Published Operations Only**: Use the dedicated documentation to distinguish currently enabled Private Notebook operations from the existing podcast and content-generation APIs
+
+## Platform Features 🚀
+
+### Complete Platform Solution
+Everything you need to create, manage, and distribute podcasts at scale - from individual episodes to automated content pipelines.
+
+1. **Smart Scheduling Dashboard**
+   - View and manage scheduled podcast episodes
+   - Automatic generation based on content calendar
+   - Never miss a release date
+
+2. **Automated Distribution**
+   - Direct publishing to Spotify, Apple Music, and major platforms
+   - Set once and reach audiences on autopilot
+   - Zero manual effort required
+
+3. **Advanced Podcast Editor**
+   - Modify existing podcasts from any source
+   - Change voices, scripts, tones, and duration
+   - Intuitive editing interface
+
+4. **Bulk Content Scheduler**
+   - Generate high-quality podcasts at scale
+   - Process lists of URLs or RSS feeds
+   - Automated release frequency management
+
+## One-Click Distribution 📻
+
+**Instant Publishing Across Platforms**
+Create professional podcasts in one click and distribute automatically to major platforms with zero manual effort.
+
+### Supported Platforms:
+- **Spotify**: World's largest podcast platform
+- **Apple Music**: Seamless Apple ecosystem integration
+- **Additional Platforms**: Comprehensive distribution network
+
+### Additional Features:
+- **Instant Publishing**: Podcasts go live within minutes
+- **Analytics Tracking**: Monitor performance across all platforms
+- **Scheduled Releases**: Automated publishing schedules
+
+## Statistics 📊
+
+- **400+** Active Customers
+- **500,000+** AI Generated Podcasts
+- **20,000+** Study Resources Created
+
+## Advanced Features 🔧
+
+### AI Podcast Generation Features
+
+1. **AI Podcast Generator**
+   - Professional-quality AI generated podcasts from any text content
+   - NotebookLM-style podcast generation through AutoContent API workflows
+
+2. **Multilanguage Support**
+   - Generate podcasts in 50+ languages
+   - Reach global audiences effectively
+
+3. **Multi-Voice Podcast Generation**
+   - Engaging conversations with multiple AI voices
+   - Perfect for interview-style content
+
+4. **Custom Voice Podcasts**
+   - Clone your own voice for personalized podcasts
+   - Premium voice options available
+
+5. **Advanced Podcast Controls**
+   - Custom instructions and tone settings
+   - Fine-tune conversation styles
+
+6. **FAQ Generation**
+   - Automatically create comprehensive Q&A content
+   - Process multiple source materials
+
+7. **Study Guides**
+   - Generate structured learning resources
+   - Instant educational material creation
+
+8. **Table of Contents**
+   - Create detailed content outlines
+   - Structured document hierarchies
+
+9. **Timeline Generation**
+   - Convert content into chronological timelines
+   - Event sequence visualization
+
+10. **Briefing Documents**
+    - Generate executive summaries
+    - Concise briefing materials
+
+## Pricing Plans 💰
+
+### Amateur Plan - €29/month (Originally €99)
+- **1,000 credits/month**
+- **1 concurrent request**
+- **15 podcasts/24h max**
+- Features:
+  - Normal API access
+  - Create new podcast (10 credits)
+  - Modify podcast (200 credits)
+  - Get podcast transcript (30 credits)
+  - Multiple languages support
+  - Schedule podcast generation
+  - Automate Spotify publishing
+  - Custom AI host instructions
+  - Instant API key via email
+  - Email support
+
+### Professional Plan - €69/month (Originally €199) ⭐ Most Popular
+- **5,000 credits/month**
+- **5 concurrent requests**
+- **30 podcasts/24h max**
+- Everything in Amateur plus:
+  - High Priority access
+  - Video Shorts (400 credits)
+  - 2 Data Feeds (X, Reddit + others)
+  - 2 custom voices
+  - Custom video avatars
+  - Auto-bypass restricted websites
+  - Citations support
+
+### Business Plan - €129/month (Originally €299)
+- **10,000 credits/month**
+- **10 concurrent requests**
+- **60 podcasts/24h max**
+- Everything in Professional plus:
+  - Max Priority API access
+  - 4 Data Feeds
+  - Deep Research API
+  - 10 custom voices
+  - Priority email support
+
+### Enterprise Plans
+Starting from €199/month for 20,000 credits:
+- **Max Priority API access**
+- **10 concurrent requests**
+- **Up to 120 podcasts/24h max**
+- **8 Data feeds**
+- **Custom integration support**
+- **Branded video shorts**
+- **Dedicated support**
+
+## Use Cases 🎯
+
+### Social Media
+Transform social media content into engaging audio:
+- Convert X (Twitter) threads into podcasts
+- LinkedIn profiles into audio reports
+- YouTube videos into audio clips
+- Social media feedback analysis
+
+### Educational Purposes
+Make learning more accessible with audio content:
+- Meeting notes to audio briefs
+- Academic papers to digestible summaries
+- Course materials to audio lectures
+- Research papers to audio summaries
+
+### E-commerce
+Enhance shopping experience with voice technology:
+- Product descriptions to voice ads
+- Audio product comparison narratives
+- Customer engagement through audio
+
+### Data Analysis & Automation
+Transform complex data into understandable audio:
+- Financial market summary generation
+- Market data insights
+- Sports data to engaging game recaps
+- Automated data reporting
+
+## Frequently Asked Questions ❓
+
+**Does it support multiple languages?**
+Yes, generate podcasts in 50+ languages by specifying your desired language.
+
+**Can I use my own Notebooks?**
+Yes, available for Enterprise clients only.
+
+**Can I modify existing podcasts?**
+Yes, modify podcasts and change voices and scripts after generation.
+
+**How many podcasts can I create?**
+Amateur: 100/month, Professional: 500/month, Enterprise: thousands per day.
+
+**How do credits work?**
+Credits are used for API requests. Creating one podcast costs 10 credits. Check documentation for complete pricing.
+
+**Can I also ask questions by text?**
+Yes, we support all NotebookLM formats: text, study guides, timelines.
+
+**Can we customize video avatars?**
+Yes, available for Professional and Enterprise customers.
+
+**Is there a free trial?**
+No, all resources are allocated to paid customers for the best possible service.
+
+**How much does it cost to create a podcast?**
+10 credits, regardless of podcast duration.
+
+**How long does it take to generate a podcast?**
+Usually less than 5 minutes, depending on subscription level.
+
+## API Information 🔧
+
+### Sample API Request
+```bash
+curl -X POST 'https://api.autocontentapi.com/Content/Create' \
+  -H 'accept: text/plain' \
+  -H 'Authorization: Bearer YOUR_TOKEN_HERE' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "resources": [
+      {
+        "content": "https://autocontentapi.com",
+        "type": "website"
+      },
+      {
+        "content": "74% of businesses expect AI to increase productivity",
+        "type": "text"
+      }
+    ],
+    "text": "Explain why automating with AutoContent API is a game changer for any business",
+    "outputType": "audio"
+  }'
+```
+
+### Key Features:
+- **Multiple Sources**: Process websites, plain text, YouTube videos, PDF files
+- **Smart Processing**: AI analyzes content context and relationships
+- **Flexible Outputs**: Generate podcasts, FAQs, study guides, timelines, briefing documents
+- **Professional Documentation**: Complete API documentation available
+- **Developer-Friendly**: Easy integration with comprehensive SDKs
+
+## Getting Started 🚀
+
+1. **Sign Up**: Get instant API access via email
+2. **Documentation**: Visit https://docs.autocontentapi.com
+3. **Try Platform**: https://app.autocontentapi.com
+4. **Contact Support**: Available via contact form for questions
+
+## Partnership 🤝
+
+Powered by industry-leading CloudBrowser AI technology for exceptional performance and reliability.
+
+---
+
+**Contact Information:**
+- Website: https://autocontentapi.com
+- Documentation: https://docs.autocontentapi.com
+- Platform: https://app.autocontentapi.com
+- Support: Available via contact form
+
+© 2025 AutoContent API. All rights reserved.
+*We are not affiliated with Google in any way*
