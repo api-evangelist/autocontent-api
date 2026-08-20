@@ -24,6 +24,15 @@ accessModel:
   method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/autocontent-api.png
 tags:
+  - Artificial Intelligence
+  - Audio
+  - Content Generation
+  - Podcasts
+  - Video
+  - Generative AI
+  - Text-to-Speech
+  - Automation
+tags_raw:
   - AI
   - Audio
   - Content Generation
@@ -47,6 +56,11 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Artificial Intelligence
+  - Podcast
+  - Audio
+  - Content Generation
+  tags_raw:
   - AI
   - Podcast
   - Audio
@@ -65,6 +79,10 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Artificial Intelligence
+  - Video
+  - Content Generation
+  tags_raw:
   - AI
   - Video
   - Content Generation
@@ -80,6 +98,10 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Artificial Intelligence
+  - Research
+  - Content Generation
+  tags_raw:
   - AI
   - Research
   - Content Generation
@@ -94,6 +116,11 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Artificial Intelligence
+  - Infographics
+  - Quizzes
+  - Content Generation
+  tags_raw:
   - AI
   - Infographics
   - Quizzes
