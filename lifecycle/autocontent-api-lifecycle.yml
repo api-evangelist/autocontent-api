@@ -1,0 +1,111 @@
+generated: '2026-09-04'
+method: searched
+source: >-
+  https://autocontentapi.com/developers/api, https://autocontentapi.com/developers/legacy, and the
+  deprecated flags in openapi/autocontent-api-legacy-content-openapi.json. Status-page and
+  changelog absence established by probe on 2026-09-04.
+description: >-
+  AutoContent API runs two products side by side. The Platform API is versioned in the path at
+  https://api.autocontentapi.com/v1; the legacy Content API is unversioned at the bare host. The
+  provider is explicit that the legacy routes are NOT compatibility aliases for /v1, and publishes
+  a migration sequence — but no dated sunset, no Sunset/Deprecation response headers, no SLA, no
+  status page and no changelog.
+versioning:
+  scheme: path
+  current: v1
+  base_url: https://api.autocontentapi.com/v1
+  spec_version: 1.0.0
+  docs: https://autocontentapi.com/developers/api
+  note: >-
+    The legacy Content API (openapi 3.0.0, info.version 1.0.0) is served unversioned at
+    https://api.autocontentapi.com with its own credentials and its own credit vocabulary.
+products:
+- name: AutoContent Platform API
+  status: current
+  base_url: https://api.autocontentapi.com/v1
+  contract: openapi/autocontent-api-platform-v1-openapi.json
+  credentials: Scoped Platform API keys (acp_ prefix) or Platform OAuth access tokens
+  billing: Prepaid USD service balance, quoted per Generation
+- name: AutoContent legacy Content API
+  status: legacy
+  base_url: https://api.autocontentapi.com
+  contract: openapi/autocontent-api-legacy-content-openapi.json
+  credentials: Legacy JWT bearer tokens
+  billing: Monthly credit plans
+  note: >-
+    Still fully documented and served. The provider says "New integrations should start at
+    https://autocontentapi.com/developers" but publishes no retirement date for the legacy surface.
+deprecation:
+  policy_published: true
+  policy_url: https://autocontentapi.com/developers/legacy
+  headers:
+    sunset: false
+    deprecation: false
+    note: >-
+      Neither RFC 8594 Sunset nor the Deprecation header appears anywhere in either published
+      OpenAPI. Deprecation is signalled only in the contract (deprecated: true) and in prose.
+  sunset_dates_published: false
+  deprecated_operations:
+  - operationId: null
+    path: /podcast/episodes
+    method: get
+    spec: openapi/autocontent-api-legacy-content-openapi.json
+    deprecated: true
+    summary: Get all podcast episodes for user (deprecated)
+    stated_reason: >-
+      "this broad all-episodes endpoint is expensive for large accounts and will be removed later"
+    replacement:
+    - /podcast/episodes/unallocated
+    - /podcast/shows/{podcastId}/episodes
+    removal_date: null
+    note: >-
+      A named replacement with no date. "will be removed later" is the only timing an integrator
+      gets.
+  migration_guide:
+    url: https://autocontentapi.com/developers/legacy
+    sequence:
+    - Create and confirm a Platform Project for each durable brand/workspace boundary.
+    - Ingest reusable files, text and URLs as Project Sources.
+    - Replace output-type switches with explicit first-class `assets` entries.
+    - Preview every Generation, accept under max_cost_usd, and retain an idempotency key.
+    - Consume Asset Artifacts and signed Platform webhooks.
+    - Move recurring jobs to Content Loops only after one-off behavior is correct.
+    cutover_guidance: >-
+      Run legacy and Platform integrations side by side with distinct credentials and resource IDs.
+      Do not reinterpret legacy credit amounts as Platform USD.
+catalog_versioning:
+  note: >-
+    Asset availability is versioned at runtime rather than in the spec. GET /asset-types returns
+    live availability, stable option schemas, capabilities, contract versions and a catalog
+    version; GET /models returns pinnable models. The provider states models can be retired
+    (error code model_retired) and that clients should not infer provider models or prices.
+  discovery_endpoints:
+  - operationId: listAssetTypes
+    path: /asset-types
+  - operationId: listModels
+    path: /models
+freeze_semantics:
+  source: https://autocontentapi.com/llms.txt
+  rule: >-
+    Accepted Generations freeze Project, Source, brand, Voice, Avatar, model, option and catalog
+    identities, so later changes do not rewrite in-flight or completed work. Existing work may
+    finish during a graceful service deployment.
+status_page:
+  published: false
+  probes:
+  - url: https://status.autocontentapi.com
+    status: 0
+    note: DNS does not resolve.
+  - url: https://autocontentapi.com/status
+    status: 404
+changelog:
+  published: false
+  probes:
+  - url: https://autocontentapi.com/changelog
+    status: 404
+  note: >-
+    No dated changelog was found on autocontentapi.com or docs.autocontentapi.com, and neither
+    llms.txt links one. Version history is not publicly traceable.
+sla:
+  published: false
+  note: No uptime, latency or support-response commitment is published on any public page.

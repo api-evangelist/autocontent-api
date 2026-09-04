@@ -4,107 +4,146 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: AutoContent API
 providerId: autocontent-api
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
-tags:
-  - AI
-  - Audio
-  - Content Generation
-  - Podcasts
-  - Video
-  - Generative AI
-  - Text to Speech
-  - Automation
-  - Rate Limiting
-  - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the AutoContent API API surface. Captures per-tier
-  quotas, burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to
-  be replaced with published provider limits.
+modified: '2026-09-04'
+generated: '2026-09-04'
+method: searched
+source: >-
+  https://autocontentapi.com/#pricing (per-plan daily and concurrency limits),
+  https://autocontentapi.com/developers/errors (429 handling), the 429 responses and
+  components.responses.AutoContentError header block in
+  openapi/autocontent-api-platform-v1-openapi.json, and the per-route limits declared in
+  openapi/autocontent-api-legacy-content-openapi.json.
+description: >-
+  Published throttling for AutoContent API. The limits that exist are commercial — a daily asset
+  cap and a concurrency cap attached to each legacy plan — plus a handful of per-route limits on
+  the legacy API. What is NOT published is the runtime signal: neither surface returns a
+  RateLimit-* or X-RateLimit-* header, so a client can only discover it has hit a limit by
+  receiving a 429.
+limit_count: 9
 headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
+  limit: null
+  remaining: null
+  reset: null
   retryAfter: Retry-After
-  policy: RateLimit-Policy
+  policy: null
+  note: >-
+    Retry-After is the only rate-limit header declared anywhere in either contract, and it is
+    documented as present only "when the error supplies a bounded retry time" — so even on a 429 it
+    is not guaranteed. No X-RateLimit-Limit / -Remaining / -Reset and no RFC-draft RateLimit-* family
+    is published. An agent cannot budget against these limits; it can only react to them. The
+    X-RateLimit-* header names carried in earlier rounds of this artifact were a scaffold default
+    and were not observed — they are removed.
 responseCodes:
   throttled: 429
   quotaExceeded: 429
   serviceUnavailable: 503
+error_codes:
+- code: rate_limited
+  status: 429
+  surface: Platform API v1
+  action: Respect Retry-After or the authoritative reset.
+- code: provider_operation_limit_exceeded
+  status: 429
+  surface: Platform API v1
+  action: >-
+    An upstream model provider's limit, not AutoContent's. Respect Retry-After or the authoritative
+    reset.
 limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - Podcast Generation API
-      - Video Generation API
-      - Deep Research API
-      - Infographics and Quizzes API
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
-    timeFrame: month
-    applies:
-      - Podcast Generation API
-      - Video Generation API
-      - Deep Research API
-      - Infographics and Quizzes API
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - Podcast Generation API
-      - Video Generation API
-      - Deep Research API
-      - Infographics and Quizzes API
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - Podcast Generation API
-      - Video Generation API
-      - Deep Research API
-      - Infographics and Quizzes API
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - Podcast Generation API
-      - Video Generation API
-      - Deep Research API
-      - Infographics and Quizzes API
-policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
-maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+- tier: amateur
+  name: Amateur plan
+  surface: Legacy Content API
+  scope: account
+  metric: assets
+  limit: 15
+  window: day
+  applies_to: podcasts, videos, slide decks, infographics, quizzes
+  source: https://autocontentapi.com/#pricing
+- tier: amateur
+  name: Amateur plan concurrency
+  surface: Legacy Content API
+  scope: account
+  metric: concurrent_requests
+  limit: 1
+  window: instantaneous
+  source: https://autocontentapi.com/#pricing
+- tier: professional
+  name: Professional plan
+  surface: Legacy Content API
+  scope: account
+  metric: assets
+  limit: 30
+  window: day
+  source: https://autocontentapi.com/#pricing
+- tier: professional
+  name: Professional plan concurrency
+  surface: Legacy Content API
+  scope: account
+  metric: concurrent_requests
+  limit: 5
+  window: instantaneous
+  source: https://autocontentapi.com/#pricing
+- tier: enterprise
+  name: Enterprise plan
+  surface: Legacy Content API
+  scope: account
+  metric: assets
+  limit: 60
+  window: day
+  source: https://autocontentapi.com/#pricing
+- tier: enterprise
+  name: Enterprise plan concurrency
+  surface: Legacy Content API
+  scope: account
+  metric: concurrent_requests
+  limit: 10
+  window: instantaneous
+  source: https://autocontentapi.com/#pricing
+- tier: all
+  name: Feed creation spacing
+  surface: Legacy Content API
+  scope: endpoint
+  endpoint: POST /feeds
+  metric: interval
+  limit: 1
+  window: 3s
+  message: 'Rate limit exceeded. Please wait 3 seconds before creating another feed.'
+  source: openapi/autocontent-api-legacy-content-openapi.json
+- tier: none
+  name: Public podcast ideas (unauthenticated, origin-gated)
+  surface: Legacy Content API
+  scope: ip
+  endpoint: POST /podcast/ideas
+  metric: requests
+  limit: 2
+  window: 24h
+  additional:
+    global_per_24h: 30
+    concurrent_per_ip: 2
+  source: openapi/autocontent-api-legacy-content-openapi.json
+- tier: private-notebooks
+  name: Private Notebooks rolling allowance
+  surface: Dedicated Account
+  scope: account
+  metrics:
+    questions_per_rolling_24h: 200
+    audio_overviews_per_rolling_24h: 6
+    video_overviews_per_rolling_24h: 6
+    notebooks_total: 200
+    sources_per_notebook: 100
+  reset_discovery: GET /dedicated-account/usage returns resetsOn
+  source: https://autocontentapi.com/#pricing
+platform_api:
+  published_limits: 0
+  note: >-
+    The Platform API v1 publishes NO numeric rate limit anywhere — not in the OpenAPI, not on
+    /developers/api, not on the pricing page. It declares the failure modes (rate_limited,
+    provider_operation_limit_exceeded, both 429 with an optional Retry-After) without ever saying
+    what the threshold is. The effective governor on the Platform API is money, not requests:
+    prepaid USD balance plus the per-Generation max_cost_usd and per-Loop budget ceilings. An honest
+    zero, recorded rather than omitted.
+quota_model:
+  legacy: >-
+    Monthly credits (1,000 / 5,000 / 10,000 by tier), consumed at published per-asset rates — see
+    plans/autocontent-api-plans-pricing.yml. Credits are a quota, not a rate limit; the daily asset
+    cap and concurrency cap above are the rate limits.
+  platform: Prepaid USD service balance with per-request and per-Loop ceilings.

@@ -1,14 +1,99 @@
-generated: '2026-07-11'
-method: derived
-source: openapi/autocontent-api-openapi.yml
+generated: '2026-09-04'
+method: searched
+source: >-
+  https://autocontentapi.com/developers/api and https://autocontentapi.com/developers (auth
+  guidance), components.securitySchemes in openapi/autocontent-api-platform-v1-openapi.json and
+  openapi/autocontent-api-legacy-content-openapi.json, and the fetched authorization-server
+  metadata at well-known/autocontent-api-auth-oauth-authorization-server.json.
+docs: https://autocontentapi.com/developers/api
 summary:
   types:
   - http
+  - oauth2
+  products: 2
+description: >-
+  Two credential families for two products. The Platform API accepts either a scoped API key
+  (acp_ prefix) or an OAuth access token, both presented as Authorization: Bearer. The legacy
+  Content API takes its own JWT bearer token and shares nothing with the Platform credentials.
 schemes:
+- name: platformApiKey
+  product: AutoContent Platform API v1
+  type: http
+  scheme: bearer
+  bearerFormat: acp_ Platform API key
+  key_prefix: acp_
+  scoped: true
+  header: 'Authorization: Bearer <key>'
+  minted_by: createApiKey (POST /api-keys, scope platform.keys.write) or the Platform app
+  revocable: true
+  revoked_by: revokeApiKey (DELETE /api-keys/{id})
+  guidance: >-
+    "Keep the key on the server or in a secret manager; never ship it in browser JavaScript."
+    AUTOCONTENT_API_KEY is the documented environment variable for the SDK and CLI, and the CLI
+    treats it as overriding any locally stored key — the preferred CI/agent path.
+  sources:
+  - openapi/autocontent-api-platform-v1-openapi.json
+  - https://autocontentapi.com/developers/api
+- name: platformOAuth
+  product: AutoContent Platform API v1
+  type: http
+  scheme: bearer
+  bearerFormat: Platform OAuth JWT
+  oauth:
+    issuer: https://auth.autocontentapi.com
+    authorization_endpoint: https://auth.autocontentapi.com/auth
+    token_endpoint: https://auth.autocontentapi.com/token
+    revocation_endpoint: https://auth.autocontentapi.com/token/revocation
+    registration_endpoint: https://auth.autocontentapi.com/reg
+    jwks_uri: https://auth.autocontentapi.com/jwks
+    end_session_endpoint: https://auth.autocontentapi.com/session/end
+    grant_types:
+    - authorization_code
+    - refresh_token
+    response_types:
+    - code
+    pkce:
+    - S256
+    token_endpoint_auth_methods:
+    - none
+    dynamic_client_registration: true
+    scopes:
+    - platform.read
+    - platform.write
+    - platform.generate
+    - platform.billing.read
+    - platform.billing.write
+    - platform.keys.write
+  note: >-
+    Public-client OAuth only — token_endpoint_auth_methods_supported is ["none"], so PKCE is the
+    protection, not a client secret. Dynamic client registration at /reg is what lets an arbitrary
+    MCP client obtain a client_id without a human in the loop.
+  sources:
+  - openapi/autocontent-api-platform-v1-openapi.json
+  - well-known/autocontent-api-auth-oauth-authorization-server.json
 - name: bearerAuth
+  product: AutoContent legacy Content API
   type: http
   scheme: bearer
   bearerFormat: JWT
-  description: AutoContent API key as a Bearer token in the Authorization header.
+  header: 'Authorization: Bearer <token>'
+  description: >-
+    Legacy API token, applied as a global security requirement across the legacy Content API. 87 of
+    its 106 operations declare a 401 response.
+  note: >-
+    Separate credential space from the Platform. The provider states legacy routes, credentials and
+    credit vocabulary remain separate and are not compatibility aliases for /v1.
   sources:
-  - openapi/autocontent-api-openapi.yml
+  - openapi/autocontent-api-legacy-content-openapi.json
+unauthenticated_surface:
+- path: /podcast/ideas
+  spec: openapi/autocontent-api-legacy-content-openapi.json
+  auth: none
+  gate: >-
+    Origin allowlist (autocontentapi.com / app.autocontentapi.com / localhost) OR a
+    X-Free-Tools-Secret header; other callers get 403. Limits 2 requests per IP per 24h, 30 total
+    per 24h, 2 concurrent per IP.
+  note: >-
+    The only route on either surface that runs without a credential. It is origin-gated, not open.
+mfa: null
+mtls: false

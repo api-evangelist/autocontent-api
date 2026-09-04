@@ -1,0 +1,124 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the AutoContent Platform API
+  version: 1.0.0
+x-provenance:
+  generated: '2026-09-04'
+  method: generated
+  source: >-
+    API Evangelist enhancements over openapi/autocontent-api-platform-v1-openapi.json, which is the
+    verbatim provider document from https://autocontentapi.com/openapi/autocontent-platform-v1.json.
+    Every value applied here is either an API Evangelist annotation or a fact published by the
+    provider on autocontentapi.com — nothing is invented, and the original spec is never mutated.
+extends: ../openapi/autocontent-api-platform-v1-openapi.json
+actions:
+- target: $.info
+  description: >-
+    Add contact and external documentation the provider publishes on its own site and llms.txt but
+    omits from the spec's info block.
+  update:
+    contact:
+      name: AutoContent API
+      url: https://autocontentapi.com/developers
+      email: hello@autocontentapi.com
+    termsOfService: https://autocontentapi.com/terms
+    x-api-evangelist:
+      provider: autocontent-api
+      profile: https://apis.io/autocontent-api
+      product: AutoContent Platform API v1
+      sibling_surface: >-
+        The legacy AutoContent Content API is a separate product at https://api.autocontentapi.com
+        with its own credentials; it is not a compatibility alias for /v1.
+- target: $
+  description: >-
+    Declare the fifteen tags the operations already use. The provider's document tags every
+    operation but publishes no top-level tags array, so no tooling can render a grouped navigation
+    or a per-tag description without this.
+  update:
+    tags:
+    - name: projects
+      description: The durable brand and Knowledge boundary, plus its logo and collections.
+    - name: collections
+      description: Named groupings of Sources inside one Project.
+    - name: sources
+      description: Reusable URL, text and file inputs, including request-only uploads.
+    - name: asset-types
+      description: Runtime catalog of available asset types, option schemas and contract versions.
+    - name: models
+      description: Pinnable generation models and their native option schemas.
+    - name: voices
+      description: Stock and custom cloned voices.
+    - name: avatars
+      description: Stock and custom video avatars.
+    - name: generations
+      description: Priced units of work — preview, accept under a ceiling, inspect, edit, cancel.
+    - name: assets
+      description: Finished first-class content objects and their Artifacts.
+    - name: content-loops
+      description: Scheduled standing authorizations to generate under explicit USD ceilings.
+    - name: content-loop-runs
+      description: Individual executions of a Content Loop.
+    - name: account
+      description: Account identity, plan and granted scopes.
+    - name: api-keys
+      description: Scoped Platform API key lifecycle.
+    - name: billing
+      description: Authoritative usage, prepaid balance and Checkout funding.
+    - name: webhooks
+      description: Signed webhook destinations.
+    externalDocs:
+      description: AutoContent Platform developer documentation
+      url: https://autocontentapi.com/developers
+- target: $.components.securitySchemes.platformApiKey
+  description: Record the documented key-handling guidance alongside the scheme.
+  update:
+    description: >-
+      Scoped Platform API key, prefix acp_, sent as Authorization: Bearer. The provider instructs
+      integrators to keep it on the server or in a secret manager and never ship it in browser
+      JavaScript. AUTOCONTENT_API_KEY is the documented environment variable, and it overrides any
+      locally stored CLI key.
+- target: $.components.securitySchemes.platformOAuth
+  description: Attach the discovered authorization-server metadata to the OAuth scheme.
+  update:
+    description: >-
+      Platform OAuth access token, sent as Authorization: Bearer. Issuer
+      https://auth.autocontentapi.com; RFC 8414 metadata at
+      /.well-known/oauth-authorization-server; PKCE S256 only; public clients only
+      (token_endpoint_auth_methods_supported is ["none"]); dynamic client registration at /reg.
+    x-oauth-metadata: https://auth.autocontentapi.com/.well-known/oauth-authorization-server
+    x-protected-resource-metadata: https://mcp.autocontentapi.com/.well-known/oauth-protected-resource/v1
+- target: $.paths['/generations/preview'].post
+  description: Mark the preview endpoint as the API's dry-run surface for agent tooling.
+  update:
+    x-dry-run: true
+    x-consuming: false
+    x-agent-note: >-
+      Non-consuming and authoritative. Creates no Generation, reservation or provider effect.
+      Rehearse here before every acceptance; never calculate or cache prices client-side.
+- target: $.paths['/generations/{id}/edit/preview'].post
+  description: Mark the edit preview endpoint as a dry-run surface.
+  update:
+    x-dry-run: true
+    x-consuming: false
+- target: $.paths['/generations'].post
+  description: Flag the money ceiling that governs acceptance.
+  update:
+    x-cost-ceiling-field: max_cost_usd
+    x-agent-note: >-
+      Accepts only when max_cost_usd covers the current quote. max_cost_exceeded and
+      payment_required both leave zero effect. Never raise the ceiling without an explicit decision.
+- target: $.paths['/generations/{id}/cancel'].post
+  description: Record the reversal boundary this operation actually offers.
+  update:
+    x-reversal-of: createGeneration
+    x-reversal-window: >-
+      Undispatched work only. Once a Generation is dispatched to a provider it cannot be cancelled.
+      No elapsed-time window is published.
+- target: $.paths['/projects/{id}'].delete
+  description: Record that archive has no published restore path.
+  update:
+    x-reversal-of: createProject
+    x-restore-operation: null
+    x-agent-note: >-
+      Archives the Project AND its Content Loops. No unarchive operation and no retention window is
+      published — the widest-blast write on this API.

@@ -1,0 +1,58 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the AutoContent legacy Content API
+  version: 1.0.0
+x-provenance:
+  generated: '2026-09-04'
+  method: generated
+  source: >-
+    API Evangelist enhancements over openapi/autocontent-api-legacy-content-openapi.json, the
+    verbatim provider document from https://api.autocontentapi.com/api-docs.json. The original is
+    never mutated.
+extends: ../openapi/autocontent-api-legacy-content-openapi.json
+actions:
+- target: $.info
+  description: >-
+    Name the product properly and record its lifecycle position. The provider's own document is
+    titled only "Content API" with the description "API documentation for the Content API", which
+    gives a consumer no way to tell it apart from the current Platform API.
+  update:
+    title: AutoContent legacy Content API
+    contact:
+      name: AutoContent API
+      url: https://autocontentapi.com/developers/legacy
+      email: hello@autocontentapi.com
+    termsOfService: https://autocontentapi.com/terms
+    x-lifecycle: legacy
+    x-superseded-by: https://api.autocontentapi.com/v1
+    x-migration-guide: https://autocontentapi.com/developers/legacy
+    x-api-evangelist:
+      provider: autocontent-api
+      note: >-
+        The provider states this surface is NOT a compatibility alias for /v1 and that new
+        integrations should start at https://autocontentapi.com/developers. No sunset date is
+        published for it.
+- target: $
+  description: Point at the human documentation for this surface.
+  update:
+    externalDocs:
+      description: AutoContent legacy API documentation
+      url: https://docs.autocontentapi.com/
+- target: $.paths['/podcast/ideas'].post
+  description: Flag the one route on this API that needs no credential.
+  update:
+    x-unauthenticated: true
+    x-access-gate: >-
+      Origin allowlist (autocontentapi.com / app.autocontentapi.com / localhost) or an
+      X-Free-Tools-Secret header. Other callers receive 403. Limits: 2 requests per IP per 24h,
+      30 total per 24h, 2 concurrent per IP.
+- target: $.paths['/podcast/episodes'].get
+  description: Record the replacement operations for the one deprecated route on this surface.
+  update:
+    x-replaced-by:
+    - /podcast/episodes/unallocated
+    - /podcast/shows/{podcastId}/episodes
+    x-sunset-date: null
+    x-agent-note: >-
+      Marked deprecated with the reason "expensive for large accounts and will be removed later".
+      A named replacement with no date.

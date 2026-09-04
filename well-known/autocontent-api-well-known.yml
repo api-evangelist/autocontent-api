@@ -1,0 +1,164 @@
+generated: '2026-09-04'
+method: probed
+source: >-
+  Anonymous HTTPS probes of /.well-known/* on every host this record knows — the registrable
+  domain and www, the API baseURL host, every OpenAPI servers[] host, the docs host, the app host,
+  the MCP host named in llms.txt, and auth.autocontentapi.com, which is the authorization_servers
+  entry the MCP protected-resource documents point at.
+description: >-
+  AutoContent API publishes no security.txt, api-catalog or ai-plugin.json anywhere. It does
+  publish real OAuth discovery: two RFC 9728 protected-resource documents on mcp.autocontentapi.com
+  (one for the legacy MCP resource, one at the /v1 path for the Platform resource) and full RFC 8414
+  authorization-server metadata plus OIDC discovery on auth.autocontentapi.com. app.autocontentapi.com
+  answers 200 with the same SPA shell for every /.well-known/ path and serves no document at any of
+  them — recorded as misses, not hits.
+hosts:
+- host: autocontentapi.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: www.autocontentapi.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: api.autocontentapi.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: docs.autocontentapi.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: app.autocontentapi.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    note: >-
+      SPA catch-all — returns the app's index.html for every /.well-known/ path. Not a document;
+      treated as a miss.
+  - path: /.well-known/openid-configuration
+    status: 200
+    note: SPA shell, not a document. Miss.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    note: SPA shell, not a document. Miss.
+  - path: /.well-known/api-catalog
+    status: 200
+    note: SPA shell, not a document. Miss.
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    note: SPA shell, not a document. Miss.
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    note: SPA shell, not a document. Miss.
+  - path: /.well-known/agent-card.json
+    status: 200
+    note: SPA shell, not a document. Miss.
+  - path: /.well-known/agent.json
+    status: 200
+    note: SPA shell, not a document. Miss.
+- host: mcp.autocontentapi.com
+  documents:
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: well-known/autocontent-api-mcp-oauth-protected-resource.json
+    note: >-
+      RFC 9728 protected-resource metadata for the LEGACY AutoContent MCP resource
+      https://mcp.autocontentapi.com/mcp — scopes content.create, content.status.
+  - path: /.well-known/oauth-protected-resource/v1
+    status: 200
+    file: well-known/autocontent-api-platform-oauth-protected-resource.json
+    note: >-
+      RFC 9728 protected-resource metadata for the Platform MCP resource
+      https://api.autocontentapi.com/platform — scopes platform.read, platform.write,
+      platform.generate, platform.billing.read. Discovered from the WWW-Authenticate
+      resource_metadata parameter returned by an anonymous POST to https://mcp.autocontentapi.com/v1.
+  - path: /.well-known/openid-configuration
+    status: 302
+    note: 302 redirect to https://auth.autocontentapi.com/.well-known/openid-configuration.
+  - path: /.well-known/oauth-authorization-server
+    status: 302
+    note: 302 redirect to https://auth.autocontentapi.com/.well-known/oauth-authorization-server.
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: auth.autocontentapi.com
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: well-known/autocontent-api-auth-openid-configuration.json
+    note: >-
+      OpenID Connect discovery. issuer https://auth.autocontentapi.com, authorization_code +
+      refresh_token + implicit, PKCE S256, dynamic client registration at /reg.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: well-known/autocontent-api-auth-oauth-authorization-server.json
+    note: >-
+      RFC 8414 authorization-server metadata. scopes_supported carries all eight published scopes
+      across both products — content.create, content.status, platform.read, platform.write,
+      platform.generate, platform.billing.read, platform.billing.write, platform.keys.write.
+  - path: /.well-known/security.txt
+    status: 404

@@ -1,0 +1,128 @@
+generated: '2026-09-04'
+method: probed
+source: >-
+  scopes_supported in https://auth.autocontentapi.com/.well-known/oauth-authorization-server
+  (fetched 2026-09-04, saved at well-known/autocontent-api-auth-oauth-authorization-server.json),
+  cross-checked against x-required-scopes on every operation in
+  openapi/autocontent-api-platform-v1-openapi.json and the scope table at
+  https://autocontentapi.com/developers/api.
+docs: https://autocontentapi.com/developers/api
+description: >-
+  Eight OAuth scopes across two products. The Platform API declares a required scope on every one
+  of its 55 operations via x-required-scopes, so the mapping below is read from the contract rather
+  than inferred. Two legacy scopes cover the older MCP resource.
+authorization_server: https://auth.autocontentapi.com
+grant_types:
+- authorization_code
+- refresh_token
+pkce: S256
+dynamic_client_registration: https://auth.autocontentapi.com/reg
+scopes:
+- name: platform.read
+  product: Platform API v1
+  description: >-
+    Read Projects, Collections, Sources, Assets, Generations, Content Loops, Content Loop Runs and
+    the account record, plus the Asset Type / Model / Voice / Avatar discovery endpoints.
+  operations: 21
+  examples:
+  - listProjects
+  - getProject
+  - listSources
+  - getSource
+  - listAssetTypes
+  - listModels
+  - listVoices
+  - listAvatars
+  - listGenerations
+  - getGeneration
+  - listAssets
+  - getAsset
+  - listContentLoops
+  - getContentLoop
+  - listContentLoopRuns
+  - getContentLoopRun
+  - getAccount
+- name: platform.write
+  product: Platform API v1
+  description: >-
+    Create and mutate Projects, Collections, Sources, logos, Asset feedback, Content Loop Run
+    feedback and webhook destinations.
+  examples:
+  - createProject
+  - updateProject
+  - archiveProject
+  - replaceProjectLogo
+  - removeProjectLogo
+  - refreshProject
+  - createCollection
+  - updateCollection
+  - deleteCollection
+  - createSource
+  - removeSource
+  - refreshSource
+  - recordAssetFeedback
+  - recordContentLoopRunFeedback
+  - createWebhook
+  - listWebhooks
+  - deleteWebhook
+- name: platform.generate
+  product: Platform API v1
+  description: >-
+    Spend money. Preview and create Generations and full-Asset edits, cancel Generations, run
+    Content Loops, and create or revoke custom Voices and Avatars.
+  spends: true
+  examples:
+  - previewGeneration
+  - createGeneration
+  - previewGenerationEdit
+  - createGenerationEdit
+  - cancelGeneration
+  - runContentLoop
+  - createVoice
+  - revokeVoice
+  - createAvatar
+  - revokeAvatar
+  note: >-
+    Content Loop create/update/archive require BOTH platform.write and platform.generate, because
+    a Loop is a standing authorization to spend.
+- name: platform.billing.read
+  product: Platform API v1
+  description: Read authoritative usage and prepaid service balance.
+  examples:
+  - getBillingUsage
+- name: platform.billing.write
+  product: Platform API v1
+  description: >-
+    Create a prepaid Checkout session to add USD service balance. The docs call this the OAuth-only
+    prepayment endpoint.
+  examples:
+  - createPrepaymentSession
+  note: >-
+    NOT requested by the Platform MCP — the MCP WWW-Authenticate challenge asks only for
+    platform.read, platform.write, platform.generate and platform.billing.read, so an MCP client
+    cannot move money into the account.
+- name: platform.keys.write
+  product: Platform API v1
+  description: Mint, list and revoke scoped Platform API keys.
+  examples:
+  - createApiKey
+  - listApiKeys
+  - revokeApiKey
+  note: >-
+    Credential minting. Also outside the Platform MCP's requested scope set. listApiKeys requires
+    the write scope, so there is no read-only view of an account's keys.
+- name: content.create
+  product: Legacy AutoContent MCP
+  description: Create content through the legacy AutoContent MCP resource.
+  resource: https://mcp.autocontentapi.com/mcp
+- name: content.status
+  product: Legacy AutoContent MCP
+  description: Read the status of legacy content requests.
+  resource: https://mcp.autocontentapi.com/mcp
+mcp_scope_sets:
+- endpoint: https://mcp.autocontentapi.com/v1
+  scopes: [platform.read, platform.write, platform.generate, platform.billing.read]
+  evidence: WWW-Authenticate header on an anonymous POST, 2026-09-04.
+- endpoint: https://mcp.autocontentapi.com/mcp
+  scopes: [content.create, content.status]
+  evidence: https://mcp.autocontentapi.com/.well-known/oauth-protected-resource

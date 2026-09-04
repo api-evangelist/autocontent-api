@@ -1,0 +1,1 @@
+{"resource":"https://mcp.autocontentapi.com/mcp","authorization_servers":["https://auth.autocontentapi.com"],"scopes_supported":["content.create","content.status"],"resource_documentation":"https://api.autocontentapi.com/api-docs.json"}

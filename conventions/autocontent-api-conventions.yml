@@ -1,0 +1,260 @@
+generated: '2026-09-04'
+method: searched
+source: >-
+  https://autocontentapi.com/developers/api, /developers/errors, /developers/webhooks,
+  /developers/sdk, /developers/concepts/pricing and https://autocontentapi.com/llms.txt, derived
+  against openapi/autocontent-api-platform-v1-openapi.json.
+scope: >-
+  AutoContent Platform API v1 (https://api.autocontentapi.com/v1). The legacy Content API at the
+  bare host does NOT share these conventions — see the legacy block at the end.
+description: >-
+  Cross-cutting runtime semantics an agent needs before it calls anything: how requests are shaped,
+  how money is quoted and capped, how replays are made safe, how pages are walked, and what can be
+  taken back.
+request_response:
+  case: snake_case in both requests and responses
+  content_type: application/json, except documented multipart uploads
+  money: Decimal USD values are strings, never floats
+  price_authority: >-
+    The preview endpoint is authoritative. "Client code must not calculate or cache customer
+    prices." Always preview immediately before create.
+authentication:
+  style: 'Authorization: Bearer <Platform API key or OAuth access token>'
+  key_prefix: acp_
+  scoped: Every operation declares x-required-scopes in the contract.
+  detail: authentication/autocontent-api-authentication.yml
+idempotency:
+  supported: true
+  coverage: partial
+  mechanism: Idempotency-Key request header
+  header: Idempotency-Key
+  format: 1-255 visible ASCII bytes (pattern ^[!-~]+$); UUID recommended
+  required_on: 18
+  mutating_operations_total: 32
+  conflict_codes:
+  - idempotency_conflict
+  - idempotency_in_progress
+  retention: null
+  scope:
+  - createProject
+  - updateProject
+  - replaceProjectLogo
+  - refreshProject
+  - createCollection
+  - createSource
+  - refreshSource
+  - createVoice
+  - createAvatar
+  - createGeneration
+  - createGenerationEdit
+  - createContentLoop
+  - updateContentLoop
+  - archiveContentLoop
+  - runContentLoop
+  - createApiKey
+  - createPrepaymentSession
+  - createWebhook
+  not_required_on:
+  - archiveProject
+  - removeProjectLogo
+  - updateCollection
+  - deleteCollection
+  - removeSource
+  - revokeVoice
+  - revokeAvatar
+  - previewGeneration
+  - previewGenerationEdit
+  - cancelGeneration
+  - recordAssetFeedback
+  - recordContentLoopRunFeedback
+  - revokeApiKey
+  - deleteWebhook
+  note: >-
+    coverage is `partial`, not `full`: Idempotency-Key is a REQUIRED header parameter on 18 of the
+    32 mutating operations (x-idempotency-required: true), and is not declared at all on the other
+    14 — every DELETE/revoke, both previews, cancelGeneration, updateCollection, and both feedback
+    writes. The 18 that carry it are the ones that create durable or billable state, which is a
+    defensible design; but an agent cannot assume a replay-safe write everywhere. Retention window
+    for a key is not published. The TypeScript SDK generates a key when the caller omits one and
+    keeps it across safe retries, which narrows the practical gap for SDK users only — not for
+    direct REST or MCP callers.
+  ambiguous_transport_rule: >-
+    If a keyed mutation may have reached the service, do not create a new key. Retry the exact
+    method, path, body and key, or inspect the returned resource. Never automatically replay a
+    consumed one-shot upload stream.
+reversibility:
+  grade: documented
+  applicable: true
+  note: >-
+    Every write surface has a documented undo verb, and the money path has an explicit pre-effect
+    boundary — but no operation states a time window inside which a reversal works, and nothing in
+    either the spec or the docs describes restoring an archived Project, Loop or Source. Graded
+    `documented` rather than `verified` for that reason.
+  surfaces:
+  - surface: Generation (billable work)
+    write: createGeneration
+    reversal: cancelGeneration
+    reversal_path: POST /generations/{id}/cancel
+    window: >-
+      Only undispatched work. The operation's own summary is "Cancel undispatched Generation
+      work" — once a Generation is dispatched to a provider it cannot be cancelled. No elapsed-time
+      figure is published.
+    window_stated: true
+    restores_funds: unknown
+    docs: https://autocontentapi.com/developers/api
+  - surface: Generation edit
+    write: createGenerationEdit
+    reversal: null
+    window: null
+    window_stated: false
+    note: >-
+      A full-Asset edit is itself the correction path for an unsatisfactory Asset (preview then
+      edit), but an edit cannot be undone; there is no revert-to-previous-Artifact operation.
+  - surface: Project
+    write: createProject
+    reversal: archiveProject
+    reversal_path: DELETE /projects/{id}
+    window: null
+    window_stated: false
+    note: >-
+      Archive, not delete — but no restore/unarchive operation is published and no retention period
+      is stated. Archiving a Project also archives its Content Loops, so this is the widest-blast
+      write on the surface.
+  - surface: Content Loop (standing authorization to spend)
+    write: createContentLoop
+    reversal: archiveContentLoop
+    reversal_path: DELETE /content-loops/{id}
+    window: null
+    window_stated: false
+    note: >-
+      Archiving stops future Runs. Runs already accepted are not described as reversible.
+  - surface: Source
+    write: createSource
+    reversal: removeSource
+    reversal_path: DELETE /sources/{id}
+    window: >-
+      Separately, a request-only upload (keep_as_project_asset: false) expires on its own after 24
+      hours unless a Generation claims it — a stated expiry, not a stated undo window.
+    window_stated: false
+  - surface: Collection
+    write: createCollection
+    reversal: deleteCollection
+    reversal_path: DELETE /collections/{id}
+    window: null
+    window_stated: false
+    note: Only an EMPTY collection can be deleted.
+  - surface: Custom Voice / Avatar
+    write: [createVoice, createAvatar]
+    reversal: [revokeVoice, revokeAvatar]
+    window: null
+    window_stated: false
+  - surface: Platform API key
+    write: createApiKey
+    reversal: revokeApiKey
+    window: null
+    window_stated: false
+  - surface: Webhook destination
+    write: createWebhook
+    reversal: deleteWebhook
+    window: null
+    window_stated: false
+  - surface: Prepaid funding
+    write: createPrepaymentSession
+    reversal: null
+    window: null
+    window_stated: false
+    note: >-
+      No refund or reversal operation. The docs say purchased service balance is not charged again
+      when used, and Stripe may add tax at Checkout; there is no published route to reverse a
+      completed prepayment.
+  pre_effect_guarantees:
+  - >-
+      previewGeneration and previewGenerationEdit are explicitly non-consuming and authoritative —
+      the rehearsal path. Neither creates a Generation, a reservation or a provider effect.
+  - >-
+      A payment_required response "creates no Generation, reservation, or provider effect", so an
+      underfunded acceptance is a clean no-op rather than something to unwind.
+  - >-
+      max_cost_usd is a hard ceiling supplied by the caller at acceptance; a quote above it fails
+      with max_cost_exceeded and nothing is spent. Content Loops carry max_cost_per_run_usd and
+      max_cost_per_month_usd for the same reason.
+dry_run_mode:
+  supported: true
+  mechanism: >-
+    POST /generations/preview and POST /generations/{id}/edit/preview return the complete
+    validation result and the authoritative USD quote without creating anything.
+  operations:
+  - previewGeneration
+  - previewGenerationEdit
+pagination:
+  style: cursor
+  request_params:
+  - limit
+  - cursor
+  response_field: next_cursor
+  opaque: true
+  rule: >-
+    "Use limit and opaque cursor; one response never implies all later pages were fetched." Follow
+    next_cursor explicitly.
+versioning:
+  style: path
+  current: /v1
+  detail: lifecycle/autocontent-api-lifecycle.yml
+error_envelope:
+  shape: '{"error": {"code","message","correlation_id","doc_url","details"}}'
+  code_enum: 36 published values
+  rfc9457: false
+  detail: errors/autocontent-api-problem-types.yml
+request_tracing:
+  field: error.correlation_id
+  pattern: ^corr_[A-Za-z0-9_-]+$
+  scope: >-
+    Present on every error body. No success-path request-id header is documented, so a correlation
+    id exists only when something failed.
+rate_limit_signaling:
+  headers:
+  - Retry-After
+  status: 429
+  codes:
+  - rate_limited
+  - provider_operation_limit_exceeded
+  note: >-
+    Retry-After is the only rate-limit header declared in the contract. No RateLimit-* or
+    X-RateLimit-* family is published, so an agent cannot see how close it is to a limit before
+    hitting one. Detail in rate-limits/autocontent-api-rate-limits.yml.
+async_model:
+  style: 202-accept-then-poll-or-webhook
+  accepted_codes: [201, 202]
+  poll: getProject, getSource, getGeneration, getContentLoopRun
+  push: Signed webhooks — see asyncapi/autocontent-api-webhooks.yml
+  freeze: >-
+    Accepted Generations freeze Project, Source, brand, Voice, Avatar, model, option and catalog
+    identities, so later configuration changes do not rewrite in-flight or completed work.
+discovery:
+  rule: >-
+    Do not hardcode asset types, models or prices. GET /asset-types gives live availability, stable
+    option schemas, capabilities, contract versions and a catalog version; GET /models gives
+    pinnable models and their native option schemas.
+attachments:
+  field: attachment_source_ids
+  placement: Top-level Generation field, separate from input.source_ids
+  limit: Up to 20 unique ready Sources owned by the same Project
+  claim: Request-only uploads are claimed atomically at Generation acceptance
+  expiry: A request-only file Source expires after 24 hours unless a Generation claims it
+  constraint: >-
+    Textual attachments can ground any Asset; Product Visual attachments can guide Lead Magnets and
+    Product Demo Videos only, and never replace textual grounding.
+legacy_api:
+  base_url: https://api.autocontentapi.com
+  note: >-
+    The legacy Content API shares none of the above. Its fields are PascalCase-ish route names
+    (/content/Create, /content/Status/{id}), it uses page/limit offset pagination rather than
+    cursors, it has no Idempotency-Key, no correlation ids, no preview/quote step, and its errors
+    are {"success": false, "error": "<string>"}. Anything an agent learns here must not be carried
+    across.
+cross_links:
+  errors: errors/autocontent-api-problem-types.yml
+  lifecycle: lifecycle/autocontent-api-lifecycle.yml
+  authentication: authentication/autocontent-api-authentication.yml
+  scopes: scopes/autocontent-api-scopes.yml
+  rate_limits: rate-limits/autocontent-api-rate-limits.yml

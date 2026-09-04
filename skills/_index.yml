@@ -1,0 +1,38 @@
+generated: '2026-09-04'
+method: generated
+provider: AutoContent API
+providerId: autocontent-api
+api: AutoContent Platform API v1
+source: >-
+  Authored from openapi/autocontent-api-platform-v1-openapi.json (the provider's verbatim OpenAPI
+  3.1 document) and the developer reference at https://autocontentapi.com/developers. Every
+  operationId referenced in every skill is present in that spec; no operation, field, error code or
+  window is invented.
+description: >-
+  Packaged Agent Skills for the AutoContent Platform API v1. Skills cover the Platform surface only
+  — the legacy Content API at the bare host shares none of these conventions and is deliberately
+  not covered.
+skills:
+- name: autocontent-api-generate-assets
+  file: skills/autocontent-api-generate-assets.md
+  summary: Project to finished Assets — create, ground, discover, preview, accept under a ceiling, collect.
+  operations: 12
+- name: autocontent-api-run-content-loop
+  file: skills/autocontent-api-run-content-loop.md
+  summary: Turn a proven Generation into a budgeted recurring Content Loop, then monitor and stop it.
+  operations: 9
+- name: autocontent-api-consume-webhooks
+  file: skills/autocontent-api-consume-webhooks.md
+  summary: Register a destination and verify every delivery before parsing it.
+  operations: 6
+- name: autocontent-api-recover-from-errors
+  file: skills/autocontent-api-recover-from-errors.md
+  summary: Pick the one safe next action per error code, including the ambiguous keyed write.
+  operations: 5
+provider_published_skills: none
+provider_published_agents_md: none
+notes:
+- >-
+    No provider-published Agent Skills or AGENTS.md were found on autocontentapi.com,
+    docs.autocontentapi.com or in either llms.txt. These are API Evangelist generations grounded in
+    the provider's own contract.

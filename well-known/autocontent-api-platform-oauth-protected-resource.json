@@ -1,0 +1,1 @@
+{"resource":"https://api.autocontentapi.com/platform","authorization_servers":["https://auth.autocontentapi.com"],"scopes_supported":["platform.read","platform.write","platform.generate","platform.billing.read"],"bearer_methods_supported":["header"],"resource_documentation":"https://autocontentapi.com/developers"}

@@ -1,0 +1,80 @@
+generated: '2026-09-04'
+method: searched
+source: >-
+  https://autocontentapi.com/developers/sdk and https://autocontentapi.com/developers/cli
+  (provider-published SDK/CLI reference), reconciled against registry.npmjs.org, pypi.org and
+  api.github.com on 2026-09-04.
+description: >-
+  First-party client libraries for AutoContent API. The provider documents exactly one package —
+  an ESM-first TypeScript SDK that also ships the `autocontent` CLI binary — and names it in its
+  own quickstart as `npm install autocontentapi`. That package name resolved 404 on
+  registry.npmjs.org at the time of this probe, so the documented SDK is not installable from the
+  public npm registry. No PyPI, Maven, NuGet, Go, RubyGems, Packagist or crates.io distribution is
+  published or claimed.
+packages:
+- name: autocontentapi
+  language: typescript
+  registry: npm
+  official: true
+  version: null
+  published: null
+  install: npm install autocontentapi
+  cli_binary: autocontent
+  docs: https://autocontentapi.com/developers/sdk
+  runtime: Node.js 20+
+  module_format: esm
+  covers: AutoContent Platform API v1
+  resources:
+  - projects
+  - collections
+  - sources
+  - assetTypes
+  - models
+  - voices
+  - avatars
+  - generations
+  - assets
+  - contentLoops
+  - account
+  - apiKeys
+  - billing
+  - webhooks
+  features:
+  - Typed resource clients preserving the API's snake_case fields
+  - Automatic idempotency-key generation on mutations, retained through safe retries
+  - Streaming/replayable uploads; a consumed one-shot stream is never silently resent
+  - Polling helpers (client.projects.wait, client.generations.wait)
+  - Webhook signature verification via AutoContent.webhooks.constructEvent
+  probe:
+    url: https://registry.npmjs.org/autocontentapi
+    status: 404
+    checked: '2026-09-04'
+  note: >-
+    version/published are null because the package the provider's own docs tell you to install is
+    absent from npm — registry.npmjs.org/autocontentapi returned 404 on 2026-09-04. Checked, not
+    unchecked. Because nothing is installable, this record does NOT carry an apis.yml `SDKs`
+    pointer; the SDK is documented but not yet distributed.
+candidates:
+- name: autocontentapi-sdk-ts
+  repository: https://github.com/miguelpieras/autocontentapi-sdk-ts
+  official: false
+  version: 0.1.0
+  published: null
+  registry: github
+  license: MIT
+  package_name: autocontentapi
+  bin: autocontent
+  first_commit: '2026-09-01'
+  last_push: '2026-09-04'
+  probe:
+    url: https://api.github.com/repos/miguelpieras/autocontentapi-sdk-ts
+    status: 200
+    checked: '2026-09-04'
+  note: >-
+    Source that matches the documented SDK exactly — package.json name `autocontentapi`, bin
+    `autocontent`, description "TypeScript SDK and CLI for the AutoContent Platform API", and a
+    README whose examples are byte-comparable with autocontentapi.com/developers/sdk. It is
+    recorded as a CANDIDATE, not an official package, because it lives on a personal GitHub
+    account and nothing on autocontentapi.com, docs.autocontentapi.com or either llms.txt links
+    to it — the provider publishes no GitHub organization or repository link anywhere on its
+    public surface. Do not treat as first-party without the provider confirming it.

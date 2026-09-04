@@ -1,0 +1,232 @@
+generated: '2026-09-04'
+method: searched
+source: >-
+  https://autocontentapi.com/developers/errors (canonical error shape + recovery matrix) enriched
+  from components.schemas.ErrorBody and components.responses.AutoContentError in
+  openapi/autocontent-api-platform-v1-openapi.json.
+description: >-
+  AutoContent Platform API returns one normalized error envelope for every failure — provider
+  payloads are never passed through. The code is drawn from a closed 36-value enum published in the
+  OpenAPI, so an agent can branch on `error.code` without string-matching messages.
+format: custom-envelope
+media_type: application/json
+rfc9457: false
+envelope:
+  shape: '{"error": {"code","message","correlation_id","doc_url","details"}}'
+  required:
+  - code
+  - message
+  - correlation_id
+  - doc_url
+  correlation_id_pattern: ^corr_[A-Za-z0-9_-]+$
+  details: Either an array of {field, reason} objects or a free-form object.
+  doc_url: Every error carries a URL to the documentation for that failure.
+  example: |
+    {
+      "error": {
+        "code": "max_cost_exceeded",
+        "message": "The current quote exceeds max_cost_usd.",
+        "correlation_id": "corr_example",
+        "doc_url": "https://autocontentapi.com/developers/errors",
+        "details": {}
+      }
+    }
+headers:
+  Retry-After:
+    description: Whole seconds before retry, present when the error supplies a bounded retry time.
+    type: integer
+    minimum: 1
+recovery_matrix:
+  source: https://autocontentapi.com/developers/errors
+  rows:
+  - status: 400
+    codes: [invalid_request, invalid_asset_options, invalid_model_options, unknown_asset_type]
+    action: Correct the request; do not retry unchanged.
+  - status: 401/403
+    codes: [unauthorized, forbidden]
+    action: Refresh OAuth or use a key with the required scope.
+  - status: 402
+    codes: [payment_required]
+    action: >-
+      Add prepaid USD, re-preview, then explicitly retry. A payment_required response creates no
+      Generation, no reservation and no provider effect.
+  - status: 404
+    codes: [not_found]
+    action: Check the account-owned resource ID.
+  - status: 409
+    codes: [idempotency_conflict, idempotency_in_progress]
+    action: Reuse the key only with the identical body; poll when directed.
+  - status: 422
+    codes: [project_not_ready, source_not_ready, source_unreachable, source_paywalled, input_resolution_failed]
+    action: Wait for readiness or change the selected resources.
+  - status: 429
+    codes: [rate_limited, provider_operation_limit_exceeded]
+    action: Respect Retry-After or the authoritative reset.
+  - status: 500/502/503
+    codes: [internal_error]
+    action: Retry only safe reads or the identical keyed mutation.
+problem_types:
+- code: invalid_request
+  status: 400
+  title: Malformed or invalid request
+  remediation: Correct the request; do not retry unchanged.
+- code: unknown_asset_type
+  status: 400
+  title: Asset type not in the live catalog
+  remediation: Call GET /asset-types for currently available identifiers.
+- code: invalid_asset_options
+  status: 400
+  title: Asset options failed the stable option schema
+  remediation: Read the option schema from GET /asset-types for that asset type.
+- code: invalid_model_options
+  status: 400
+  title: Model-native options failed validation
+  remediation: Read the native option schema from GET /models.
+- code: model_not_supported
+  status: 400
+  title: Model cannot produce the requested asset
+  remediation: Choose a model listed for that asset type by GET /models.
+- code: model_retired
+  status: 400
+  title: Pinned model is retired
+  remediation: Re-pin to a currently listed model.
+- code: project_not_ready
+  status: 422
+  title: Project analysis incomplete or unconfirmed
+  remediation: Wait for status ready, or confirm the inferred profile via PATCH /projects/{id}.
+- code: project_limit_exceeded
+  status: 400
+  title: Account Project limit reached
+  remediation: Archive an unused Project or raise the account limit.
+- code: provider_operation_limit_exceeded
+  status: 429
+  title: Upstream provider operation limit reached
+  remediation: Respect Retry-After or the authoritative reset before retrying.
+- code: source_not_ready
+  status: 422
+  title: Source still ingesting
+  remediation: Poll GET /sources/{id} until status is ready.
+- code: source_unreachable
+  status: 422
+  title: Source URL could not be fetched
+  remediation: Verify the URL is publicly reachable, or supply text/file instead.
+- code: source_paywalled
+  status: 422
+  title: Source is behind a paywall
+  remediation: Supply the content as text or an uploaded file.
+- code: product_visual_required
+  status: 400
+  title: Asset requires a Product Visual attachment
+  remediation: >-
+    Attach a Product Visual source. Applies to Lead Magnets and Product Demo Videos; a visual never
+    replaces textual grounding.
+- code: no_qualified_trend
+  status: 422
+  title: Trend input produced no qualified material
+  remediation: Widen lookback_days or change the input type.
+- code: no_qualified_knowledge
+  status: 422
+  title: Knowledge input produced no qualified material
+  remediation: Add reusable Sources to the Project before generating.
+- code: input_resolution_failed
+  status: 422
+  title: Input could not be resolved to usable material
+  remediation: Change the selected input or Sources.
+- code: max_cost_exceeded
+  status: 400
+  title: Quote exceeds max_cost_usd
+  remediation: >-
+    Re-preview and accept with a max_cost_usd at or above the returned quote. Never raise the
+    ceiling without an explicit human or policy decision.
+- code: payment_required
+  status: 402
+  title: Insufficient prepaid service balance
+  remediation: >-
+    Add funds, refetch authoritative usage, re-preview the unchanged draft, then require an
+    explicit acceptance. No Generation, reservation or provider effect was created.
+- code: content_loop_budget_exceeded
+  status: 400
+  title: Content Loop run or monthly USD ceiling reached
+  remediation: Raise max_cost_per_run_usd / max_cost_per_month_usd deliberately, or wait for reset.
+- code: content_loop_limit_exceeded
+  status: 400
+  title: Account Content Loop limit reached
+  remediation: Archive an unused Loop.
+- code: idempotency_conflict
+  status: 409
+  title: Idempotency key reused with a different body
+  remediation: Reuse the key only with the identical body, or mint a new key for new work.
+- code: idempotency_in_progress
+  status: 409
+  title: A mutation with this key is still in flight
+  remediation: >-
+    Poll rather than retrying. If Retry-After is present, wait and retry the identical request with
+    the same key.
+- code: consent_required
+  status: 403
+  title: Consent required for the requested resource
+  remediation: Obtain the required consent (custom Voice/Avatar likeness) before retrying.
+- code: voice_not_found
+  status: 404
+  title: Voice does not exist or is not account-owned
+  remediation: Check the Voice ID against GET /voices.
+- code: voice_not_ready
+  status: 422
+  title: Custom Voice still training
+  remediation: Poll GET /voices/{id} until ready.
+- code: voice_not_supported
+  status: 400
+  title: Voice not supported for this asset or model
+  remediation: Choose a Voice listed as compatible with the selected asset type and model.
+- code: avatar_not_found
+  status: 404
+  title: Avatar does not exist or is not account-owned
+  remediation: Check the Avatar ID against GET /avatars.
+- code: avatar_not_ready
+  status: 422
+  title: Custom Avatar still building
+  remediation: Poll GET /avatars/{id} until ready.
+- code: avatar_not_supported
+  status: 400
+  title: Avatar not supported for this asset or model
+  remediation: Choose an Avatar compatible with the selected video asset type.
+- code: artifact_verification_failed
+  status: 500
+  title: Produced Artifact failed verification
+  remediation: Retry the identical keyed mutation; report the correlation_id if it recurs.
+- code: rate_limited
+  status: 429
+  title: Rate limit reached
+  remediation: Respect Retry-After or the authoritative reset.
+- code: webhook_limit_exceeded
+  status: 400
+  title: Webhook destination limit reached
+  remediation: Revoke an unused destination via DELETE /webhooks/{id}.
+- code: not_found
+  status: 404
+  title: Resource not found or not account-owned
+  remediation: Check the ID; the API does not distinguish absent from not-yours.
+- code: unauthorized
+  status: 401
+  title: Missing or invalid credential
+  remediation: Refresh the OAuth access token or supply a valid Platform API key.
+- code: forbidden
+  status: 403
+  title: Credential lacks the required scope
+  remediation: Use a key or token carrying the operation's x-required-scopes.
+- code: internal_error
+  status: 500
+  title: Internal or upstream provider failure
+  remediation: Retry only safe reads or the identical keyed mutation.
+ambiguous_transport:
+  source: https://autocontentapi.com/developers/errors
+  rule: >-
+    If a keyed mutation may have reached the service, do NOT create a new key. Retry the exact
+    method, path, body and key, or inspect the returned resource. Never automatically replay a
+    consumed one-shot upload stream.
+legacy_api:
+  note: >-
+    The legacy Content API (openapi/autocontent-api-legacy-content-openapi.json) does not share
+    this envelope. Its errors are {"success": false, "error": "<string>"} with no code enum and no
+    correlation id, and 401 is by far the most declared failure (87 of 106 operations). Agents
+    integrating the legacy surface cannot branch on a stable code.

@@ -1,0 +1,96 @@
+generated: '2026-09-04'
+method: probed
+source: >-
+  https://autocontentapi.com/developers/mcp (provider MCP reference) and https://autocontentapi.com/llms.txt,
+  confirmed by an anonymous JSON-RPC tools/list POST to https://mcp.autocontentapi.com/v1 on 2026-09-04.
+description: >-
+  AutoContent API runs TWO distinct hosted MCP services on mcp.autocontentapi.com. The Platform MCP
+  at /v1 is the current one: Streamable HTTP, OAuth-only, sharing the Platform REST API's audience
+  and scopes, and forwarding the caller's bearer unchanged to https://api.autocontentapi.com/v1.
+  A separate legacy AutoContent MCP resource is still advertised at /mcp with its own narrower
+  scope pair. Neither is anonymously introspectable — tools/list returns 401 with an RFC 9728
+  WWW-Authenticate challenge — so the tool inventory below is the provider's own documented
+  capability grouping, not a live schema dump.
+deployment:
+  mode: remote
+  endpoint: https://mcp.autocontentapi.com/v1
+  transport: streamable-http
+  auth: oauth
+  verified: probed
+servers:
+- name: Platform MCP
+  endpoint: https://mcp.autocontentapi.com/v1
+  status: published
+  transport: streamable-http
+  auth: oauth
+  authorization_servers:
+  - https://auth.autocontentapi.com
+  resource: https://api.autocontentapi.com/platform
+  scopes:
+  - platform.read
+  - platform.write
+  - platform.generate
+  - platform.billing.read
+  resource_metadata: https://mcp.autocontentapi.com/.well-known/oauth-protected-resource/v1
+  docs: https://autocontentapi.com/developers/mcp
+  probe:
+    url: https://mcp.autocontentapi.com/v1
+    method: POST
+    body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+    status: 401
+    www_authenticate: >-
+      Bearer resource_metadata="https://mcp.autocontentapi.com/.well-known/oauth-protected-resource/v1",
+      scope="platform.read platform.write platform.generate platform.billing.read"
+    body_returned: '{"code":"authentication_required","message":"Authenticate with AutoContent OAuth before using the Platform MCP."}'
+    checked: '2026-09-04'
+- name: Legacy AutoContent MCP
+  endpoint: https://mcp.autocontentapi.com/mcp
+  status: published
+  transport: streamable-http
+  auth: oauth
+  authorization_servers:
+  - https://auth.autocontentapi.com
+  resource: https://mcp.autocontentapi.com/mcp
+  scopes:
+  - content.create
+  - content.status
+  resource_metadata: https://mcp.autocontentapi.com/.well-known/oauth-protected-resource
+  resource_documentation: https://api.autocontentapi.com/api-docs.json
+  probe:
+    url: https://mcp.autocontentapi.com/mcp
+    method: POST
+    status: 400
+    body_returned: '{"jsonrpc":"2.0","error":{"code":-32000,"message":"Bad Request: No valid session ID provided"},"id":null}'
+    checked: '2026-09-04'
+  note: >-
+    The provider states plainly that this is a separate service from the Platform MCP and that
+    legacy routes are not compatibility aliases for /v1. Session-based transport — an anonymous
+    tools/list without a session id is rejected before authentication is evaluated.
+tool_inventory:
+  method: documented
+  source: https://autocontentapi.com/developers/mcp
+  note: >-
+    NOT a live tools/list result. The Platform MCP requires OAuth, so individual tool names and
+    inputSchemas need authenticated introspection. What follows is the provider's own published
+    grouping of what the hosted tools do; no tool name is invented here.
+  groups:
+  - group: projects-and-sources
+    capability: Create, list, get, update, and inspect Projects and Sources.
+  - group: discovery-and-generations
+    capability: >-
+      Discover Asset capabilities, then preview, create, wait briefly, and inspect Generations.
+  - group: content-loops
+    capability: Create, list, update, and run Content Loops.
+  - group: brand-resources
+    capability: Create or revoke custom Voices and Avatars; set or remove Project logos.
+  - group: edits-feedback-usage
+    capability: Preview full-Asset edits, edit, record feedback, and read usage.
+constraints:
+  input_boundary: >-
+    Hosted MCP accepts URL or text Sources and can reference up to 20 ready same-Project Source IDs
+    via attachment_source_ids. It does not read arbitrary client-local paths and does not accept
+    base64 file blobs — files must be uploaded through the Platform, SDK or CLI first.
+  idempotency: Mutating tools require caller-supplied idempotency keys wherever the REST API does.
+  token_handling: >-
+    The service validates issuer, exact Platform audience, account binding and scopes, then
+    forwards the caller's bearer unchanged to the Platform API.

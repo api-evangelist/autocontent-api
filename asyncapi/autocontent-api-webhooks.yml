@@ -1,0 +1,110 @@
+generated: '2026-09-04'
+method: searched
+source: >-
+  https://autocontentapi.com/developers/webhooks, the webhook operations and
+  components.schemas.WebhookEvent in openapi/autocontent-api-platform-v1-openapi.json, and the
+  legacy webhook routes in openapi/autocontent-api-legacy-content-openapi.json.
+description: >-
+  AutoContent publishes a signed HTTP webhook surface for both products, but ships no AsyncAPI
+  document and no event-catalog endpoint. Event families are documented in prose; individual event
+  type strings beyond the four named Project and Source events are not enumerated on any public
+  page.
+asyncapi_published: false
+asyncapi_probes:
+- url: https://autocontentapi.com/asyncapi.yaml
+  status: 404
+- url: https://api.autocontentapi.com/asyncapi.json
+  status: 404
+webhooks:
+  published: true
+  docs: https://autocontentapi.com/developers/webhooks
+  transport: HTTPS POST to a caller-registered destination
+  management:
+  - operationId: createWebhook
+    method: POST
+    path: /webhooks
+    scope: platform.write
+    idempotent: true
+  - operationId: listWebhooks
+    method: GET
+    path: /webhooks
+    scope: platform.write
+  - operationId: deleteWebhook
+    method: DELETE
+    path: /webhooks/{id}
+    scope: platform.write
+  limits:
+    error_code: webhook_limit_exceeded
+    max_destinations: null
+    note: A destination limit exists (it has its own error code) but the number is not published.
+  security:
+    scheme: HMAC-SHA256
+    signed_payload: '<unix timestamp>.<raw body>'
+    signature_header: x-autocontent-signature
+    event_id_header: x-autocontent-event-id
+    timestamp_tolerance_seconds: 300
+    verification_rules:
+    - Read the exact raw request bytes and verify BEFORE JSON parsing.
+    - Require x-autocontent-event-id to equal body.id.
+    - Reject timestamps outside a +/-300 second window.
+    - Deduplicate by event ID.
+    sdk_helper: AutoContent.webhooks.constructEvent
+    secret_env: AUTOCONTENT_WEBHOOK_SECRET
+  handler_guidance:
+  - Return 2xx quickly after durable receipt.
+  - Process idempotently outside the request path.
+  - >-
+      Treat event data as a signal to fetch the current account-owned resource when the complete
+      object is needed.
+  event_families:
+  - family: project
+    events:
+    - project.needs_review
+    - project.ready
+    enumerated: true
+  - family: source
+    events:
+    - source.ready
+    - source.failed
+    enumerated: true
+  - family: generation
+    outcomes:
+    - succeeded
+    - partially succeeded
+    - failed
+    - cancelled
+    enumerated: false
+    note: >-
+      Documented as four terminal outcomes. The exact event type strings are not published; only
+      the outcomes are named.
+  - family: content_loop
+    outcomes:
+    - configuration warnings
+    - pauses
+    - six terminal Run outcomes
+    enumerated: false
+    note: >-
+      "six terminal Run outcomes" are referenced but never listed on any public page. An integrator
+      cannot exhaustively switch on Content Loop Run events from the documentation alone.
+  schema:
+    name: WebhookEvent
+    location: components.schemas.WebhookEvent in openapi/autocontent-api-platform-v1-openapi.json
+legacy_webhooks:
+  published: true
+  surface: Legacy Content API
+  routes:
+  - POST /content/Webhook
+  - GET /content/Webhooks
+  - POST /content/RemoveWebhook
+  signing: >-
+    No HMAC signing scheme is documented for the legacy webhook surface. The signed-webhook
+    contract above applies to the Platform API only.
+  callback_data: >-
+    Several legacy create routes accept a `callbackData` opaque value returned in eventual
+    callbacks.
+gaps:
+- No AsyncAPI or CloudEvents document is published for either surface.
+- >-
+    Generation and Content Loop event type strings are not enumerated publicly; only their outcome
+    categories are named.
+- The webhook destination limit exists as an error code but the number is unpublished.

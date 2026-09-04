@@ -17,6 +17,13 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
+  "notes": [
+    "autocontent-api-content-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "autocontent-api-dedicated-account-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "autocontent-api-podcast-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "autocontent-api-share-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "autocontent-api-video-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
   "skipped": []
 }

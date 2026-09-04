@@ -1,0 +1,99 @@
+generated: '2026-09-04'
+method: probed
+source: >-
+  Fetched discovery documents (auth.autocontentapi.com RFC 8414 + OIDC metadata,
+  mcp.autocontentapi.com RFC 9728 protected-resource documents) and the verbatim Platform OpenAPI
+  at openapi/autocontent-api-platform-v1-openapi.json, plus the provider's error and protocol
+  reference pages.
+description: >-
+  Cross-cutting standards AutoContent API's own contract and discovery documents demonstrate.
+  Entries are asserted only where the evidence is a document that was fetched or a construct that
+  is literally present in the published spec.
+conformance:
+- id: oauth2
+  conforms: true
+  evidence: >-
+    https://auth.autocontentapi.com/.well-known/oauth-authorization-server — authorization_code and
+    refresh_token grants, /auth, /token, /token/revocation endpoints, JWKS at /jwks.
+- id: rfc8414
+  conforms: true
+  evidence: >-
+    https://auth.autocontentapi.com/.well-known/oauth-authorization-server returns 200 with a
+    complete OAuth 2.0 Authorization Server Metadata document.
+- id: rfc9728
+  conforms: true
+  evidence: >-
+    https://mcp.autocontentapi.com/.well-known/oauth-protected-resource and
+    /.well-known/oauth-protected-resource/v1 both return 200 OAuth 2.0 Protected Resource Metadata,
+    and an anonymous POST to https://mcp.autocontentapi.com/v1 returns 401 with a
+    WWW-Authenticate resource_metadata parameter pointing at the /v1 document.
+- id: rfc7636
+  conforms: true
+  evidence: >-
+    code_challenge_methods_supported ["S256"] in
+    https://auth.autocontentapi.com/.well-known/oauth-authorization-server. PKCE is the only
+    challenge method offered, and token_endpoint_auth_methods_supported is ["none"] — public
+    clients only.
+- id: rfc7591
+  conforms: true
+  evidence: >-
+    registration_endpoint https://auth.autocontentapi.com/reg — OAuth 2.0 Dynamic Client
+    Registration, which is what lets an arbitrary MCP client onboard without a human-issued
+    client_id.
+- id: oidc
+  conforms: true
+  evidence: >-
+    https://auth.autocontentapi.com/.well-known/openid-configuration returns 200 with issuer,
+    jwks_uri, end_session_endpoint and claims_supported [sub, sid, auth_time, iss].
+- id: idempotency
+  conforms: true
+  evidence: >-
+    Idempotency-Key is a declared required header parameter on 18 of the 32 mutating operations in
+    the Platform OpenAPI (x-idempotency-required: true), with idempotency_conflict and
+    idempotency_in_progress as first-class error codes. Scoped, not universal — see
+    conventions/autocontent-api-conventions.yml.
+- id: pagination
+  conforms: true
+  evidence: >-
+    Cursor pagination throughout the Platform OpenAPI — limit plus an opaque cursor, responses
+    carrying next_cursor. https://autocontentapi.com/developers/api states "one response never
+    implies all later pages were fetched".
+- id: rfc9457
+  conforms: false
+  evidence: >-
+    Errors are a bespoke envelope — {"error":{code,message,correlation_id,doc_url,details}} served
+    as application/json — not application/problem+json with type/title/status/detail. The shape is
+    well specified (36-value code enum in components.schemas.ErrorBody) but it is not RFC 9457.
+- id: mcp
+  conforms: true
+  evidence: >-
+    https://mcp.autocontentapi.com/v1 speaks JSON-RPC 2.0 over Streamable HTTP and answers a
+    tools/list request with an MCP-shaped 401 authentication challenge rather than a transport
+    error. https://autocontentapi.com/developers/mcp documents it as Streamable HTTP.
+- id: rfc6750
+  conforms: true
+  evidence: >-
+    Both securitySchemes in the Platform OpenAPI are http/bearer, and the docs specify
+    "Authorization: Bearer <Platform API key or OAuth access token>";
+    bearer_methods_supported ["header"] in the /v1 protected-resource document.
+- id: webhook-hmac
+  conforms: true
+  evidence: >-
+    https://autocontentapi.com/developers/webhooks — HMAC-SHA256 over
+    "<unix timestamp>.<raw body>", x-autocontent-signature and x-autocontent-event-id headers,
+    +/-300s timestamp tolerance, dedupe by event id.
+domain_standards:
+- id: null
+  conforms: false
+  evidence: >-
+    No domain standard asserted. AI content generation has no established interoperability standard
+    of the SCIM/OData/OpenRTB/HL7 class, and the contract declares none — no standard URN, no
+    $metadata surface, no standardized message type anywhere in either published spec. Recorded as
+    an honest absence, not a gap; this dimension is reward-only.
+not_applicable:
+- fhir
+- fapi
+- scim
+- odata
+- psd2
+- json:api

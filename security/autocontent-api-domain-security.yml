@@ -1,18 +1,19 @@
-generated: '2026-07-11'
+generated: '2026-09-04'
 method: probed
 source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
 hosts:
 - host: autocontentapi.com
   https: true
   tls_version: TLSv1.3
-  cert_expires: Sep  4 21:03:49 2026 GMT
+  cert_expires: Nov  4 03:17:28 2026 GMT
   hsts: true
   hsts_max_age: 31536000
 - host: api.autocontentapi.com
   https: true
   tls_version: TLSv1.3
-  cert_expires: Sep 23 02:53:58 2026 GMT
-  hsts: false
+  cert_expires: Nov 22 06:58:16 2026 GMT
+  hsts: true
+  hsts_max_age: 31536000
 domains:
 - domain: autocontentapi.com
   dnssec: false

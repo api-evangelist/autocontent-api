@@ -1,0 +1,81 @@
+generated: '2026-09-04'
+method: searched
+source: https://autocontentapi.com/developers/cli
+description: >-
+  AutoContent ships a first-party CLI, `autocontent`, distributed inside the same npm package as
+  the TypeScript SDK. It is positioned explicitly as an agent and CI surface — "Run the same typed
+  Platform workflow from a terminal, CI job, or agent without a second API contract."
+name: autocontent
+official: true
+covers: AutoContent Platform API v1
+docs: https://autocontentapi.com/developers/cli
+install:
+- method: npm
+  command: npm install --global autocontentapi
+  package: autocontentapi
+  binary: autocontent
+  runtime: Node.js 20+
+  availability: >-
+    The package is not published on npm as of 2026-09-04 (registry.npmjs.org/autocontentapi -> 404),
+    so this install command does not currently succeed. See packages/autocontent-api-packages.yml.
+authentication:
+  interactive: autocontent login acp_...
+  verify: autocontent whoami
+  env: AUTOCONTENT_API_KEY
+  precedence: >-
+    AUTOCONTENT_API_KEY overrides the locally stored key and is the provider's documented preferred
+    path for CI and agents.
+output:
+  machine_readable_flag: --json
+  quiet_flag: --quiet
+  note: --json produces canonical machine-readable output.
+safety:
+  interactive: Interactive terminals preview and ask once before acceptance.
+  non_interactive: >-
+    Non-interactive use requires an explicit maximum. "The CLI never invents or raises it" — there
+    is no implicit cost ceiling for an unattended run.
+command_groups:
+- Projects
+- Knowledge
+- Discovery
+- Voices
+- Avatars
+- Generations and edits
+- Assets
+- Content Loops
+- Usage
+- Funding
+- API keys
+- Webhooks
+help: autocontent --help, plus per-group help
+documented_commands:
+- command: autocontent login <key>
+  purpose: Store a Platform API key locally.
+- command: autocontent whoami
+  purpose: Verify the active credential.
+- command: >-
+    autocontent --quiet sources add ./brief.pdf --project prj_example --request-only
+  purpose: >-
+    Upload a one-off file as a request-only Source; wait for it to become ready, then pass the
+    returned ID via --attachment-source.
+- command: >-
+    autocontent preview --project prj_example --knowledge --attachment-source src_request_brief
+    --asset lead_magnet
+  purpose: Non-consuming quote for a Generation draft.
+- command: >-
+    autocontent generate --project prj_example --knowledge --attachment-source src_request_brief
+    --asset lead_magnet --max-cost "$PREVIEW_TOTAL_USD" --wait --output-dir ./assets
+  purpose: Accept under an explicit ceiling, wait for completion, and write artifacts to disk.
+flags:
+- flag: --project
+- flag: --knowledge
+- flag: --attachment-source
+  note: Repeatable, one per Source ID.
+- flag: --asset
+- flag: --max-cost
+  note: Required for non-interactive acceptance.
+- flag: --wait
+- flag: --output-dir
+- flag: --json
+- flag: --quiet
+- flag: --request-only

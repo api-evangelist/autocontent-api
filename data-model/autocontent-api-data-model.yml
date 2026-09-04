@@ -1,0 +1,321 @@
+generated: '2026-09-04'
+method: derived
+source: >-
+  components.schemas $ref links and typed id-reference fields in
+  openapi/autocontent-api-platform-v1-openapi.json, enriched with the concept vocabulary at
+  https://autocontentapi.com/developers/concepts/projects-and-knowledge and
+  https://autocontentapi.com/llms.txt.
+scope: AutoContent Platform API v1
+description: >-
+  The Platform data model is Project-centred: a Project is the durable brand and Knowledge
+  boundary, and every other resource except stock Voices/Avatars and the Account hangs off it.
+  Every entity id is prefix-typed with a published regex pattern, so an agent can validate an id
+  belongs to the right entity before spending a call on it.
+id_prefixes:
+- entity: Account
+  prefix: acct_
+  pattern: ^acct_[A-Za-z0-9_-]+$
+- entity: Project
+  prefix: prj_
+  pattern: ^prj_[A-Za-z0-9_-]+$
+- entity: Collection
+  prefix: col_
+  pattern: ^col_[A-Za-z0-9_-]+$
+- entity: Source
+  prefix: src_
+  pattern: ^src_[A-Za-z0-9_-]+$
+- entity: Generation
+  prefix: gen_
+  pattern: ^gen_[A-Za-z0-9_-]+$
+- entity: Asset
+  prefix: ast_
+  pattern: ^ast_[A-Za-z0-9_-]+$
+- entity: ContentLoop
+  prefix: loop_
+  pattern: ^loop_[A-Za-z0-9_-]+$
+- entity: ContentLoopRun
+  prefix: run_
+  pattern: ^run_[A-Za-z0-9_-]+$
+- entity: Voice
+  prefix: voice_
+  pattern: ^voice_[A-Za-z0-9_-]+$
+- entity: Avatar
+  prefix: avatar_
+  pattern: ^avatar_[A-Za-z0-9_-]+$
+- entity: Webhook
+  prefix: wh_
+  pattern: ^wh_[A-Za-z0-9_-]+$
+- entity: ApiKey
+  prefix: key_
+  pattern: ^key_[A-Za-z0-9_-]+$
+money_type:
+  representation: string
+  pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+  currency: USD
+  note: >-
+    Every USD amount in the model is a two-decimal string with a published regex, never a float.
+    Fields using it: reserved_cost_usd, settled_cost_usd, released_cost_usd, cost_usd,
+    max_cost_usd, max_cost_per_run_usd, max_cost_per_month_usd, prepaid_available_usd,
+    prepaid_reserved_usd, promotional_remaining_usd, prepayment_minimum_usd, prepayment_maximum_usd.
+entities:
+- name: Account
+  schema: Account
+  key_fields: [id, email, display_name, plan, platform_oauth_audience, scopes]
+  operations: [getAccount]
+- name: Project
+  schema: Project
+  description: The durable brand and Knowledge boundary, created from one public website URL.
+  key_fields:
+  - status
+  - website_url
+  - brand
+  - profile_revision
+  - category
+  - audience
+  - relevant_keywords
+  - competitor_keywords
+  - excluded_keywords
+  - allow_competitor_mentions
+  - research_locale
+  - crawl_scope
+  - poll_after_seconds
+  lifecycle_states: [analysing, needs_review, ready]
+  operations:
+  - createProject
+  - listProjects
+  - getProject
+  - updateProject
+  - archiveProject
+  - refreshProject
+  - replaceProjectLogo
+  - removeProjectLogo
+- name: Collection
+  schema: Collection
+  description: A named grouping of Sources inside one Project.
+  operations: [createCollection, listCollections, updateCollection, deleteCollection]
+- name: Source
+  schema: Source
+  description: >-
+    A reusable URL, text or uploaded-file input. Carries a retention_scope and, for request-only
+    uploads, an expires_at and a claimed_generation_id.
+  key_fields:
+  - kind
+  - external_url
+  - status
+  - retention_scope
+  - expires_at
+  - claimed_generation_id
+  - current_revision
+  - visual_count
+  - removed_at
+  operations: [createSource, listSources, getSource, removeSource, refreshSource]
+- name: Generation
+  schema: Generation
+  description: >-
+    One priced, accepted unit of work producing one or more Assets. Carries the full money
+    lifecycle — reserved, settled, released — against the caller's max_cost_usd ceiling.
+  key_fields:
+  - status
+  - currency
+  - reserved_cost_usd
+  - settled_cost_usd
+  - released_cost_usd
+  - max_cost_usd
+  - edited_from_generation_id
+  - content_loop_run_id
+  operations:
+  - previewGeneration
+  - createGeneration
+  - listGenerations
+  - getGeneration
+  - previewGenerationEdit
+  - createGenerationEdit
+  - cancelGeneration
+- name: Asset
+  schema: Asset
+  description: >-
+    A first-class finished content object of a catalog asset_type, with Artifacts and its own
+    cost accounting.
+  key_fields:
+  - asset_type
+  - status
+  - cost_usd
+  - reserved_cost_usd
+  - released_cost_usd
+  - effective_voice_id
+  - effective_avatar_id
+  - logo_revision_id
+  - product_visual_source_revision_ids
+  operations: [listAssets, getAsset, recordAssetFeedback]
+- name: ContentLoop
+  schema: ContentLoop
+  description: >-
+    A standing, scheduled authorization to generate the same Asset contract repeatedly under
+    explicit per-run and per-month USD ceilings.
+  key_fields: [status, revision, max_cost_per_run_usd, max_cost_per_month_usd]
+  operations:
+  - createContentLoop
+  - listContentLoops
+  - getContentLoop
+  - updateContentLoop
+  - archiveContentLoop
+  - runContentLoop
+- name: ContentLoopRun
+  schema: ContentLoopRun
+  description: One execution of a Content Loop; always produces an ordinary Generation.
+  key_fields: [trigger, status, currency, billing_period_id, reserved_cost_usd, settled_cost_usd, released_cost_usd]
+  operations: [listContentLoopRuns, getContentLoopRun, recordContentLoopRunFeedback]
+- name: Voice
+  schema: Voice
+  description: Stock or custom (cloned) voice. project_id is nullable — stock voices are account-wide.
+  key_fields: [display_name, kind, status, compatibility]
+  operations: [listVoices, createVoice, getVoice, revokeVoice]
+- name: Avatar
+  schema: Avatar
+  description: Stock or custom video avatar. project_id nullable, same as Voice.
+  key_fields: [display_name, kind, status, compatibility]
+  operations: [listAvatars, createAvatar, getAvatar, revokeAvatar]
+- name: AssetTypeDefinition
+  schema: AssetTypeDefinition
+  description: >-
+    Runtime catalog entry describing an asset_type's availability, stable option schema,
+    capabilities and contract version. Discovery-only; not an owned resource.
+  operations: [listAssetTypes]
+- name: Model
+  schema: Model
+  description: Pinnable generation model with its native option schema. Discovery-only.
+  operations: [listModels]
+- name: Webhook
+  schema: Webhook
+  key_fields: [url, status]
+  operations: [createWebhook, listWebhooks, deleteWebhook]
+- name: ApiKey
+  schema: ApiKey
+  key_fields: [prefix, name, scopes]
+  operations: [createApiKey, listApiKeys, revokeApiKey]
+- name: BillingUsage
+  schema: BillingUsage
+  description: >-
+    Authoritative money and capacity view — prepaid available/reserved, promotional balance,
+    month-to-date, concurrency, and per-resource counters over a billing period.
+  key_fields:
+  - plan
+  - funding_status
+  - promotion_status
+  - prepaid_available_usd
+  - prepaid_reserved_usd
+  - prepayment_minimum_usd
+  - prepayment_maximum_usd
+  - month_to_date
+  - concurrency
+  - period_starts_at
+  - period_ends_at
+  operations: [getBillingUsage]
+- name: PrepaymentSession
+  schema: PrepaymentSession
+  description: A Stripe-backed Checkout session that adds prepaid USD service balance.
+  operations: [createPrepaymentSession]
+relationships:
+- from: Account
+  type: has_many
+  to: Project
+  via: account ownership (every resource is account-scoped; not_found is returned for foreign ids)
+- from: Project
+  type: has_many
+  to: Collection
+  via: Collection.project_id
+- from: Project
+  type: has_many
+  to: Source
+  via: Source.project_id
+- from: Collection
+  type: has_many
+  to: Source
+  via: Source.collection_id (nullable — a Source can sit outside any Collection)
+- from: Project
+  type: has_many
+  to: Generation
+  via: Generation.project_id
+- from: Project
+  type: has_many
+  to: ContentLoop
+  via: ContentLoop.project_id
+- from: Project
+  type: has_many
+  to: Voice
+  via: Voice.project_id (nullable — null means a stock, account-wide Voice)
+- from: Project
+  type: has_many
+  to: Avatar
+  via: Avatar.project_id (nullable — null means a stock, account-wide Avatar)
+- from: Generation
+  type: has_many
+  to: Asset
+  via: Asset.generation_id
+- from: Asset
+  type: belongs_to
+  to: Project
+  via: Asset.project_id (denormalized alongside generation_id)
+- from: Generation
+  type: has_one
+  to: Generation
+  via: Generation.edited_from_generation_id (nullable self-reference — the edit lineage)
+- from: Generation
+  type: belongs_to
+  to: ContentLoopRun
+  via: Generation.content_loop_run_id (nullable — set when the Generation came from a Loop)
+- from: ContentLoop
+  type: has_many
+  to: ContentLoopRun
+  via: ContentLoopRun.content_loop_id
+- from: ContentLoopRun
+  type: has_one
+  to: Generation
+  via: ContentLoopRun.generation_id (nullable until the Run produces one)
+- from: Source
+  type: belongs_to
+  to: Generation
+  via: Source.claimed_generation_id (nullable — set when a request-only upload is claimed)
+- from: Source
+  type: has_one
+  to: Source
+  via: Source.refresh_operation_id (nullable — in-flight refresh)
+- from: Asset
+  type: has_one
+  to: Voice
+  via: Asset.effective_voice_id (nullable)
+- from: Asset
+  type: has_one
+  to: Avatar
+  via: Asset.effective_avatar_id (nullable)
+- from: Asset
+  type: has_many
+  to: Source
+  via: Asset.product_visual_source_revision_ids (source revision references)
+- from: Generation
+  type: has_many
+  to: Source
+  via: attachment_source_ids on the request (max 20, must be ready and same-Project)
+- from: Account
+  type: has_many
+  to: ApiKey
+  via: account ownership
+- from: Account
+  type: has_many
+  to: Webhook
+  via: account ownership
+notes:
+- >-
+    Revision-aware by design: Project.profile_revision, Source.current_revision,
+    ContentLoop.revision and Asset.logo_revision_id / product_visual_source_revision_ids exist so an
+    accepted Generation can freeze the exact inputs it used. Later edits to a Project, Source, brand,
+    Voice, Avatar or model do not rewrite in-flight or completed work.
+- >-
+    The money lifecycle is modelled on both Generation and Asset — reserved before provider work,
+    settled on completion, released on cancellation or partial failure. An agent reconciling spend
+    should read released_cost_usd, not assume reserved equals charged.
+- >-
+    Asset types are NOT enumerated in this file. The catalog is a runtime surface
+    (GET /asset-types); the twelve launch identifiers named in llms.txt — article, lead_magnet,
+    ebook, slides, infographic, quiz, podcast_episode, short_video, explainer_video, launch_video,
+    product_demo_video, ad_video — are a snapshot, not the contract.

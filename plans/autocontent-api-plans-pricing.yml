@@ -4,160 +4,187 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: AutoContent API
 providerId: autocontent-api
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
-tags:
-  - AI
-  - Audio
-  - Content Generation
-  - Podcasts
-  - Video
-  - Generative AI
-  - Text to Speech
-  - Automation
-description: Machine-readable plans and pricing scaffold for this API provider. Conforms to the API Commons
-  Plans schema. Tier limits and prices are scaffold defaults; replace with provider-published values.
+modified: '2026-09-04'
+generated: '2026-09-04'
+method: searched
+source: https://autocontentapi.com/#pricing
+description: >-
+  AutoContent API sells two unrelated pricing models at once. The legacy Content API is sold as
+  monthly credit subscriptions in EUR (with a USD toggle) — Amateur, Professional and Enterprise,
+  plus a separate Private Notebooks license. The Platform API v1 is NOT sold on a plan at all: it is
+  prepaid pay-as-you-go in USD, quoted per Generation by a preview endpoint, with no tier, no
+  monthly commitment and no published rate card. Prices below are the published EUR figures read
+  from the pricing section on 2026-09-04; the page also offers a USD toggle whose figures were not
+  captured.
+plan_count: 4
+currency: EUR
+currency_options: [EUR, USD]
+billing_periods: [monthly, annual]
+free_tier: false
+trial: false
 plans:
-  - id: autocontent-api-free
-    name: Free
-    type: freemium
-    description: Free entry tier for the AutoContent API API surface. Intended for evaluation, prototyping,
-      and low-volume integrations. Real limits and pricing must be reconciled with the provider's published
-      plan documentation.
-    entries:
-      - label: API Requests
-        description: Monthly API request quota across all included endpoints
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: 1000
-        timeFrame: month
-        geo: global
-        domains:
-          - https://api.autocontentapi.com
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-      - label: Rate Limit
-        description: Maximum requests per minute on the free tier
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 10
-        timeFrame: minute
-        geo: global
-        domains:
-          - https://api.autocontentapi.com
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-    elements:
-      - name: Public Documentation
-      - name: Community Support
-      - name: Sandbox Access
-      - name: Podcast Generation API
-      - name: Video Generation API
-      - name: Deep Research API
-      - name: Infographics and Quizzes API
-  - id: autocontent-api-pro
-    name: Professional
-    type: paid
-    description: Production tier for AutoContent API. Provides higher quotas, priority support, and access
-      to the broader API portfolio. Pricing placeholder; align with the provider's pricing page.
-    entries:
-      - label: API Requests
-        description: Monthly API request quota
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: 100000
-        timeFrame: month
-        geo: global
-        domains:
-          - https://api.autocontentapi.com
-        unit: 1
-        price: TBD
-        userMultiplied: false
-      - label: Rate Limit
-        description: Maximum requests per minute on the professional tier
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 100
-        timeFrame: minute
-        geo: global
-        domains:
-          - https://api.autocontentapi.com
-        unit: 1
-        price: '0.00'
-        userMultiplied: false
-      - label: Overage
-        description: Per-request price after monthly quota is exceeded
-        name: overage
-        type: metered
-        metric: requests
-        limit: -1
-        timeFrame: month
-        geo: global
-        domains:
-          - https://api.autocontentapi.com
-        unit: 1000
-        price: TBD
-        userMultiplied: false
-    elements:
-      - name: All Production Endpoints
-      - name: Email Support
-      - name: SLA Targets
-      - name: Webhook Subscriptions
-      - name: Podcast Generation API
-      - name: Video Generation API
-      - name: Deep Research API
-      - name: Infographics and Quizzes API
-  - id: autocontent-api-enterprise
-    name: Enterprise
-    type: enterprise
-    description: Custom-negotiated tier for AutoContent API. Includes dedicated capacity, contractual
-      SLAs, security review, data residency options, and named technical account management.
-    entries:
-      - label: API Requests
-        description: Negotiated request volume; -1 indicates uncapped subject to fair use
-        name: api_requests
-        type: quota
-        metric: requests
-        limit: -1
-        timeFrame: month
-        geo: configurable
-        domains:
-          - https://api.autocontentapi.com
-        unit: 1
-        price: custom
-        userMultiplied: false
-      - label: Rate Limit
-        description: Negotiated burst and steady-state rate
-        name: rate_limit
-        type: rate
-        metric: requests_per_minute
-        limit: 1000
-        timeFrame: minute
-        geo: configurable
-        domains:
-          - https://api.autocontentapi.com
-        unit: 1
-        price: custom
-        userMultiplied: false
-    elements:
-      - name: Unlimited / Negotiated Volume
-      - name: 24/7 Dedicated Support
-      - name: Contractual SLA
-      - name: Security & Compliance Review
-      - name: Dedicated Account Manager
-      - name: Custom Data Residency
-      - name: Podcast Generation API
-      - name: Video Generation API
-      - name: Deep Research API
-      - name: Infographics and Quizzes API
-maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+- id: autocontent-api-amateur
+  name: Amateur
+  product: Legacy Content API
+  type: subscription
+  description: Perfect for indie creators and small teams.
+  price:
+    monthly: 29
+    annual_monthly_equivalent: 24
+    annual_total: 288
+    annual_saving: 60
+    currency: EUR
+  included:
+    credits_per_month: 1000
+    daily_asset_limit: 15
+    concurrent_requests: 1
+    queue_priority: normal
+  max_per_month_if_single_type:
+    podcasts: 100
+    explainer_videos: 20
+    infographics: 100
+    slide_decks: 33
+    quizzes: 100
+    deep_researches: 10
+    shorts: 2
+  features:
+  - Normal API access, no queue priority, standard processing times
+  - Multiple languages
+  - Scheduled podcast generation
+  - Automated Spotify / Apple Music publishing
+  - Custom AI host instructions
+  - Instant API key via email
+  - Email support
+- id: autocontent-api-professional
+  name: Professional
+  product: Legacy Content API
+  type: subscription
+  description: For growing businesses and content teams.
+  price:
+    monthly: 69
+    annual_monthly_equivalent: 58
+    annual_total: 696
+    annual_saving: 132
+    currency: EUR
+  included:
+    credits_per_month: 5000
+    daily_asset_limit: 30
+    concurrent_requests: 5
+    queue_priority: high
+  max_per_month_if_single_type:
+    podcasts: 500
+    explainer_videos: 100
+    infographics: 500
+    slide_decks: 166
+    quizzes: 500
+    deep_researches: 50
+    shorts: 12
+  features:
+  - Everything in Amateur
+  - High-priority queue with reduced processing times
+  - Video Shorts
+  - 2 data feeds (X, Reddit and others)
+  - 2 custom voice clones
+  - Custom video avatars
+  - Auto-bypass restricted websites
+  - Citations support for text responses
+- id: autocontent-api-enterprise
+  name: Enterprise
+  product: Legacy Content API
+  type: subscription
+  description: Custom solutions for large organizations. Marked "Most Popular" on the pricing page.
+  price:
+    monthly: 129
+    annual_monthly_equivalent: 108
+    annual_total: 1296
+    annual_saving: 252
+    currency: EUR
+  included:
+    credits_per_month: 10000
+    daily_asset_limit: 60
+    concurrent_requests: 10
+    queue_priority: max
+  max_per_month_if_single_type:
+    podcasts: 1000
+    explainer_videos: 200
+    infographics: 1000
+    slide_decks: 333
+    quizzes: 1000
+    deep_researches: 100
+    shorts: 25
+  features:
+  - Everything in Professional
+  - Max-priority API access
+  - 8 data feeds (X, Reddit and others)
+  - Fastest podcast creation
+  - Dedicated support
+  - Branded video shorts
+  - Custom video avatars
+  - Custom integration support
+- id: autocontent-api-private-notebooks
+  name: Private Notebooks
+  product: Dedicated Account
+  type: subscription
+  description: >-
+    Separate license from the content-generation plans. Persistent notebooks with their own
+    capacity envelope and no generation credits or per-call fees.
+  price:
+    monthly: 99
+    currency: EUR
+  included:
+    licenses: 1
+    dedicated_accounts: 1
+    notebooks_total: 200
+    sources_per_notebook: 100
+    questions_per_rolling_24h: 200
+    audio_overviews_per_rolling_24h: 6
+    video_overviews_per_rolling_24h: 6
+  note: >-
+    Activation completes within one business day. An operation is available through the API only
+    when the dedicated guide lists it as enabled and production-verified.
+credit_costs:
+  unit: credits
+  source: https://autocontentapi.com/#pricing
+  items:
+  - item: Create new podcast (standard voices)
+    credits: 10
+    note: Custom voices consume more; the page does not publish how much more.
+  - item: Modify podcast
+    credits: 200
+  - item: Get podcast transcript
+    credits: 30
+  - item: Explainer video
+    credits: 50
+  - item: Infographic
+    credits: 10
+  - item: Slide deck
+    credits: 30
+  - item: Quiz
+    credits: 10
+  - item: Deep research
+    credits: 100
+  - item: Video short
+    credits: 400
+platform_api_pricing:
+  model: prepaid-payg
+  currency: USD
+  plans: 0
+  docs: https://autocontentapi.com/developers/concepts/pricing
+  rate_card_published: false
+  mechanics:
+  - The preview endpoint returns the authoritative per-Asset and total USD quote before any work.
+  - Acceptance requires an explicit max_cost_usd at or above the quote.
+  - The accepted service value is reserved before provider work begins.
+  - Funds are added as prepaid USD service balance through the Platform app or POST /billing/prepayment-session.
+  - Content Loops carry max_cost_per_run_usd and max_cost_per_month_usd ceilings.
+  note: >-
+    plans: 0 for the Platform API is the finding, not a gap. There is no tier and no published
+    price list — the provider deliberately makes the live preview the only price source and states
+    that "client code must not calculate or cache customer prices". A buyer cannot estimate cost
+    from any public page; they must hold an account and call preview.
+discrepancies:
+- note: >-
+    An earlier round of this profile recorded a fourth legacy tier, "High Volume" at EUR 166/month
+    with 20,000 credits and 90 assets/day. That tier is not on the pricing page as of 2026-09-04;
+    the third tier is now named Enterprise at EUR 108/month annual. The stale figures survive in
+    the apis.yml common[] RateLimits data block and are corrected in this round.

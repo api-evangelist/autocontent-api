@@ -1,0 +1,149 @@
+generated: '2026-09-04'
+method: derived
+source: >-
+  Documented Platform MCP tool groups at https://autocontentapi.com/developers/mcp bound to the
+  operationIds published in https://autocontentapi.com/openapi/autocontent-platform-v1.json
+  (saved verbatim at openapi/autocontent-api-platform-v1-openapi.json).
+description: >-
+  Binds each documented Platform MCP capability to the REST operations that back it. The Platform
+  MCP forwards the caller's bearer unchanged to the same /v1 REST API, so every hosted tool's real
+  inputSchema is the parameters and requestBody of the operation(s) named in `rest`. Confidence is
+  deliberately low-to-medium throughout: the live tools/list is OAuth-gated (401), so these are
+  documented capability groups mapped by semantics, not tool names read off the wire.
+surfaces:
+  openapi: openapi/autocontent-api-platform-v1-openapi.json
+  openapi_url: https://autocontentapi.com/openapi/autocontent-platform-v1.json
+  openapi_gated: false
+  mcp: https://mcp.autocontentapi.com/v1
+  mcp_gated: true
+  mcp_gate: OAuth (RFC 9728 challenge; anonymous tools/list returns 401)
+  graphql: null
+crosswalk:
+- tool: projects-and-sources
+  category: knowledge
+  rest:
+  - createProject
+  - listProjects
+  - getProject
+  - updateProject
+  - archiveProject
+  - refreshProject
+  - replaceProjectLogo
+  - removeProjectLogo
+  - createCollection
+  - listCollections
+  - updateCollection
+  - deleteCollection
+  - createSource
+  - listSources
+  - getSource
+  - removeSource
+  - refreshSource
+  binding: documented-group
+  confidence: medium
+  note: >-
+    The provider's phrase is "Create, list, get, update, and inspect Projects and Sources"; the
+    logo routes are covered by the separate published line "set or remove Project logos". Individual
+    tool names unknown until authenticated introspection.
+- tool: discovery-and-generations
+  category: generation
+  rest:
+  - listAssetTypes
+  - listModels
+  - previewGeneration
+  - createGeneration
+  - listGenerations
+  - getGeneration
+  - cancelGeneration
+  binding: documented-group
+  confidence: medium
+  note: >-
+    "Discover Asset capabilities, then preview, create, wait briefly, and inspect Generations."
+    "Wait briefly" is a client-side poll over getGeneration, not a distinct REST operation.
+    cancelGeneration is inferred from the group's inspect/operate scope and is the lowest-confidence
+    member of this row.
+- tool: content-loops
+  category: automation
+  rest:
+  - createContentLoop
+  - listContentLoops
+  - getContentLoop
+  - updateContentLoop
+  - runContentLoop
+  - listContentLoopRuns
+  - getContentLoopRun
+  binding: documented-group
+  confidence: medium
+  note: >-
+    Published as "Create, list, update, and run Content Loops." archiveContentLoop is NOT claimed
+    here — the provider does not list archive among the hosted tool verbs.
+- tool: brand-resources
+  category: brand
+  rest:
+  - listVoices
+  - createVoice
+  - getVoice
+  - revokeVoice
+  - listAvatars
+  - createAvatar
+  - getAvatar
+  - revokeAvatar
+  - replaceProjectLogo
+  - removeProjectLogo
+  binding: documented-group
+  confidence: medium
+  note: '"Create or revoke custom Voices and Avatars; set or remove Project logos."'
+- tool: edits-feedback-usage
+  category: refinement
+  rest:
+  - previewGenerationEdit
+  - createGenerationEdit
+  - recordAssetFeedback
+  - recordContentLoopRunFeedback
+  - getBillingUsage
+  binding: documented-group
+  confidence: medium
+  note: >-
+    "Preview full-Asset edits, edit, record feedback, and read usage." getBillingUsage requires
+    platform.billing.read, which the MCP challenge does advertise.
+mcp_only: []
+rest_only:
+- operationId: getAccount
+  reason: No hosted tool group covers account identity; usage is exposed instead.
+- operationId: createApiKey
+  reason: >-
+    Credential minting. Requires platform.keys.write, a scope the MCP WWW-Authenticate challenge
+    does not request.
+- operationId: listApiKeys
+  reason: Requires platform.keys.write, outside the MCP scope set.
+- operationId: revokeApiKey
+  reason: Requires platform.keys.write, outside the MCP scope set.
+- operationId: createPrepaymentSession
+  reason: >-
+    Requires platform.billing.write, outside the MCP scope set; the docs call it the OAuth-only
+    prepayment endpoint and route funding through Stripe Checkout in the Platform app.
+- operationId: listAssets
+  reason: Asset library listing is not named in any published MCP tool group.
+- operationId: getAsset
+  reason: Asset retrieval is not named in any published MCP tool group.
+- operationId: createWebhook
+  reason: Webhook destination management is not named in any published MCP tool group.
+- operationId: listWebhooks
+  reason: Webhook destination management is not named in any published MCP tool group.
+- operationId: deleteWebhook
+  reason: Webhook destination management is not named in any published MCP tool group.
+- operationId: archiveContentLoop
+  reason: Archive is not among the published Content Loop tool verbs.
+- operationId: archiveProject
+  reason: >-
+    Covered only loosely by "update"; not claimed, because archiving a Project also archives its
+    Loops and that is not a verb the MCP page names.
+coverage:
+  rest_operations_total: 55
+  rest_operations_bound: 43
+  rest_operations_unbound: 12
+  mcp_tool_groups: 5
+  mcp_tool_names_known: 0
+  note: >-
+    mcp_tool_names_known is 0 on purpose. Until someone introspects the Platform MCP with a valid
+    OAuth token, no individual tool name for this provider is known, and none has been invented.
