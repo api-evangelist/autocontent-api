@@ -1,0 +1,50 @@
+# Kin Score artifact — autocontent-api — 2026-09-14T064754
+# The API Evangelist rating (https://github.com/api-evangelist/kin-score). Generated; do not edit.
+---
+kin_score:
+  slug: autocontent-api
+  schema_version: 0.22.0
+  scored_at: '2026-09-14'
+  run_ts: 2026-09-14T064754
+  composite: 46.5
+  band: developing
+  facets:
+    discoverability: 75.9
+    contract_quality: 8.7
+    contract_governance: 18.2
+    operational_transparency: 47.4
+    developer_ergonomics: 61.3
+    access_clarity: 84.2
+  agent_readiness:
+    score: 48.0
+    band: agent-native
+    dimensions:
+      spec_presence: true
+      agentic_access: derived
+      reversibility_documented: false
+      mcp_server: verified
+      auth_clarity: bearer
+      idempotency: verified
+      error_semantics: documented
+      openapi_examples: partial
+      rate_limit_signal: verified
+      event_surface_described: true
+      agent_skills: derived
+      well_known_catalog: false
+      consent_identity: false
+      agent_card: false
+      dry_run_mode: false
+      delegated_identity: false
+      protected_resource_metadata: false
+      dynamic_client_registration: false
+      agentic_commerce: false
+  provenance:
+    mcp: first-party
+    skills: derived
+    agentic_access: derived
+    conformance: first-party
+    contracts:
+      total: 6
+      derived: 0
+      coverage: 0.0
+      callable: 100.0

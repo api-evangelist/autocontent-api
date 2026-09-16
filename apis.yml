@@ -191,38 +191,16 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/autocontent-api-video-api-openapi.yml
-- aid: autocontent-api:platform-api-v1
-  name: AutoContent Platform API v1
-  description: >-
-    The current AutoContent product: a Project-centred, scope-based REST API that turns a website,
-    reusable Knowledge or a bounded topic into first-class content Assets — articles, lead magnets,
-    ebooks, slides, infographics, quizzes, podcast episodes and five video products. 55 operations
-    across 39 paths, prepaid USD billing quoted by a non-consuming preview endpoint and accepted
-    under a caller-supplied max_cost_usd ceiling, cursor pagination, Idempotency-Key on keyed
-    mutations, signed webhooks, and a hosted OAuth MCP service over the same scopes.
-  humanURL: https://autocontentapi.com/developers
-  baseURL: https://api.autocontentapi.com/v1
+- aid: autocontent-api:autocontent-api-account-api
+  name: AutoContent API Account API
+  description: The account API from AutoContent API — 1 operation(s) for account.
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
   tags:
-  - Artificial Intelligence
-  - Content Generation
-  - Video
-  - Podcasts
-  - Generative AI
-  - Automation
-  tags_raw:
-  - AI
-  - Content Generation
-  - Video
-  - Podcasts
-  - Generative AI
-  - Automation
+  - account
   properties:
   - type: OpenAPI
-    url: openapi/autocontent-api-platform-v1-openapi.json
-  - type: Overlay
-    url: overlays/autocontent-api-platform-v1-overlay.yaml
-  - type: MCPServer
-    url: mcp/autocontent-api-mcp.yml
+    url: openapi/autocontent-api-account-api-openapi.yml
   - type: ToolCrosswalk
     url: mcp/autocontent-api-tool-crosswalk.yml
   - type: DataModel
@@ -235,39 +213,589 @@ apis:
     url: https://autocontentapi.com/developers/api
   - type: Authentication
     url: https://autocontentapi.com/developers/api
-- aid: autocontent-api:legacy-content-api
-  name: AutoContent legacy Content API
-  description: >-
-    The original AutoContent surface, served unversioned at https://api.autocontentapi.com with its
-    own JWT credentials and monthly credit plans. 106 operations across 99 paths covering podcasts,
-    explainer and short video, deep research, infographics, quizzes, slide decks, data tables,
-    documents, files, X/Twitter and Reddit feeds, sharing and billing. The provider states it is not
-    a compatibility alias for the Platform /v1 API and publishes a migration guide, but no sunset
-    date.
-  humanURL: https://docs.autocontentapi.com/
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-api-keys-api
+  name: AutoContent API API Keys API
+  description: The api-keys API from AutoContent API — 2 operation(s) for api-keys.
+  humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
-  - Artificial Intelligence
-  - Content Generation
-  - Podcasts
-  - Video
-  - Audio
-  - Research
-  tags_raw:
-  - AI
-  - Content Generation
-  - Podcasts
-  - Video
-  - Audio
-  - Research
+  - api-keys
   properties:
   - type: OpenAPI
-    url: openapi/autocontent-api-legacy-content-openapi.json
-  - type: Overlay
-    url: overlays/autocontent-api-legacy-content-overlay.yaml
+    url: openapi/autocontent-api-api-keys-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-asset-types-api
+  name: AutoContent API Asset Types API
+  description: The asset-types API from AutoContent API — 1 operation(s) for asset-types.
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - asset-types
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-asset-types-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-assets-api
+  name: AutoContent API Assets API
+  description: The assets API from AutoContent API — 3 operation(s) for assets.
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - assets
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-assets-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-avatars-api
+  name: AutoContent API Avatars API
+  description: The avatars API from AutoContent API — 2 operation(s) for avatars.
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - avatars
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-avatars-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-billing-api
+  name: AutoContent API Billing API
+  description: Billing and invoices operations
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - Billing
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-billing-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-collections-api
+  name: AutoContent API Collections API
+  description: The collections API from AutoContent API — 1 operation(s) for collections.
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - collections
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-collections-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-content-loop-runs-api
+  name: AutoContent API Content Loop Runs API
+  description: The content-loop-runs API from AutoContent API — 2 operation(s) for content-loop-runs.
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - content-loop-runs
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-content-loop-runs-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-content-loops-api
+  name: AutoContent API Content Loops API
+  description: The content-loops API from AutoContent API — 4 operation(s) for content-loops.
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - content-loops
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-content-loops-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-data-tables-api
+  name: AutoContent API Data Tables API
+  description: Data table assets generated per token
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - Data Tables
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-data-tables-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-deep-research-api
+  name: AutoContent API Deep Research API
+  description: Advanced research operations
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - Deep Research
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-deep-research-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-documents-api
+  name: AutoContent API Documents API
+  description: Briefing document assets generated per token
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - Documents
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-documents-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-feeds-api
+  name: AutoContent API Feeds API
+  description: Social media feed management operations
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - Feeds
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-feeds-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-files-api
+  name: AutoContent API Files API
+  description: Upload and manage private files for resources
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - Files
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-files-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-generations-api
+  name: AutoContent API Generations API
+  description: The generations API from AutoContent API — 6 operation(s) for generations.
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - generations
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-generations-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-infographics-api
+  name: AutoContent API Infographics API
+  description: Infographic assets generated per token
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - Infographics
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-infographics-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-models-api
+  name: AutoContent API Models API
+  description: The models API from AutoContent API — 1 operation(s) for models.
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - models
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-models-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-projects-api
+  name: AutoContent API Projects API
+  description: Project context management for content generation
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - Projects
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-projects-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-public-api
+  name: AutoContent API Public API
+  description: The Public API from AutoContent API — 4 operation(s) for public.
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - Public
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-public-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-quizzes-api
+  name: AutoContent API Quizzes API
+  description: Quiz assets generated per token
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - Quizzes
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-quizzes-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-slide-decks-api
+  name: AutoContent API Slide Decks API
+  description: Slide deck assets generated per token
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - Slide Decks
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-slide-decks-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-sources-api
+  name: AutoContent API Sources API
+  description: The sources API from AutoContent API — 2 operation(s) for sources.
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - sources
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-sources-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-voices-api
+  name: AutoContent API Voices API
+  description: The voices API from AutoContent API — 2 operation(s) for voices.
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - voices
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-voices-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-webhooks-api
+  name: AutoContent API Webhooks API
+  description: The webhooks API from AutoContent API — 2 operation(s) for webhooks.
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - webhooks
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-webhooks-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
+  - type: Documentation
+    url: https://docs.autocontentapi.com/
+- aid: autocontent-api:autocontent-api-x-api
+  name: AutoContent API X API
+  description: X (Twitter) operations
+  humanURL: https://autocontentapi.com
+  baseURL: https://api.autocontentapi.com
+  tags:
+  - X
+  properties:
+  - type: OpenAPI
+    url: openapi/autocontent-api-x-api-openapi.yml
+  - type: ToolCrosswalk
+    url: mcp/autocontent-api-tool-crosswalk.yml
+  - type: DataModel
+    url: data-model/autocontent-api-data-model.yml
+  - type: Webhooks
+    url: asyncapi/autocontent-api-webhooks.yml
+  - type: Documentation
+    url: https://autocontentapi.com/developers
+  - type: APIReference
+    url: https://autocontentapi.com/developers/api
+  - type: Authentication
+    url: https://autocontentapi.com/developers/api
   - type: Documentation
     url: https://docs.autocontentapi.com/
 common:
+  - type: Overlay
+    url: overlays/autocontent-api-platform-v1-overlay.yaml
+  - type: Overlay
+    url: overlays/autocontent-api-legacy-content-overlay.yaml
   - type: AgenticAccess
     url: agentic-access/autocontent-api-agentic-access.yml
   - type: DomainSecurity
