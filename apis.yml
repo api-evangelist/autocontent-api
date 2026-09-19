@@ -70,7 +70,7 @@ apis:
   baseURL: https://api.autocontentapi.com
   tags:
   - Artificial Intelligence
-  - Podcast
+  - Podcasts
   - Audio
   - Content Generation
   tags_raw:
@@ -167,6 +167,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Podcasts
+  tags_raw:
   - Podcast
   properties:
   - type: OpenAPI
@@ -197,6 +199,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Account
+  tags_raw:
   - account
   properties:
   - type: OpenAPI
@@ -221,6 +225,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - APIKeys
+  tags_raw:
   - api-keys
   properties:
   - type: OpenAPI
@@ -245,6 +251,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Asset Types
+  tags_raw:
   - asset-types
   properties:
   - type: OpenAPI
@@ -269,6 +277,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Assets
+  tags_raw:
   - assets
   properties:
   - type: OpenAPI
@@ -293,6 +303,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Avatars
+  tags_raw:
   - avatars
   properties:
   - type: OpenAPI
@@ -341,6 +353,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Collection
+  tags_raw:
   - collections
   properties:
   - type: OpenAPI
@@ -485,6 +499,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Feed
+  tags_raw:
   - Feeds
   properties:
   - type: OpenAPI
@@ -509,6 +525,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - File
+  tags_raw:
   - Files
   properties:
   - type: OpenAPI
@@ -533,6 +551,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Generations
+  tags_raw:
   - generations
   properties:
   - type: OpenAPI
@@ -581,6 +601,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Models
+  tags_raw:
   - models
   properties:
   - type: OpenAPI
@@ -605,6 +627,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Project
+  tags_raw:
   - Projects
   properties:
   - type: OpenAPI
@@ -701,6 +725,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Sources
+  tags_raw:
   - sources
   properties:
   - type: OpenAPI
@@ -725,6 +751,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Voice
+  tags_raw:
   - voices
   properties:
   - type: OpenAPI
@@ -749,6 +777,8 @@ apis:
   humanURL: https://autocontentapi.com
   baseURL: https://api.autocontentapi.com
   tags:
+  - Webhook
+  tags_raw:
   - webhooks
   properties:
   - type: OpenAPI
