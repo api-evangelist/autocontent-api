@@ -1,0 +1,843 @@
+openapi: 3.2.0
+info:
+  title: AutoContent Platform Assets API
+  version: 1.0.0
+  description: First-class content Assets with prepaid USD billing. Generic document and video routes do not exist.
+servers:
+- url: https://api.autocontentapi.com/v1
+tags:
+- name: Assets
+paths:
+  /assets:
+    get:
+      operationId: listAssets
+      summary: List the Project Asset library
+      tags:
+      - Assets
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.read
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters:
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 4096
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(?:[1-9]|[1-9][0-9]|100)$
+      - name: project_id
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+      - name: asset_type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - article
+          - lead_magnet
+          - ebook
+          - slides
+          - infographic
+          - quiz
+          - podcast_episode
+          - short_video
+          - explainer_video
+          - launch_video
+          - product_demo_video
+          - ad_video
+      - name: origin
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - one_off
+          - content_loop
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - queued
+          - generating
+          - succeeded
+          - failed
+          - cancelled
+      - name: created_at_from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      - name: created_at_before
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      - name: input_type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - trend
+          - topic
+          - knowledge
+      - name: subject_query
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+          x-max-utf8-bytes: 200
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - data
+                - next_cursor
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Asset'
+                  next_cursor:
+                    oneOf:
+                    - type: string
+                      minLength: 1
+                    - type: 'null'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+  /assets/{id}:
+    get:
+      operationId: getAsset
+      summary: Get Asset detail and Artifacts
+      tags:
+      - Assets
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.read
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^ast_[A-Za-z0-9_-]+$
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+  /assets/{id}/feedback:
+    post:
+      operationId: recordAssetFeedback
+      summary: Record Asset usefulness feedback
+      tags:
+      - Assets
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.write
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^ast_[A-Za-z0-9_-]+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: string
+                  enum:
+                  - useful
+                  - not_useful
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+                  x-max-utf8-bytes: 1000
+              required:
+              - rating
+              additionalProperties: false
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssetFeedback'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+components:
+  schemas:
+    AssetFeedback:
+      type: object
+      additionalProperties: false
+      required:
+      - revision
+      - rating
+      - reason
+      - created_at
+      properties:
+        revision:
+          type: integer
+          minimum: 1
+        rating:
+          type: string
+          enum:
+          - useful
+          - not_useful
+        reason:
+          oneOf:
+          - type: string
+            maxLength: 1000
+          - type: 'null'
+        created_at:
+          type: string
+          format: date-time
+    Asset:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - generation_id
+      - project_id
+      - asset_type
+      - status
+      - created_at
+      properties:
+        id:
+          type: string
+          pattern: ^ast_[A-Za-z0-9_-]+$
+        generation_id:
+          type: string
+          pattern: ^gen_[A-Za-z0-9_-]+$
+        project_id:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+        asset_type:
+          $ref: '#/components/schemas/AssetType'
+        title:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        status:
+          type: string
+          enum:
+          - queued
+          - generating
+          - succeeded
+          - failed
+          - cancelled
+        origin:
+          type: string
+          enum:
+          - one_off
+          - content_loop
+        language:
+          type: string
+          minLength: 2
+          maxLength: 255
+          format: bcp47
+        instructions:
+          oneOf:
+          - type: string
+            maxLength: 4000
+          - type: 'null'
+        normalized_options:
+          description: One normalized first-class Asset options contract. Exact schemas are also discoverable from GET /asset-types.
+          anyOf:
+          - type: object
+            properties:
+              target_words:
+                default: 1200
+                type: integer
+                minimum: 500
+                maximum: 3000
+            required:
+            - target_words
+            additionalProperties: false
+          - type: object
+            properties:
+              page_count:
+                default: 10
+                type: integer
+                minimum: 4
+                maximum: 30
+              format:
+                default: auto
+                type: string
+                enum:
+                - auto
+                - checklist
+                - cheat_sheet
+                - workbook
+                - planner
+                - tracker
+                - scorecard
+                - roadmap
+                - challenge
+                - swipe_file
+                - resource_guide
+                - comparison_guide
+                - meal_plan
+            required:
+            - page_count
+            - format
+            additionalProperties: false
+          - type: object
+            properties:
+              chapter_count:
+                default: 6
+                type: integer
+                minimum: 3
+                maximum: 12
+              target_pages:
+                default: 30
+                type: integer
+                minimum: 15
+                maximum: 60
+            required:
+            - chapter_count
+            - target_pages
+            additionalProperties: false
+          - type: object
+            properties:
+              slide_count:
+                default: 12
+                type: integer
+                minimum: 5
+                maximum: 30
+              aspect_ratio:
+                default: '16:9'
+                type: string
+                enum:
+                - '16:9'
+                - '4:3'
+            required:
+            - slide_count
+            - aspect_ratio
+            additionalProperties: false
+          - type: object
+            properties:
+              aspect_ratio:
+                default: '4:5'
+                type: string
+                enum:
+                - '1:1'
+                - '4:5'
+                - '9:16'
+                - '16:9'
+              resolution:
+                default: standard
+                type: string
+                enum:
+                - standard
+                - high
+            required:
+            - aspect_ratio
+            - resolution
+            additionalProperties: false
+          - type: object
+            properties:
+              question_count:
+                default: 10
+                type: integer
+                minimum: 5
+                maximum: 30
+              difficulty:
+                default: intermediate
+                type: string
+                enum:
+                - beginner
+                - intermediate
+                - advanced
+            required:
+            - question_count
+            - difficulty
+            additionalProperties: false
+          - type: object
+            properties:
+              duration_seconds:
+                default: 600
+                type: integer
+                minimum: 120
+                maximum: 14400
+            required:
+            - duration_seconds
+            additionalProperties: false
+          - type: object
+            properties:
+              duration_seconds:
+                default: 30
+                type: integer
+                minimum: 5
+                maximum: 180
+              aspect_ratio:
+                default: '9:16'
+                type: string
+                enum:
+                - '9:16'
+                - '1:1'
+                - '16:9'
+              resolution:
+                default: 1080p
+                type: string
+                enum:
+                - 720p
+                - 1080p
+              captions:
+                default: true
+                type: boolean
+              presentation_mode:
+                default: faceless
+                type: string
+                enum:
+                - faceless
+                - avatar
+            required:
+            - duration_seconds
+            - aspect_ratio
+            - resolution
+            - captions
+            - presentation_mode
+            additionalProperties: false
+          - type: object
+            properties:
+              duration_seconds:
+                default: 90
+                type: integer
+                minimum: 30
+                maximum: 600
+              aspect_ratio:
+                default: '16:9'
+                type: string
+                enum:
+                - '16:9'
+                - '9:16'
+                - '1:1'
+              resolution:
+                default: 1080p
+                type: string
+                enum:
+                - 720p
+                - 1080p
+              captions:
+                default: true
+                type: boolean
+              presentation_mode:
+                default: faceless
+                type: string
+                enum:
+                - faceless
+                - avatar
+            required:
+            - duration_seconds
+            - aspect_ratio
+            - resolution
+            - captions
+            - presentation_mode
+            additionalProperties: false
+          - type: object
+            properties:
+              duration_seconds:
+                default: 60
+                type: integer
+                minimum: 15
+                maximum: 180
+              aspect_ratio:
+                default: '16:9'
+                type: string
+                enum:
+                - '16:9'
+                - '9:16'
+                - '1:1'
+              resolution:
+                default: 1080p
+                type: string
+                enum:
+                - 720p
+                - 1080p
+              captions:
+                default: true
+                type: boolean
+              presentation_mode:
+                default: faceless
+                type: string
+                enum:
+                - faceless
+                - avatar
+            required:
+            - duration_seconds
+            - aspect_ratio
+            - resolution
+            - captions
+            - presentation_mode
+            additionalProperties: false
+          - type: object
+            properties:
+              duration_seconds:
+                default: 120
+                type: integer
+                minimum: 30
+                maximum: 600
+              aspect_ratio:
+                default: '16:9'
+                type: string
+                enum:
+                - '16:9'
+                - '9:16'
+                - '1:1'
+              resolution:
+                default: 1080p
+                type: string
+                enum:
+                - 720p
+                - 1080p
+              captions:
+                default: true
+                type: boolean
+              presentation_mode:
+                default: faceless
+                type: string
+                enum:
+                - faceless
+                - avatar
+              product_visual_source_ids:
+                minItems: 1
+                maxItems: 20
+                type: array
+                items:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                  pattern: ^[A-Za-z0-9_-]+$
+                uniqueItems: true
+            required:
+            - duration_seconds
+            - aspect_ratio
+            - resolution
+            - captions
+            - presentation_mode
+            additionalProperties: false
+          - type: object
+            properties:
+              duration_seconds:
+                default: 30
+                type: integer
+                minimum: 5
+                maximum: 120
+              aspect_ratio:
+                default: '9:16'
+                type: string
+                enum:
+                - '9:16'
+                - '1:1'
+                - '16:9'
+              resolution:
+                default: 1080p
+                type: string
+                enum:
+                - 720p
+                - 1080p
+              captions:
+                default: true
+                type: boolean
+              presentation_mode:
+                default: faceless
+                type: string
+                enum:
+                - faceless
+                - avatar
+            required:
+            - duration_seconds
+            - aspect_ratio
+            - resolution
+            - captions
+            - presentation_mode
+            additionalProperties: false
+        contract_version:
+          type: integer
+          minimum: 1
+        requested_model:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        model_used:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        presentation_mode:
+          oneOf:
+          - type: string
+            enum:
+            - faceless
+            - avatar
+          - type: 'null'
+        effective_voice_id:
+          oneOf:
+          - type: string
+            pattern: ^voice_[A-Za-z0-9_-]+$
+          - type: 'null'
+        effective_avatar_id:
+          oneOf:
+          - type: string
+            pattern: ^avatar_[A-Za-z0-9_-]+$
+          - type: 'null'
+        logo_revision_id:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        product_visual_source_revision_ids:
+          type: array
+          maxItems: 20
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+        resolved_subject:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        currency:
+          const: usd
+        reserved_cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        released_cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        artifacts:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - id
+            - kind
+            - mime_type
+            - is_primary
+            - url
+            - size_bytes
+            - verification
+            properties:
+              id:
+                type: string
+                pattern: ^art_[A-Za-z0-9_-]+$
+              kind:
+                type: string
+                minLength: 1
+              mime_type:
+                type: string
+                minLength: 1
+              is_primary:
+                type: boolean
+              url:
+                type: string
+                format: uri
+              size_bytes:
+                type: integer
+                minimum: 0
+              verification:
+                type: object
+                additionalProperties: false
+                required:
+                - passed
+                - issues
+                properties:
+                  passed:
+                    const: true
+                  issues:
+                    type: array
+                    maxItems: 0
+                    items: false
+        feedback:
+          oneOf:
+          - $ref: '#/components/schemas/AssetFeedback'
+          - type: 'null'
+        error:
+          oneOf:
+          - type: object
+            additionalProperties: true
+          - type: 'null'
+    AssetType:
+      type: string
+      enum:
+      - article
+      - lead_magnet
+      - ebook
+      - slides
+      - infographic
+      - quiz
+      - podcast_episode
+      - short_video
+      - explainer_video
+      - launch_video
+      - product_demo_video
+      - ad_video
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      - correlation_id
+      - doc_url
+      properties:
+        code:
+          type: string
+          enum:
+          - invalid_request
+          - unknown_asset_type
+          - invalid_asset_options
+          - invalid_model_options
+          - model_not_supported
+          - model_retired
+          - project_not_ready
+          - project_limit_exceeded
+          - provider_operation_limit_exceeded
+          - source_not_ready
+          - source_unreachable
+          - source_paywalled
+          - product_visual_required
+          - no_qualified_trend
+          - no_qualified_knowledge
+          - input_resolution_failed
+          - max_cost_exceeded
+          - payment_required
+          - content_loop_budget_exceeded
+          - content_loop_limit_exceeded
+          - idempotency_conflict
+          - idempotency_in_progress
+          - consent_required
+          - voice_not_found
+          - voice_not_ready
+          - voice_not_supported
+          - avatar_not_found
+          - avatar_not_ready
+          - avatar_not_supported
+          - artifact_verification_failed
+          - rate_limited
+          - webhook_limit_exceeded
+          - not_found
+          - unauthorized
+          - forbidden
+          - internal_error
+        message:
+          type: string
+        details:
+          oneOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/ErrorDetail'
+          - type: object
+        correlation_id:
+          type: string
+          pattern: ^corr_[A-Za-z0-9_-]+$
+        doc_url:
+          type: string
+          format: uri
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required:
+      - reason
+      properties:
+        field:
+          type: string
+        reason:
+          type: string
+  responses:
+    AutoContentError:
+      description: Normalized AutoContent error; provider payloads are never returned.
+      headers:
+        Retry-After:
+          description: Whole seconds before retry when the error supplies a bounded retry time.
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              code: max_cost_exceeded
+              message: Current price exceeds max_cost_usd.
+              correlation_id: corr_42
+              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
+  securitySchemes:
+    platformOAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Platform OAuth JWT
+    platformApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: acp_ Platform API key

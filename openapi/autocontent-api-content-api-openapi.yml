@@ -1,262 +1,2128 @@
 openapi: 3.2.0
 info:
-  title: AutoContent Content API
-  description: 'Best-effort OpenAPI 3.1 description of the AutoContent API for generating
-
-    podcasts, videos, slide decks, infographics, transcripts and other content
-
-    types. Derived from the public documentation index at
-
-    https://docs.autocontentapi.com/llms-full.txt and the developer portal at
-
-    https://autocontentapi.com/docs.
-
-    '
-  version: '1'
-  contact:
-    name: AutoContent API Docs
-    url: https://docs.autocontentapi.com/
+  title: Autocontent Content API
+  version: '1.0'
+  description: 'Operations tagged Content across 2 of this provider''s published API definitions: autocontent-api-legacy-content-openapi.json, autocontent-api-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.autocontentapi.com
-  description: AutoContent API production
-security:
-- bearerAuth: []
 tags:
 - name: Content
+  description: Content operations and usage information
 paths:
   /content/Usage:
     get:
+      summary: Get usage information
+      description: Returns current usage statistics and remaining credits
       tags:
       - Content
-      summary: Get credit usage and limits
-      operationId: getUsage
+      security:
+      - bearerAuth: []
       responses:
         '200':
-          description: Usage returned
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usage'
+        '401':
+          description: Unauthorized
+      operationId: getContentUsage
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/QueueStats:
     get:
+      summary: Get queued and processing request counts
+      description: Returns lightweight queue counts for the authenticated client. Active means queued + processing.
       tags:
       - Content
-      summary: Get queue stats
-      operationId: getQueueStats
+      security:
+      - bearerAuth: []
       responses:
         '200':
-          description: Queue stats returned
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueueStats'
+        '401':
+          description: Unauthorized
+      operationId: getContentQueueStats
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/QueueRequests:
     get:
+      summary: Get queued or processing request IDs
+      description: Returns paginated request IDs and lightweight request metadata for the authenticated client.
       tags:
       - Content
-      summary: List queued or processing requests
-      operationId: getQueueRequests
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: state
+        required: false
+        schema:
+          type: string
+          enum:
+          - queued
+          - processing
+          - active
+          - all
+          default: active
+        description: Request state to fetch. `active` means queued + processing; `all` is accepted as an alias for active.
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        required: false
+        description: Page number for pagination, starting at 1.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 50
+        required: false
+        description: Number of items per page.
       responses:
         '200':
-          description: Queue requests returned
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueueRequestsResponse'
+        '400':
+          description: Invalid state
+        '401':
+          description: Unauthorized
+      operationId: getContentQueueRequests
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/Podcasts:
     get:
+      summary: Get all podcasts
+      description: Returns all podcasts created by the current client, optionally filtered by status. Supports optional pagination.
       tags:
       - Content
-      summary: List podcasts
-      operationId: getPodcasts
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: status
+        required: false
+        schema:
+          type: string
+          enum:
+          - all
+          - queued
+          - failed
+          - succeeded
+          - processed
+          default: all
+        description: Filter podcasts by status (all=all podcasts, queued=status=0 and no error, failed=has errorOn, succeeded=status=100, processed=has processingOn)
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+        required: false
+        description: Page number for pagination (starts at 1). If not provided, returns all results.
+        example: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+        required: false
+        description: Number of items per page (max 100, default 50 if page is specified)
+        example: 20
       responses:
         '200':
-          description: Podcasts returned
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: array
+                  description: Non-paginated response (when page and limit are not provided)
+                  items:
+                    $ref: '#/components/schemas/Podcast'
+                - type: object
+                  description: Paginated response (when page or limit are provided)
+                  properties:
+                    podcasts:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Podcast'
+                    totalCount:
+                      type: integer
+                      description: Total number of podcasts
+                      example: 100
+                    page:
+                      type: integer
+                      description: Current page number
+                      example: 1
+                    pageSize:
+                      type: integer
+                      description: Number of items per page
+                      example: 20
+                    totalPages:
+                      type: integer
+                      description: Total number of pages
+                      example: 5
+        '400':
+          description: Invalid status parameter
+        '401':
+          description: Unauthorized
+      operationId: getContentPodcasts
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/Transcripts:
     get:
+      summary: Get all transcripts
+      description: Returns all transcripts created by the current client, optionally filtered by status. Supports optional pagination.
       tags:
       - Content
-      summary: List transcripts
-      operationId: getTranscripts
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: status
+        required: false
+        schema:
+          type: string
+          enum:
+          - all
+          - queued
+          - failed
+          - succeeded
+          - processed
+          default: all
+        description: Filter transcripts by status (all=all transcripts, queued=status=0 and no error, failed=has errorOn, succeeded=status=100, processed=has processingOn)
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+        required: false
+        description: Page number for pagination (starts at 1). If not provided, returns all results.
+        example: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+        required: false
+        description: Number of items per page (max 100, default 50 if page is specified)
+        example: 20
       responses:
         '200':
-          description: Transcripts returned
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: array
+                  description: Non-paginated response (when page and limit are not provided)
+                  items:
+                    $ref: '#/components/schemas/Transcript'
+                - type: object
+                  description: Paginated response (when page or limit are provided)
+                  properties:
+                    transcripts:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Transcript'
+                    totalCount:
+                      type: integer
+                      description: Total number of transcripts
+                      example: 100
+                    page:
+                      type: integer
+                      description: Current page number
+                      example: 1
+                    pageSize:
+                      type: integer
+                      description: Number of items per page
+                      example: 20
+                    totalPages:
+                      type: integer
+                      description: Total number of pages
+                      example: 5
+        '400':
+          description: Invalid status parameter
+        '401':
+          description: Unauthorized
+      operationId: getContentTranscripts
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/Create:
     post:
+      summary: Create new content
+      description: Generate new content based on resources, topic, feed selections, researches, YouTube channels, or linked podcast episodes. Use video metadata fields (titlePrompt, descriptionPrompt, thumbnailImagePrompt, introImagePrompt, voices, publishTargets, format) when outputType is video. Video formats are explainer and short at 50 credits, or cinematic at 100 credits. Supplying voice1 or voice2 adds one 200-credit explicit-voice surcharge to a video request, including when the ID is from the global GetVoices catalogue. Video requests ignore the generic duration field if it is provided. Set isScheduled or templateMode to create recurring templates instead of immediate processing.
       tags:
       - Content
-      summary: Create content
-      description: Generate new content (audio, video, infographic, etc.).
-      operationId: createContent
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentRequest'
       responses:
         '200':
-          description: Content creation started
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: object
+                  description: Standard immediate request
+                  properties:
+                    request_id:
+                      type: string
+                      description: Unique ID for tracking the request
+                    status:
+                      type: integer
+                      description: Initial status code (0)
+                - type: object
+                  description: Response when creating a recurring schedule (isScheduled = true)
+                  properties:
+                    schedule_id:
+                      type: string
+                    request_id:
+                      type: string
+                    status:
+                      type: integer
+                    message:
+                      type: string
+                    dailyCount:
+                      type: integer
+                    endDate:
+                      type:
+                      - string
+                      - 'null'
+                      format: date-time
+                - type: object
+                  description: Response when creating a reusable template (templateMode)
+                  properties:
+                    template_request_id:
+                      type: string
+                    request_id:
+                      type: string
+                    status:
+                      type: integer
+                    template:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        name:
+                          type:
+                          - string
+                          - 'null'
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+      operationId: postContentCreate
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/Repurpose:
     post:
+      summary: Repurpose a completed request
+      description: Creates a new request using the resources and parameters of a completed request, allowing a new output type and optional updated text.
       tags:
       - Content
-      summary: Repurpose existing content
-      operationId: repurposeContent
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepurposeRequest'
       responses:
         '200':
-          description: Repurpose started
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: Unique ID for tracking the new request
+                  status:
+                    type: integer
+                    description: Initial status code (0)
+        '400':
+          description: Invalid request or request not completed
+        '401':
+          description: Unauthorized
+        '404':
+          description: Original request not found
+      operationId: postContentRepurpose
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/Status/{id}:
+    get:
+      summary: Check request status
+      description: Get the status of a content generation request. A non-null `error_on` or non-zero `error_code` is a terminal failure; the numeric `status` may remain at its last processing stage, including 0.
+      tags:
+      - Content
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: Request ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Request ID
+                    audio_title:
+                      type: string
+                      description: Title of the generated audio
+                    status:
+                      type: integer
+                      description: Status code (100 = completed)
+                    audio_url:
+                      type: string
+                      description: URL to the generated audio file
+                    video_url:
+                      type: string
+                      description: URL to the generated video file (if applicable)
+                    image_url:
+                      type: string
+                      description: URL to the generated image file (if applicable)
+                    response_text:
+                      type: string
+                      description: Generated text content
+                    requested_on:
+                      type: string
+                      format: date-time
+                      description: When the request was created
+                    callback_data:
+                      type: string
+                      description: User-provided callback data
+                    updated_on:
+                      type: string
+                      format: date-time
+                      description: When the request was last updated
+                    request_type_id:
+                      type: integer
+                      description: Type of request
+                    error_code:
+                      type: integer
+                      description: Error code (0 if no error)
+                    citations:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Citation'
+                      description: Citations if requested
+                    file_size:
+                      type: integer
+                      description: Size of the generated file in bytes
+                    audio_duration:
+                      type: number
+                      description: Duration of the audio in seconds
+                    share_url:
+                      type: string
+                      description: Public sharing URL for the content
+                    briefing_doc_url:
+                      type: string
+                      description: Direct URL to the generated Briefing Doc PDF when output type is `briefing_doc`
+                    document_format:
+                      type: string
+                      description: Stored document format when output type is `briefing_doc`
+                    document_content:
+                      type: string
+                      description: Stored text or HTML content when output type is `briefing_doc`
+                    document_url:
+                      type: string
+                      description: Stored PDF URL when output type is `briefing_doc`
+                - type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Request ID
+                    status:
+                      type: integer
+                      description: Status code (0 = pending, other values indicate processing stages)
+                    updated_on:
+                      type: string
+                      format: date-time
+                      description: When the request was last updated
+                    error_code:
+                      type: integer
+                      description: Error code (0 if no error)
+                    error_message:
+                      type: string
+                      description: Error message if any
+                    requested_on:
+                      type: string
+                      format: date-time
+                      description: When the request was created
+                    callback_data:
+                      type: string
+                      description: User-provided callback data
+        '401':
+          description: Unauthorized
+        '404':
+          description: Request not found
+      operationId: getContentStatusById
+      x-operation-id-source: derived
     parameters:
     - in: path
       name: id
       required: true
       schema:
         type: string
-    get:
-      tags:
-      - Content
-      summary: Get request status
-      operationId: getStatus
-      responses:
-        '200':
-          description: Status returned
+    servers:
+    - url: https://api.autocontentapi.com
   /content/List:
     get:
+      summary: List content requests
+      description: Get a list of content generation requests. Supports optional pagination.
       tags:
       - Content
-      summary: List content requests
-      operationId: listContent
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+        required: false
+        description: Page number for pagination (starts at 1). If not provided, returns all results.
+        example: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+        required: false
+        description: Number of items per page (max 100, default 50 if page is specified)
+        example: 20
       responses:
         '200':
-          description: Requests returned
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: array
+                  description: Non-paginated response (when page and limit are not provided)
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: Request ID
+                      requestTypeId:
+                        type: integer
+                        description: Type of content request
+                      status:
+                        type: integer
+                        description: Current status code
+                      requestedOn:
+                        type: string
+                        format: date-time
+                        description: Request creation timestamp
+                      audioTitle:
+                        type: string
+                        description: Title of the generated audio (if available)
+                - type: object
+                  description: Paginated response (when page or limit are provided)
+                  properties:
+                    requests:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            description: Request ID
+                          requestTypeId:
+                            type: integer
+                            description: Type of content request
+                          status:
+                            type: integer
+                            description: Current status code
+                          requestedOn:
+                            type: string
+                            format: date-time
+                            description: Request creation timestamp
+                          audioTitle:
+                            type: string
+                            description: Title of the generated audio (if available)
+                    totalCount:
+                      type: integer
+                      description: Total number of requests
+                      example: 100
+                    page:
+                      type: integer
+                      description: Current page number
+                      example: 1
+                    pageSize:
+                      type: integer
+                      description: Number of items per page
+                      example: 20
+                    totalPages:
+                      type: integer
+                      description: Total number of pages
+                      example: 5
+        '401':
+          description: Unauthorized
+      operationId: getContentList
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/GetVoices:
     get:
+      summary: Get available voices
+      description: List all available voices for audio generation
       tags:
       - Content
-      summary: List voices
-      operationId: getVoices
+      security:
+      - bearerAuth: []
       responses:
         '200':
-          description: Voices returned
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Numeric voice ID to pass as voice1, voice2, or voiceId in voice-enabled requests. For /content/Create video requests, any supplied voice1 or voice2 ID adds one 200-credit explicit-voice surcharge, whether this is a global catalogue voice or a client-cloned voice.
+                    name:
+                      type: string
+                      description: Voice name
+                    clientId:
+                      type: string
+                      description: ID of the client that owns this voice (for custom voices)
+        '401':
+          description: Unauthorized
+      operationId: getContentGetVoices
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/Me:
     get:
+      summary: Get current client info
+      description: Returns current client ID
       tags:
       - Content
-      summary: Get current client
-      operationId: getMe
+      security:
+      - bearerAuth: []
       responses:
         '200':
-          description: Client identity returned
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clientId:
+                    type: string
+                    description: Current authenticated client ID
+        '401':
+          description: Unauthorized
+      operationId: getContentMe
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/Webhook:
     post:
+      summary: Register webhook
+      description: Register an HTTPS webhook URL for terminal request notifications. Callbacks are sent for both successes and failures; failure callbacks include `error_code` and `error_message`.
       tags:
       - Content
-      summary: Register webhook
-      operationId: registerWebhook
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: Webhook URL to register
       responses:
         '200':
           description: Webhook registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Webhook ID
+                  url:
+                    type: string
+                    description: Registered webhook URL
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+      operationId: postContentWebhook
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/RemoveWebhook:
     post:
+      summary: Remove webhook
+      description: Remove a registered webhook
       tags:
       - Content
-      summary: Remove webhook
-      operationId: removeWebhook
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - id
+              properties:
+                id:
+                  type: string
+                  description: ID of the webhook to remove
       responses:
         '200':
           description: Webhook removed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+      operationId: postContentRemoveWebhook
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/Webhooks:
     get:
+      summary: Get webhooks
+      description: List all registered webhooks
       tags:
       - Content
-      summary: List webhooks
-      operationId: listWebhooks
+      security:
+      - bearerAuth: []
       responses:
         '200':
-          description: Webhooks returned
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Webhook ID
+                    url:
+                      type: string
+                      description: Registered webhook URL
+        '401':
+          description: Unauthorized
+      operationId: getContentWebhooks
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/ModifyPodcast:
     post:
+      summary: Modify podcast
+      description: Modify an existing podcast with new voices and background music
       tags:
       - Content
-      summary: Modify podcast
-      operationId: modifyPodcast
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - audioUrl
+              - voice1
+              - voice2
+              properties:
+                audioUrl:
+                  type: string
+                  description: URL to the audio file to modify
+                voice1:
+                  type: integer
+                  description: Numeric id of first voice from /content/GetVoices
+                voice2:
+                  type: integer
+                  description: Numeric id of second voice from /content/GetVoices
+                instructions:
+                  type: string
+                  description: Additional instructions
+                backgroundMusicUrl:
+                  type: string
+                  description: Optional URL to background music file
+                callbackData:
+                  type: string
+                  description: Optional data for webhook callbacks
       responses:
         '200':
-          description: Podcast modified
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: Unique ID for tracking the request
+                  status:
+                    type: integer
+                    description: Initial status code (0)
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+      operationId: postContentModifyPodcast
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/SeparateSpeakersAudio:
     post:
+      summary: Separate speakers in audio
+      description: Separate speakers in an audio file
       tags:
       - Content
-      summary: Separate speakers in audio
-      operationId: separateSpeakers
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - audioUrl
+              properties:
+                audioUrl:
+                  type: string
+                  description: URL to the audio file
+                callbackData:
+                  type: string
+                  description: Optional data for webhook callbacks
       responses:
         '200':
-          description: Job started
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: Unique ID for tracking the request
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+      operationId: postContentSeparateSpeakersAudio
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/CloneVoice:
     post:
+      summary: Clone voice
+      description: Clone a voice from an audio file (PRO only). Accepts either a file upload or a URL.
       tags:
       - Content
-      summary: Clone voice
-      operationId: cloneVoice
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                audioFile:
+                  type: string
+                  format: binary
+                  description: MP3 audio file to upload (max 10MB). Cannot be used with audioUrl.
+                name:
+                  type: string
+                  description: Name for the cloned voice
+          application/json:
+            schema:
+              type: object
+              required:
+              - audioUrl
+              - name
+              properties:
+                audioUrl:
+                  type: string
+                  description: URL to the MP3 audio file for voice cloning. Cannot be used with audioFile upload.
+                name:
+                  type: string
+                  description: Name for the cloned voice
       responses:
         '200':
-          description: Voice clone job started
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: Unique ID for tracking the request
+                  status:
+                    type: integer
+                    description: Initial status code (0)
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+      operationId: postContentCloneVoice
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/GetTranscript:
     post:
+      summary: Get transcript
+      description: Generate transcript from an audio file or episode. Accepts file upload, URL, or episode ID (only one at a time).
       tags:
       - Content
-      summary: Generate transcript
-      operationId: generateTranscript
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                audioFile:
+                  type: string
+                  format: binary
+                  description: MP3 or WAV audio file to upload (max 50MB). Cannot be used with audioUrl or episodeId.
+                callbackData:
+                  type: string
+                  description: Optional data for webhook callbacks
+          application/json:
+            schema:
+              type: object
+              oneOf:
+              - required:
+                - audioUrl
+              - required:
+                - episodeId
+              properties:
+                audioUrl:
+                  type: string
+                  description: URL to the audio file (.mp3 or .wav format). Cannot be used with audioFile or episodeId.
+                episodeId:
+                  type: string
+                  description: ID of an existing episode to transcribe. Cannot be used with audioFile or audioUrl.
+                callbackData:
+                  type: string
+                  description: Optional data for webhook callbacks
       responses:
         '200':
-          description: Transcript job started
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: Unique ID for tracking the request
+                  status:
+                    type: integer
+                    description: Initial status code (0)
+        '400':
+          description: Invalid request (missing parameters, both parameters provided, or invalid audio format)
+        '401':
+          description: Unauthorized
+      operationId: postContentGetTranscript
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/GetTranscript/{episodeId}:
+    get:
+      summary: Get transcript by episode ID
+      description: Retrieve an existing transcript for a specific episode
+      tags:
+      - Content
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: episodeId
+        required: true
+        schema:
+          type: string
+        description: The ID of the episode to get the transcript for
+      responses:
+        '200':
+          description: Transcript retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  episodeId:
+                    type: string
+                    description: The episode ID that was requested
+                  requestId:
+                    type: string
+                    description: The original request ID used to generate this transcript
+                  transcript:
+                    type: string
+                    description: The transcript content (JSON string format)
+                  createdOn:
+                    type: string
+                    format: date-time
+                    description: When the transcript was created
+        '400':
+          description: Invalid request (missing episode ID)
+        '401':
+          description: Unauthorized
+        '404':
+          description: Transcript not found for the specified episode ID
+        '500':
+          description: Internal server error
+      operationId: getContentGetTranscriptByEpisodeId
+      x-operation-id-source: derived
     parameters:
     - in: path
       name: episodeId
       required: true
       schema:
         type: string
-    get:
-      tags:
-      - Content
-      summary: Get transcript by episode ID
-      operationId: getTranscriptByEpisode
-      responses:
-        '200':
-          description: Transcript returned
+    servers:
+    - url: https://api.autocontentapi.com
   /content/CreatePodcastCustomScript:
     post:
+      summary: Create podcast from custom script
+      description: Create a podcast using a custom script
       tags:
       - Content
-      summary: Create podcast from custom script
-      operationId: createPodcastCustomScript
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - script
+              - voice1
+              - voice2
+              properties:
+                script:
+                  type: string
+                  description: Script with SPEAKER_00/SPEAKER_01 prefixes
+                voice1:
+                  type: integer
+                  description: Numeric id of first voice from /content/GetVoices (SPEAKER_00)
+                voice2:
+                  type: integer
+                  description: Numeric id of second voice from /content/GetVoices (SPEAKER_01)
+                callbackData:
+                  type: string
+                  description: Optional data for webhook callbacks
       responses:
         '200':
-          description: Job started
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: Unique ID for tracking the request
+                  status:
+                    type: integer
+                    description: Initial status code (0)
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+      operationId: postContentCreatePodcastCustomScript
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/CreatePodcastCustomVoices:
     post:
+      summary: Create podcast with custom voices
+      description: Create a podcast with specified voices based on resources, topic, or feeds. Either 'resources', 'topic', or 'feeds' must be provided.
       tags:
       - Content
-      summary: Create podcast with custom voices
-      operationId: createPodcastCustomVoices
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - voice1
+              - voice2
+              properties:
+                resources:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                        - text
+                        - youtube
+                        - website
+                        - pdf
+                        - file
+                      content:
+                        type: string
+                        description: For type "file", provide an https URL or a file id returned by POST /files. For other types, provide the text or URL expected by that type.
+                  description: Resources for content generation (required if topic or feeds are not provided)
+                topic:
+                  type: string
+                  description: Topic for content generation (alternative to resources or feeds)
+                feeds:
+                  type: array
+                  items:
+                    type: integer
+                  description: Array of feed IDs for content generation (alternative to resources or topic, max 10)
+                projects:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of project IDs to use as context for generation (max 10)
+                text:
+                  type: string
+                  description: Instructions or query for content generation
+                voice1:
+                  type: integer
+                  description: Numeric id of first voice from /content/GetVoices
+                voice2:
+                  type: integer
+                  description: Numeric id of second voice from /content/GetVoices
+                duration:
+                  type: string
+                  enum:
+                  - short
+                  - long
+                  - default
+                  description: Duration preference for content generation
+                style:
+                  type: string
+                  enum:
+                  - deep dive
+                  - brief
+                  - critique
+                  - debate
+                  description: Style of podcast content (defaults to deep dive)
+                language:
+                  type: string
+                  description: Optional language for the generated podcast (leave empty to use the default)
+                notebookId:
+                  type: string
+                  description: Notebook ID for enterprise clients
+                callbackData:
+                  type: string
+                  description: Optional data for webhook callbacks
       responses:
         '200':
-          description: Job started
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: Unique ID for tracking the request
+                  status:
+                    type: integer
+                    description: Initial status code (0)
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+      operationId: postContentCreatePodcastCustomVoices
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /content/CreateGPT:
+    post:
+      summary: Create content via GPT
+      description: Special endpoint for GPT integration
+      x-internal: true
+      tags:
+      - Content
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - resources
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User email for delivery
+                resources:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                        - text
+                        - youtube
+                        - website
+                        - pdf
+                        - file
+                      content:
+                        type: string
+                        description: For type "file", provide an https URL or a file id returned by POST /files. For other types, provide the text or URL expected by that type.
+                  description: Resources for content generation (max 3)
+                text:
+                  type: string
+                  description: Instructions or query for content generation
+      responses:
+        '200':
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the request was accepted
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+      operationId: postContentCreateGPT
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/RemoveVoice:
     post:
+      summary: Remove cloned voice
+      description: Remove a cloned voice owned by the current user
       tags:
       - Content
-      summary: Remove cloned voice
-      operationId: removeVoice
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - id
+              properties:
+                id:
+                  type: integer
+                  description: ID of the voice to remove
       responses:
         '200':
-          description: Voice removed
+          description: Voice removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  message:
+                    type: string
+                    description: Success message
+        '400':
+          description: Invalid request or missing voice ID
+        '401':
+          description: Unauthorized
+        '404':
+          description: Voice not found or cannot be deleted
+      operationId: postContentRemoveVoice
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/DeleteRequest:
     post:
+      summary: Delete request
+      description: Mark a content request as deleted
       tags:
       - Content
-      summary: Delete a request
-      operationId: deleteRequest
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - id
+              properties:
+                id:
+                  type: string
+                  description: ID of the request to delete
       responses:
         '200':
-          description: Request deleted
+          description: Request deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  message:
+                    type: string
+                    description: Success message
+        '400':
+          description: Invalid request or missing request ID
+        '401':
+          description: Unauthorized
+        '404':
+          description: Request not found or not owned by user
+        '500':
+          description: Failed to delete request
+      operationId: postContentDeleteRequest
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /content/Schedule:
     post:
+      summary: Schedule multiple podcasts
+      description: Create multiple podcasts at once, scheduled at intervals from a start time. Supports two modes - URLs mode (one podcast per episode, with each episode containing multiple URLs) or cached sources mode (feedSelections and/or youtubeChannels). Either 'urls' or (feedSelections/youtubeChannels + numberOfEpisodes) must be provided, but not both.
       tags:
       - Content
-      summary: Schedule multiple podcasts
-      operationId: schedulePodcasts
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - frequency
+              oneOf:
+              - required:
+                - urls
+              - required:
+                - feedSelections
+                - numberOfEpisodes
+              - required:
+                - youtubeChannels
+                - numberOfEpisodes
+              properties:
+                urls:
+                  type: array
+                  items:
+                    type: array
+                    items:
+                      type: string
+                      format: uri
+                  description: Array of episodes, where each episode is an array of URLs to create a podcast from (URLs mode - cannot be used with feedSelections or youtubeChannels)
+                  example:
+                  - - https://example.com/article1
+                    - https://example.com/article2
+                  - - https://example.com/article3
+                feedSelections:
+                  type: array
+                  description: Cached feed items to include in scheduled episodes (cannot be used with urls)
+                  items:
+                    $ref: '#/components/schemas/FeedSelection'
+                  example:
+                  - feedId: 1
+                    feedItemIds:
+                    - post-123
+                    - post-456
+                numberOfEpisodes:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  description: Number of episodes to create (required when using feedSelections or youtubeChannels)
+                  example: 5
+                youtubeChannels:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of connected YouTube channel IDs to pull recent videos from (cannot be used with urls)
+                  example:
+                  - yt-channel-1
+                  - yt-channel-2
+                frequency:
+                  type: integer
+                  minimum: 1
+                  description: Frequency in minutes between scheduled podcasts
+                  example: 60
+                instructions:
+                  type: string
+                  maxLength: 500
+                  description: Optional instructions for podcast generation
+                  example: Create a conversational podcast discussing the main points
+                brandUrl:
+                  type: string
+                  format: uri
+                  description: Optional brand/service URL to include in each podcast (URLs mode only)
+                  example: https://yourbrand.com
+                duration:
+                  type: string
+                  enum:
+                  - short
+                  - long
+                  - default
+                  description: Duration preference for podcasts
+                  example: default
+                style:
+                  type: string
+                  enum:
+                  - deep dive
+                  - brief
+                  - critique
+                  - debate
+                  description: Style of podcast content
+                  example: deep dive
+                language:
+                  type: string
+                  description: Language for podcast generation
+                  example: English
+                podcastId:
+                  type: string
+                  description: Podcast show ID to associate episodes with
+                episodeTitle:
+                  type: string
+                  description: Optional episode title when associating to a podcast show
+                voice1:
+                  type: integer
+                  description: Numeric id of first voice from /content/GetVoices (if provided, will use custom voices mode)
+                voice2:
+                  type: integer
+                  description: Numeric id of second voice from /content/GetVoices (requires voice1)
+                startOn:
+                  type: string
+                  format: date-time
+                  description: Start time for scheduling (defaults to current time, cannot be more than 24 hours in the past)
+                  example: '2024-01-01T12:00:00Z'
+                callbackData:
+                  type: string
+                  description: Optional data for webhook callbacks
+                notebookId:
+                  type: string
+                  description: Notebook ID for enterprise clients
       responses:
         '200':
-          description: Schedule created
+          description: Podcasts scheduled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation was successful
+                  scheduled_requests:
+                    type: array
+                    items:
+                      oneOf:
+                      - type: object
+                        description: Response for URLs mode
+                        properties:
+                          request_id:
+                            type: string
+                            description: ID of the scheduled request
+                          urls:
+                            type: array
+                            items:
+                              type: string
+                            description: Array of URLs this request was created from
+                          scheduled_on:
+                            type: string
+                            format: date-time
+                            description: When this request is scheduled to run
+                          status:
+                            type: integer
+                            description: Initial status (0)
+                      - type: object
+                        description: Response for feedSelections / YouTube mode
+                        properties:
+                          request_id:
+                            type: string
+                            description: ID of the scheduled request
+                          feed_ids:
+                            type: array
+                            items:
+                              type: integer
+                            description: Feed IDs used for this episode (if any)
+                          feed_selections:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/FeedSelection'
+                            description: Feed selections used for this episode
+                          feed_items_per_episode:
+                            type: integer
+                            description: Total cached items included across feeds for this episode
+                          youtube_channel_ids:
+                            type: array
+                            items:
+                              type: string
+                            description: YouTube channel IDs used for this episode
+                          episode_number:
+                            type: integer
+                            description: Episode number in the series
+                          scheduled_on:
+                            type: string
+                            format: date-time
+                            description: When this request is scheduled to run
+                          status:
+                            type: integer
+                            description: Initial status (0)
+                  total_created:
+                    type: integer
+                    description: Total number of requests created
+                  start_time:
+                    type: string
+                    format: date-time
+                    description: Start time used for scheduling
+                  frequency_minutes:
+                    type: integer
+                    description: Frequency in minutes between requests
+                  mode:
+                    type: string
+                    enum:
+                    - URLs
+                    - sources
+                    description: Mode used for scheduling
+                  total_feeds_per_episode:
+                    type: integer
+                    description: Number of feed groups per episode (sources mode only)
+                  total_feed_items_per_episode:
+                    type: integer
+                    description: Number of cached feed items per episode (sources mode only)
+                  total_youtube_channels_per_episode:
+                    type: integer
+                    description: Number of YouTube channels per episode (sources mode only)
+                  total_urls:
+                    type: integer
+                    description: Total number of URLs across all episodes (URLs mode only)
+        '400':
+          description: Invalid request parameters or insufficient credits
+        '401':
+          description: Unauthorized
+      operationId: postContentSchedule
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
 components:
+  schemas:
+    ContentRequest:
+      type: object
+      required:
+      - outputType
+      properties:
+        resources:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                - text
+                - youtube
+                - website
+                - pdf
+                - file
+              content:
+                type: string
+                description: For type "file", provide an https URL or a file id returned by POST /files. For other types, provide the text or URL expected by that type.
+          description: Resources for content generation (required if topic, feedSelections, or researches are not provided)
+        topic:
+          type: string
+          description: Topic for content generation (alternative to resources, feedSelections, or researches)
+        feedSelections:
+          type: array
+          description: Cached feed items to include in the request (alternative to resources, topic, or researches)
+          items:
+            $ref: '#/components/schemas/FeedSelection'
+        researches:
+          type: array
+          items:
+            type: string
+          description: Array of research IDs to include as text resources (max 10)
+        projects:
+          type: array
+          items:
+            type: string
+          description: Array of project IDs to use as context for generation (max 10)
+        logoUrl:
+          type: string
+          format: uri
+          description: Optional HTTP or HTTPS PNG/JPG image URL for video, infographic, and slide_deck requests. Any source dimensions are accepted, but the image must be fully opaque and no larger than 5 MB; it is normalized to an opaque 200x50 PNG using the same rules as a project image. When supplied, it overrides the project logo for this request while project context and branding colors still apply. When omitted, the project logo and then the default logo are used.
+        youtubeChannels:
+          type: array
+          items:
+            type: string
+          description: YouTube channel IDs already connected to the account to use as sources
+        podcastEpisodeIds:
+          type: array
+          items:
+            type: string
+          description: Completed audio request IDs to reuse as podcast episode sources (max 10)
+        text:
+          type: string
+          maxLength: 5000
+          description: Instructions or query for content generation. For video, this is the NotebookLM steering prompt and is limited to 5,000 characters.
+        outputType:
+          type: string
+          enum:
+          - audio
+          - text
+          - faq
+          - study_guide
+          - timeline
+          - briefing_doc
+          - quiz
+          - video
+          - infographic
+          - slide_deck
+          - datatable
+          description: Type of output content to generate
+        duration:
+          type: string
+          enum:
+          - short
+          - default
+          - long
+          description: Duration preference for audio and slide deck generation. Ignored for video requests.
+        format:
+          type: string
+          enum:
+          - explainer
+          - short
+          - cinematic
+          - text
+          - html
+          - pdf
+          description: For `video`, accepted values are `explainer`, `short`, and `cinematic` (defaults to `explainer`). `cinematic` video requests cost 100 credits. For `briefing_doc`, accepted values are `text`, `html`, and `pdf` (defaults to `pdf`). Ignored for other output types.
+        style:
+          type: string
+          maxLength: 5000
+          description: 'Style of the generated content. For audio/text, use one of: deep dive, brief, critique, debate. For video, NotebookLM preset names (auto-select, classic, whiteboard, kawaii, anime, watercolour, retro print, heritage, or paper-craft) are selected directly; any other value is used as custom style text and is limited to 5,000 characters. Video defaults to classic when omitted.
+
+            '
+        introMusicUrl:
+          type: string
+          description: HTTPS URL to optional intro music (.mp3, .wav, or .m4a) mixed at lower volume at the start of the podcast
+        includeCitations:
+          type: boolean
+          description: Whether to include citations (PRO only)
+        ignorePaywalledResources:
+          type: boolean
+          description: When true, continue processing even if some URL resources fail to import (paywall/restrictions). The request fails only if none of the provided resources are successfully imported.
+        infographicOrientation:
+          type: string
+          enum:
+          - landscape
+          - portrait
+          - square
+          description: Infographic orientation (defaults to landscape)
+        infographicDetail:
+          type: string
+          enum:
+          - concise
+          - standard
+          - detailed
+          description: Infographic detail level (defaults to standard)
+        slideDeckFormat:
+          type: string
+          enum:
+          - detailed
+          - presenter
+          description: Slide deck format (defaults to detailed). Length is controlled via the standard duration field (short, default, long). Slide deck prompt uses the main text field.
+        quizDifficulty:
+          type: string
+          enum:
+          - easy
+          - medium
+          - hard
+          description: Difficulty level for quiz outputs (defaults to medium). Quiz prompt uses the main text field.
+        callbackData:
+          type: string
+          maxLength: 500
+          description: Optional data to include in webhooks (maximum 500 characters)
+        relatedId:
+          type: string
+          description: Existing request ID to relate this request to (must belong to the same token)
+        notebookId:
+          type: string
+          description: Owned Private Notebook ID. When present, generation uses that notebook's saved sources and its license's exact dedicated account, follows Private Notebooks capacity instead of content credits, and rejects additional request sources or generic topic/project inputs.
+        language:
+          type: string
+          description: Target language for generated content, using an exact value from the supported languages list (for example, Deutsch). For video at the base format price, set language and omit voice1 and voice2. Voice IDs select narration voices but do not translate the generated script.
+        scheduledOn:
+          type: string
+          format: date-time
+          description: Schedule the content generation for a specific time
+        podcastId:
+          type: string
+          description: Podcast show ID to associate this content with
+        episodeTitle:
+          type: string
+          description: Optional episode title when attaching to a podcast show
+        title:
+          type: string
+          description: Custom title to use for generated video outputs. When provided, overrides the automatically generated title.
+        titlePrompt:
+          type: string
+          description: Prompt to guide the generated video title
+        descriptionPrompt:
+          type: string
+          description: Prompt to guide the generated video description
+        thumbnailImagePrompt:
+          type: string
+          description: Prompt to control the generated thumbnail image for video outputs
+        introImagePrompt:
+          type: string
+          description: Prompt to control the intro image for video outputs
+        voice1:
+          type: integer
+          description: Primary explicit narration voice ID from /content/GetVoices. Use the numeric ID, not the voice name. For video, supplying any catalogue or client-cloned voice ID adds 200 credits once per request to the format base price (50 credits for explainer/short or 100 for cinematic). Omit voice1 and voice2 for base pricing. Voice selection does not translate the generated script.
+        voice2:
+          type: integer
+          description: Optional secondary explicit narration voice ID from /content/GetVoices. Requires voice1. The 200-credit video voice surcharge is per request, not per supplied voice.
+        publishTargets:
+          type: array
+          description: Targets to publish generated videos to (e.g., YouTube)
+          items:
+            $ref: '#/components/schemas/PublishTarget'
+        templateMode:
+          type: object
+          description: Create a reusable template instead of processing immediately
+          properties:
+            type:
+              type: string
+              enum:
+              - feed
+            name:
+              type: string
+              description: Optional display name for the template
+        isScheduled:
+          type: boolean
+          description: Create a recurring schedule instead of a single request
+        dailyCount:
+          type: integer
+          minimum: 1
+          maximum: 24
+          description: Number of times per day to run when isScheduled is true
+        scheduleEndDate:
+          type: string
+          format: date-time
+          description: Optional end date for recurring schedules (requires isScheduled true)
+    QueueRequestSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: integer
+        request_type_id:
+          type: integer
+        output_type:
+          type:
+          - string
+          - 'null'
+        requested_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        processing_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        scheduled_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    FeedSelection:
+      type: object
+      required:
+      - feedId
+      - feedItemIds
+      properties:
+        feedId:
+          type: integer
+          description: Identifier of the feed containing the cached items
+        feedItemIds:
+          type: array
+          items:
+            type: string
+          description: Identifiers of cached posts or videos to include from that feed
+    Citation:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Citation text
+        source:
+          type: string
+          description: Source of the citation
+        page:
+          type: integer
+          description: Page number for PDF sources
+        timeMs:
+          type: integer
+          description: Timestamp in milliseconds for audio/video sources
+    QueueStats:
+      type: object
+      properties:
+        success:
+          type: boolean
+        queued:
+          type: integer
+          description: Requests waiting to be picked up for processing
+        processing:
+          type: integer
+          description: Requests currently in progress
+        active:
+          type: integer
+          description: queued + processing
+    QueueRequestsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        state:
+          type: string
+          enum:
+          - queued
+          - processing
+          - active
+        ids:
+          type: array
+          items:
+            type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueueRequestSummary'
+        count:
+          type: integer
+          description: Number of items in this page
+        total_count:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_pages:
+          type: integer
+    Usage:
+      type: object
+      properties:
+        allowed:
+          type: integer
+          description: Total credits allowed
+        used:
+          type: integer
+          description: Total credits used
+        allowedDailyPodcasts:
+          type: integer
+          description: Daily podcast limit
+        usedDailyPodcasts:
+          type: integer
+          description: Podcasts created today
+    Transcript:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Transcript ID
+        audioTitle:
+          type: string
+          description: Title of the original audio
+        audioUrl:
+          type: string
+          description: URL to the original audio file
+        responseText:
+          type: string
+          description: The transcript text content
+        requestedOn:
+          type: string
+          format: date-time
+          description: When the transcript was requested
+        succeededOn:
+          type: string
+          format: date-time
+          description: When the transcript was completed
+        errorOn:
+          type: string
+          format: date-time
+          description: When the transcript failed (if applicable)
+        processingOn:
+          type: string
+          format: date-time
+          description: When the transcript started processing (if applicable)
+        errorMessage:
+          type: string
+          description: Error message if the transcript failed
+        status:
+          type: integer
+          description: Current status of the transcript
+        language:
+          type: string
+          description: Language of the transcript
+        callbackData:
+          type: string
+          description: Optional callback data provided during request
+        scheduledOn:
+          type: string
+          format: date-time
+          description: When the transcript was scheduled
+    Podcast:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Podcast ID
+        requestTypeId:
+          type: integer
+          description: Type of podcast request
+        audioTitle:
+          type: string
+          description: Title of the podcast
+        audioUrl:
+          type: string
+          description: URL to the audio file
+        responseText:
+          type: string
+          description: Podcast transcript/text
+        requestedOn:
+          type: string
+          format: date-time
+          description: When the podcast was requested
+        succeededOn:
+          type: string
+          format: date-time
+          description: When the podcast was completed
+        errorOn:
+          type: string
+          format: date-time
+          description: When the podcast failed (if applicable)
+        processingOn:
+          type: string
+          format: date-time
+          description: When the podcast started processing (if applicable)
+        errorMessage:
+          type: string
+          description: Error message if the podcast failed
+        status:
+          type: integer
+          description: Current status of the podcast
+        shareUrl:
+          type: string
+          description: Public sharing URL for the podcast
+    RepurposeRequest:
+      type: object
+      required:
+      - requestId
+      - outputType
+      properties:
+        requestId:
+          type: string
+          description: Identifier of the completed request to repurpose
+        outputType:
+          type: string
+          enum:
+          - audio
+          - video
+          - infographic
+          - slide_deck
+          - datatable
+          - quiz
+          description: Output type for the new request
+        language:
+          type: string
+          description: Optional language override for the new request (defaults to the original request language)
+        text:
+          type: string
+          maxLength: 5000
+          description: Optional text instructions that replace the original TEXT parameter. For video, this is the NotebookLM steering prompt and is limited to 5,000 characters.
+        callbackData:
+          type: string
+          description: Optional callback data to associate with the new request
+        duration:
+          type: string
+          enum:
+          - short
+          - default
+          - long
+          description: Duration preference for audio and slide deck repurpose requests. Ignored for video requests.
+        infographicOrientation:
+          type: string
+          enum:
+          - landscape
+          - portrait
+          - square
+          description: Orientation when repurposing to an infographic
+        infographicDetail:
+          type: string
+          enum:
+          - concise
+          - standard
+          - detailed
+          description: Detail level when repurposing to an infographic
+        slideDeckFormat:
+          type: string
+          enum:
+          - detailed
+          - presenter
+          description: Format when repurposing to a slide deck
+        quizDifficulty:
+          type: string
+          enum:
+          - easy
+          - medium
+          - hard
+          description: Difficulty level when repurposing to a quiz
+        title:
+          type: string
+          description: Override video title when repurposing to video
+        titlePrompt:
+          type: string
+          description: Prompt to guide the generated title when repurposing to video
+        descriptionPrompt:
+          type: string
+          description: Prompt to guide the generated description when repurposing to video
+        format:
+          type: string
+          enum:
+          - explainer
+          - short
+          - cinematic
+          description: Video format (defaults to explainer). Only applies when outputType is video. `cinematic` costs 100 credits.
+        style:
+          type: string
+          maxLength: 5000
+          description: NotebookLM preset name or custom style text for video outputs, limited to 5,000 characters
+        thumbnailImagePrompt:
+          type: string
+          description: Prompt to control the generated thumbnail image for video outputs
+        introImagePrompt:
+          type: string
+          description: Prompt to control the generated intro image for video outputs
+        avatarId:
+          type: integer
+          description: Optional avatar identifier for explainer video generation. If omitted, inherits from the source request when available.
+        audioLanguage:
+          type: string
+          description: Optional audio language override for explainer video generation metadata. If omitted, inherits from the source request when available.
+        textLanguage:
+          type: string
+          description: Optional text language override for explainer video generation metadata. If omitted, inherits from the source request when available.
+        backgroundImageUrl:
+          type: string
+          description: Optional background image URL for explainer video generation metadata. If omitted, inherits from the source request when available.
+        voiceId:
+          type: integer
+          description: Optional voice id from /content/GetVoices for explainer video metadata. Use the numeric id value, not the voice name. If omitted, inherits from the source request when available.
+    PublishTarget:
+      type: object
+      properties:
+        channel:
+          type: string
+          description: Target channel for publishing (e.g., youtube)
+        youtubeAccountId:
+          type:
+          - string
+          - 'null'
+          description: Connected YouTube account ID to publish to
+        youtubePlaylistId:
+          type:
+          - string
+          - 'null'
+          description: Optional playlist ID to publish into
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: AutoContent API key as a Bearer token in the Authorization header.
+x-refined-from:
+- autocontent-api-legacy-content-openapi.json
+- autocontent-api-openapi.yml

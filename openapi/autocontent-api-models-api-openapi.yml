@@ -1,0 +1,312 @@
+openapi: 3.2.0
+info:
+  title: AutoContent Platform Models API
+  version: 1.0.0
+  description: First-class content Assets with prepaid USD billing. Generic document and video routes do not exist.
+servers:
+- url: https://api.autocontentapi.com/v1
+tags:
+- name: Models
+paths:
+  /models:
+    get:
+      operationId: listModels
+      summary: List pinnable models for an Asset type
+      tags:
+      - Models
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.read
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters:
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 4096
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(?:[1-9]|[1-9][0-9]|100)$
+      - name: asset_type
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - article
+          - lead_magnet
+          - ebook
+          - slides
+          - infographic
+          - quiz
+          - podcast_episode
+          - short_video
+          - explainer_video
+          - launch_video
+          - product_demo_video
+          - ad_video
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - catalog_version
+                - data
+                - next_cursor
+                properties:
+                  catalog_version:
+                    type: string
+                    minLength: 1
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Model'
+                  next_cursor:
+                    oneOf:
+                    - type: string
+                      minLength: 1
+                    - type: 'null'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+components:
+  responses:
+    AutoContentError:
+      description: Normalized AutoContent error; provider payloads are never returned.
+      headers:
+        Retry-After:
+          description: Whole seconds before retry when the error supplies a bounded retry time.
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              code: max_cost_exceeded
+              message: Current price exceeds max_cost_usd.
+              correlation_id: corr_42
+              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
+  schemas:
+    AssetType:
+      type: string
+      enum:
+      - article
+      - lead_magnet
+      - ebook
+      - slides
+      - infographic
+      - quiz
+      - podcast_episode
+      - short_video
+      - explainer_video
+      - launch_video
+      - product_demo_video
+      - ad_video
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+    Model:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - asset_types
+      - status
+      - retires_at
+      - replacement_model
+      - capabilities
+      - asset_options_constraints_schema_version
+      - asset_options_constraints_schema
+      - model_options_schema_version
+      - model_options_schema
+      - pricing
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        asset_types:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/AssetType'
+        status:
+          type: string
+          enum:
+          - active
+          - deprecated
+          - retired
+        retires_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        replacement_model:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        capabilities:
+          type: object
+          additionalProperties: false
+          required:
+          - presentation_modes
+          properties:
+            presentation_modes:
+              type: array
+              minItems: 1
+              uniqueItems: true
+              items:
+                type: string
+                enum:
+                - faceless
+                - avatar
+            aspect_ratios:
+              type: array
+              minItems: 1
+              uniqueItems: true
+              items:
+                type: string
+                enum:
+                - '16:9'
+                - '9:16'
+                - '1:1'
+            minimum_duration_seconds:
+              type: integer
+              minimum: 1
+              maximum: 14400
+            maximum_duration_seconds:
+              type: integer
+              minimum: 1
+              maximum: 14400
+        asset_options_constraints_schema_version:
+          type: integer
+          minimum: 1
+        asset_options_constraints_schema:
+          type: object
+          additionalProperties: true
+        model_options_schema_version:
+          type: integer
+          minimum: 1
+        model_options_schema:
+          type: object
+          additionalProperties: true
+        pricing:
+          type: object
+          additionalProperties: false
+          required:
+          - basis
+          - exact_price_via_preview
+          - rate_card_version
+          properties:
+            basis:
+              type: string
+              enum:
+              - output_page
+              - output_second
+            exact_price_via_preview:
+              const: true
+            rate_card_version:
+              type: integer
+              minimum: 1
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      - correlation_id
+      - doc_url
+      properties:
+        code:
+          type: string
+          enum:
+          - invalid_request
+          - unknown_asset_type
+          - invalid_asset_options
+          - invalid_model_options
+          - model_not_supported
+          - model_retired
+          - project_not_ready
+          - project_limit_exceeded
+          - provider_operation_limit_exceeded
+          - source_not_ready
+          - source_unreachable
+          - source_paywalled
+          - product_visual_required
+          - no_qualified_trend
+          - no_qualified_knowledge
+          - input_resolution_failed
+          - max_cost_exceeded
+          - payment_required
+          - content_loop_budget_exceeded
+          - content_loop_limit_exceeded
+          - idempotency_conflict
+          - idempotency_in_progress
+          - consent_required
+          - voice_not_found
+          - voice_not_ready
+          - voice_not_supported
+          - avatar_not_found
+          - avatar_not_ready
+          - avatar_not_supported
+          - artifact_verification_failed
+          - rate_limited
+          - webhook_limit_exceeded
+          - not_found
+          - unauthorized
+          - forbidden
+          - internal_error
+        message:
+          type: string
+        details:
+          oneOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/ErrorDetail'
+          - type: object
+        correlation_id:
+          type: string
+          pattern: ^corr_[A-Za-z0-9_-]+$
+        doc_url:
+          type: string
+          format: uri
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required:
+      - reason
+      properties:
+        field:
+          type: string
+        reason:
+          type: string
+  securitySchemes:
+    platformOAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Platform OAuth JWT
+    platformApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: acp_ Platform API key

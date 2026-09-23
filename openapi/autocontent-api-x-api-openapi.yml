@@ -1,0 +1,1295 @@
+openapi: 3.2.0
+info:
+  title: Content X API
+  version: 1.0.0
+  description: API documentation for the Content API
+servers:
+- url: https://api.autocontentapi.com
+tags:
+- name: X
+  description: X (Twitter) operations
+paths:
+  /x/post:
+    post:
+      summary: Create an X (Twitter) post or thread request
+      description: Creates a request to generate and publish a tweet or thread from various content sources. Supports immediate execution or scheduling.
+      tags:
+      - X
+      operationId: createPost
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - type
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - tweet
+                  - thread
+                  description: Whether to create a single tweet or a thread
+                  example: tweet
+                feedIds:
+                  type: string
+                  description: Optional feed IDs to use as content sources (max 10). When using multipart/form-data, send as comma-separated string.
+                  example: 101,202
+                deepResearchIds:
+                  type: string
+                  description: Optional deep research request IDs to use as content sources (max 10). When using multipart/form-data, send as comma-separated string.
+                  example: 550e8400-e29b-41d4-a716-446655440000,660e8400-e29b-41d4-a716-446655440000
+                projectIds:
+                  type: string
+                  description: Optional project IDs to use as context for generation (max 10). When using multipart/form-data, send as comma-separated string.
+                  example: 123e4567-e89b-12d3-a456-426614174000,234e5678-f90a-23e4-b567-537725285111
+                audioUrl:
+                  type: string
+                  description: Optional audio URL to transcribe and use as content source
+                  example: https://example.com/audio.mp3
+                promptAudioFile:
+                  type: string
+                  format: binary
+                  description: Audio file to upload and transcribe as style instructions (alternative to promptAudioUrl)
+                url:
+                  type: string
+                  description: Optional URL to scrape and use as content source
+                  example: https://example.com/article
+                text:
+                  type: string
+                  description: Optional raw text to post (or to seed generation)
+                  example: Here are my thoughts on today's AI news...
+                prompt:
+                  type: string
+                  description: Optional style instructions to guide the content generation
+                  example: Make it funny and casual, use emojis
+                tweetStyle:
+                  type: string
+                  enum:
+                  - OneLiner
+                  - Paragraphs
+                  - Explainer
+                  description: Optional formatting style for the tweet. OneLiner for concise tweets, Paragraphs for story-style tweets, Explainer for educational content. If not specified, a random style will be selected.
+                  example: Paragraphs
+                count:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  description: Number of tweets/threads to generate (default 1)
+                  example: 3
+                deepResearch:
+                  type: boolean
+                  description: If true, triggers deep research to gather additional context and insights before generating the tweet/thread. This enhances the content with supporting evidence, implications, and key learnings.
+                  example: false
+                imageUrl:
+                  type: string
+                  description: URL to an image to include context from (will be analyzed and described)
+                  example: https://example.com/image.jpg
+                imageFile:
+                  type: string
+                  format: binary
+                  description: Image file to upload and include context from (will be analyzed and described). Max 10MB.
+                callbackData:
+                  type: string
+                  description: Optional opaque value returned in eventual callbacks
+                  example: user-specific-data
+                isScheduled:
+                  type: boolean
+                  description: If true, creates a recurring schedule instead of a one-time request
+                  example: false
+                dailyCount:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  description: Number of times per day to execute when scheduled (default 1)
+                  example: 2
+                scheduleEndDate:
+                  type: string
+                  format: date-time
+                  description: Optional end date for the schedule. If not provided, schedule runs indefinitely.
+                  example: '2024-12-31T23:59:59Z'
+              oneOf:
+              - required:
+                - type
+                - feedIds
+              - required:
+                - type
+                - deepResearchIds
+              - required:
+                - type
+                - audioUrl
+              - required:
+                - type
+                - url
+              - required:
+                - type
+                - text
+              - required:
+                - type
+                - imageUrl
+              - required:
+                - type
+                - imageFile
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - tweet
+                  - thread
+                  description: Whether to create a single tweet or a thread
+                  example: tweet
+                feedIds:
+                  type: array
+                  items:
+                    type: integer
+                  description: Optional feed IDs to use as content sources (max 10)
+                  example:
+                  - 101
+                  - 202
+                deepResearchIds:
+                  type: array
+                  items:
+                    type: string
+                  description: Optional deep research request IDs to use as content sources (max 10)
+                  example:
+                  - 550e8400-e29b-41d4-a716-446655440000
+                projectIds:
+                  type: array
+                  items:
+                    type: string
+                  description: Optional project IDs to use as context for generation (max 10)
+                  example:
+                  - 123e4567-e89b-12d3-a456-426614174000
+                  - proj-456
+                audioUrl:
+                  type: string
+                  description: Optional audio URL to transcribe and use as content source
+                  example: https://example.com/audio.mp3
+                promptAudioUrl:
+                  type: string
+                  description: URL to an audio file to transcribe and use as the prompt/style instructions
+                  example: https://example.com/prompt-audio.mp3
+                url:
+                  type: string
+                  description: Optional URL to scrape and use as content source
+                  example: https://example.com/article
+                text:
+                  type: string
+                  description: Optional raw text to post (or to seed generation)
+                  example: Here are my thoughts on today's AI news...
+                prompt:
+                  type: string
+                  description: Optional style instructions to guide the content generation
+                  example: Make it funny and casual, use emojis
+                imageUrl:
+                  type: string
+                  description: URL to an image to include context from (will be analyzed and described)
+                  example: https://example.com/image.jpg
+                tweetStyle:
+                  type: string
+                  enum:
+                  - OneLiner
+                  - Paragraphs
+                  - Explainer
+                  description: Optional formatting style for the tweet. OneLiner for concise tweets, Paragraphs for story-style tweets, Explainer for educational content. If not specified, a random style will be selected.
+                  example: Paragraphs
+                count:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  description: Number of tweets/threads to generate (default 1)
+                  example: 3
+                deepResearch:
+                  type: boolean
+                  description: If true, triggers deep research to gather additional context and insights before generating the tweet/thread. This enhances the content with supporting evidence, implications, and key learnings.
+                  example: false
+                callbackData:
+                  type: string
+                  description: Optional opaque value returned in eventual callbacks
+                  example: user-specific-data
+                isScheduled:
+                  type: boolean
+                  description: If true, creates a recurring schedule instead of a one-time request
+                  example: false
+                dailyCount:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  description: Number of times per day to execute when scheduled (default 1)
+                  example: 2
+                scheduleEndDate:
+                  type: string
+                  format: date-time
+                  description: Optional end date for the schedule. If not provided, schedule runs indefinitely.
+                  example: '2024-12-31T23:59:59Z'
+                imageFile:
+                  type: string
+                  description: Base64 encoded image file to include context from (will be analyzed and described). Cannot be used with imageUrl.
+                  example: data:image/jpeg;base64,/9j/4AAQSkZJRg...
+              oneOf:
+              - required:
+                - type
+                - feedIds
+              - required:
+                - type
+                - deepResearchIds
+              - required:
+                - type
+                - audioUrl
+              - required:
+                - type
+                - url
+              - required:
+                - type
+                - text
+              - required:
+                - type
+                - imageUrl
+      responses:
+        '200':
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: object
+                  description: Response for a one-time X post request
+                  properties:
+                    request_id:
+                      type: string
+                      description: The unique ID of the created request
+                      example: 550e8400-e29b-41d4-a716-446655440000
+                - type: object
+                  description: Response for a scheduled X post request
+                  properties:
+                    schedule_id:
+                      type: string
+                      description: The unique ID of the created schedule
+                      example: 550e8400-e29b-41d4-a716-446655440000
+                    message:
+                      type: string
+                      description: Confirmation message for the schedule
+                      example: X tweet scheduled 2 time(s) per day until 2024-12-31T23:59:59Z
+                    dailyCount:
+                      type: integer
+                      description: Number of times per day the X post will be created
+                      example: 2
+                    endDate:
+                      type: string
+                      format: date-time
+                      description: End date for the schedule, or null if no end date
+                      example: '2024-12-31T23:59:59Z'
+        '400':
+          description: Bad request - validation error or unauthorized access
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Missing type parameter (tweet or thread)
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Invalid token
+        '429':
+          description: Too many requests - rate limit exceeded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Rate limit exceeded. Please wait 5 seconds before creating another X post request.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Internal server error
+  /x/post/quick:
+    post:
+      summary: Quick-create an X (Twitter) post or thread
+      description: Minimal input endpoint. Provide type and either queryText or queryAudioFile, optionally an image.
+      tags:
+      - X
+      operationId: createPostQuick
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - type
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - tweet
+                  - thread
+                  description: Whether to create a single tweet or a thread
+                  example: tweet
+                queryText:
+                  type: string
+                  description: Text query to drive the generation (required if queryAudioFile not provided)
+                  example: Top 3 AI news today in an engaging tone
+                tweetStyle:
+                  type: string
+                  enum:
+                  - OneLiner
+                  - Paragraphs
+                  - Explainer
+                  description: Optional formatting style for the tweet. OneLiner for concise tweets, Paragraphs for story-style tweets, Explainer for educational content. If not specified, a random style will be selected.
+                  example: Paragraphs
+                count:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  description: Number of tweets/threads to generate (default 1)
+                  example: 3
+                deepResearch:
+                  type: boolean
+                  description: If true, triggers deep research to gather additional context and insights before generating the tweet/thread. This enhances the content with supporting evidence, implications, and key learnings.
+                  example: false
+                queryAudioFile:
+                  type: string
+                  format: binary
+                  description: Optional audio file to upload and transcribe as the query (required if queryText not provided)
+                imageFile:
+                  type: string
+                  format: binary
+                  description: Optional image to upload and include context from
+            oneOf:
+            - required:
+              - type
+              - queryText
+            - required:
+              - type
+              - queryAudioFile
+      responses:
+        '200':
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                    description: The unique ID of the created request
+                    example: 550e8400-e29b-41d4-a716-446655440000
+        '400':
+          description: Bad request - validation error or unauthorized access
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Invalid token
+        '429':
+          description: Too many requests - rate limit exceeded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Rate limit exceeded. Please wait 5 seconds before creating another X post request.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+  /x/refine:
+    post:
+      summary: Refine an existing X (Twitter) post
+      description: Refines an existing tweet based on user instructions while maintaining context. Costs 1 credit. Can update the tweet text and any associated data tables or charts.
+      tags:
+      - X
+      operationId: refineTweet
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - tweetId
+              properties:
+                tweetId:
+                  type: string
+                  description: The unique ID of the tweet to refine
+                  example: 550e8400-e29b-41d4-a716-446655440000
+                prompt:
+                  type: string
+                  description: Instructions for how to refine the tweet
+                  example: Make it more engaging and add relevant emojis
+                promptAudioUrl:
+                  type: string
+                  description: URL to an audio file to transcribe and use as refinement instructions. Required if prompt is not provided.
+                  example: https://example.com/refinement-audio.mp3
+      responses:
+        '200':
+          description: Tweet refined successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  post:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: The unique ID of the refined tweet
+                        example: 550e8400-e29b-41d4-a716-446655440000
+                      requestId:
+                        type: string
+                        description: The original request ID
+                        example: 660e8400-e29b-41d4-a716-446655440000
+                      result:
+                        type: string
+                        description: The refined tweet text
+                        example: 🚀 Just launched our new AI feature! It's revolutionizing how teams collaborate. Check it out! 💡
+                      type:
+                        type: string
+                        description: The post type
+                        example: tweet
+                      order:
+                        type: integer
+                        description: Order in thread (0 for single tweets)
+                        example: 1
+                      createdOn:
+                        type: string
+                        format: date-time
+                        description: Original creation date
+                        example: '2024-01-15T10:35:00Z'
+                      tweetImageUrl:
+                        type:
+                        - string
+                        - 'null'
+                        description: Main image for the tweet if present
+                        example: https://cdn.example.com/user-image.jpg
+                      dataTableImageUrl:
+                        type:
+                        - string
+                        - 'null'
+                        description: URL to updated data table image if present
+                        example: https://cdn.example.com/table-updated.png
+                      barChartImageUrl:
+                        type:
+                        - string
+                        - 'null'
+                        description: URL to updated bar chart image if present
+                        example: https://cdn.example.com/chart-updated.png
+        '400':
+          description: Bad request - validation error or insufficient credits
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Insufficient credits for tweet refinement. Please upgrade to continue.
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Invalid token
+        '404':
+          description: Tweet not found or unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Tweet not found or unauthorized
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Internal server error
+  /x/posts:
+    get:
+      summary: Get generated X (Twitter) posts for the authenticated user
+      description: Returns the list of generated X posts and threads, including visualization image URLs when available. Supports optional pagination.
+      tags:
+      - X
+      operationId: getPosts
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully retrieved X posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Unique ID of the post (use this for refinement)
+                          example: 550e8400-e29b-41d4-a716-446655440000
+                        requestId:
+                          type: string
+                          description: The request ID that generated this post
+                          example: 660e8400-e29b-41d4-a716-446655440000
+                        result:
+                          type: string
+                          description: The tweet text content
+                          example: Just launched our new AI feature! It's amazing.
+                        type:
+                          type: string
+                          description: The post type (tweet or thread item)
+                          example: tweet
+                        order:
+                          type: integer
+                          description: Order in thread (starts at 0)
+                          example: 0
+                        createdOn:
+                          type: string
+                          format: date-time
+                          description: When the post was created
+                          example: '2024-01-15T10:35:00Z'
+                        tweetImageUrl:
+                          type:
+                          - string
+                          - 'null'
+                          description: Main image for the tweet (from user upload or provided URL). When present, visualization images are not generated.
+                          example: https://cdn.example.com/user-image.jpg
+                        dataTableImageUrl:
+                          type:
+                          - string
+                          - 'null'
+                          description: URL to generated data table image if present
+                          example: https://cdn.example.com/table.png
+                        barChartImageUrl:
+                          type:
+                          - string
+                          - 'null'
+                          description: URL to generated bar chart image if present
+                          example: https://cdn.example.com/chart.png
+                oneOf:
+                - type: object
+                  description: Non-paginated response (when page and limit are not provided)
+                  properties:
+                    posts:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/XPost'
+                - type: object
+                  description: Paginated response (when page or limit are provided)
+                  properties:
+                    posts:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/XPost'
+                    totalCount:
+                      type: integer
+                      description: Total number of posts
+                      example: 100
+                    page:
+                      type: integer
+                      description: Current page number
+                      example: 1
+                    pageSize:
+                      type: integer
+                      description: Number of items per page
+                      example: 20
+                    totalPages:
+                      type: integer
+                      description: Total number of pages
+                      example: 5
+                examples:
+                  nonPaginated:
+                    summary: Response without pagination
+                    value:
+                      posts:
+                      - id: 550e8400-e29b-41d4-a716-446655440000
+                        requestId: 660e8400-e29b-41d4-a716-446655440000
+                        result: AI is revolutionizing healthcare...
+                        type: tweet
+                        order: 0
+                        createdOn: '2024-01-15T10:35:00Z'
+                        tweetImageUrl: https://cdn.example.com/user-image.jpg
+                        dataTableImageUrl: null
+                        barChartImageUrl: null
+                  paginated:
+                    summary: Response with pagination
+                    value:
+                      posts:
+                      - id: 550e8400-e29b-41d4-a716-446655440000
+                        requestId: 660e8400-e29b-41d4-a716-446655440000
+                        result: AI is revolutionizing healthcare...
+                        type: tweet
+                        order: 0
+                        createdOn: '2024-01-15T10:35:00Z'
+                        tweetImageUrl: https://cdn.example.com/user-image.jpg
+                        dataTableImageUrl: null
+                        barChartImageUrl: null
+                      totalCount: 100
+                      page: 1
+                      pageSize: 20
+                      totalPages: 5
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Invalid token
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Internal server error
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+        required: false
+        description: Page number for pagination (starts at 1). If not provided, returns all results.
+        example: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+        required: false
+        description: Number of items per page (max 100, default 50 if page is specified)
+        example: 20
+  /x/posts/{id}:
+    get:
+      summary: Get a single generated X (Twitter) post by ID
+      description: Returns a single generated tweet or thread item belonging to the authenticated user by its unique ID.
+      tags:
+      - X
+      operationId: getPostById
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The unique ID of the post to retrieve
+        example: 550e8400-e29b-41d4-a716-446655440000
+      responses:
+        '200':
+          description: Successfully retrieved the X post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: Unique ID of the post
+                        example: 550e8400-e29b-41d4-a716-446655440000
+                      requestId:
+                        type: string
+                        description: The request ID that generated this post
+                        example: 660e8400-e29b-41d4-a716-446655440000
+                      result:
+                        type: string
+                        description: The generated content or metadata
+                        example: Just launched our new AI feature! It's amazing.
+                      type:
+                        type: string
+                        description: The post type (e.g., tweet or thread item)
+                        example: tweet
+                      order:
+                        type: integer
+                        description: Order in the thread (starts at 0)
+                        example: 0
+                      createdOn:
+                        type: string
+                        format: date-time
+                        description: When the post was created
+                        example: '2024-01-15T10:35:00Z'
+                      tweetImageUrl:
+                        type:
+                        - string
+                        - 'null'
+                        description: Main image for the tweet (from user upload or provided URL)
+                        example: https://cdn.example.com/user-image.jpg
+                      dataTableImageUrl:
+                        type:
+                        - string
+                        - 'null'
+                        description: Optional URL to a generated data table image
+                        example: https://cdn.example.com/table.png
+                      barChartImageUrl:
+                        type:
+                        - string
+                        - 'null'
+                        description: Optional URL to a generated bar chart image
+                        example: https://cdn.example.com/chart.png
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Invalid token
+        '404':
+          description: Post not found or unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Post not found or unauthorized
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Internal server error
+  /x/recurring:
+    get:
+      summary: Get recurring X (Twitter) templates
+      description: Returns all recurring tweet/thread templates for the authenticated user with their configuration and scheduling details.
+      tags:
+      - X
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully retrieved recurring templates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  templates:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Unique ID of the recurring template
+                          example: 550e8400-e29b-41d4-a716-446655440000
+                        type:
+                          type: string
+                          enum:
+                          - tweet
+                          - thread
+                          description: Type of X post to create
+                          example: tweet
+                        deletedOn:
+                          type:
+                          - string
+                          - 'null'
+                          format: date-time
+                          description: When the template was deleted (null if not deleted)
+                          example: null
+                        feedIds:
+                          type: array
+                          items:
+                            type: integer
+                          description: Feed IDs used as content sources
+                          example:
+                          - 101
+                          - 202
+                        deepResearchIds:
+                          type: array
+                          items:
+                            type: string
+                          description: Deep research IDs used as content sources
+                          example:
+                          - 550e8400-e29b-41d4-a716-446655440000
+                        projectIds:
+                          type: array
+                          items:
+                            type: string
+                          description: Project IDs used as context
+                          example:
+                          - 123e4567-e89b-12d3-a456-426614174000
+                        audioUrl:
+                          type:
+                          - string
+                          - 'null'
+                          description: Audio URL for transcription
+                          example: https://example.com/audio.mp3
+                        url:
+                          type:
+                          - string
+                          - 'null'
+                          description: URL for content scraping
+                          example: https://example.com/article
+                        text:
+                          type:
+                          - string
+                          - 'null'
+                          description: Raw text content
+                          example: Breaking news about AI...
+                        prompt:
+                          type:
+                          - string
+                          - 'null'
+                          description: Style instructions for generation
+                          example: Make it engaging with emojis
+                        imageUrl:
+                          type:
+                          - string
+                          - 'null'
+                          description: Image URL for context
+                          example: https://example.com/image.jpg
+                        promptAudioUrl:
+                          type:
+                          - string
+                          - 'null'
+                          description: Audio URL for prompt instructions
+                          example: https://example.com/prompt.mp3
+                        queryText:
+                          type:
+                          - string
+                          - 'null'
+                          description: Quick mode query text
+                          example: Top AI news today
+                        queryAudioUrl:
+                          type:
+                          - string
+                          - 'null'
+                          description: Quick mode query audio URL
+                          example: https://example.com/query.mp3
+                        fast:
+                          type:
+                          - boolean
+                          - 'null'
+                          description: Whether this is a quick mode template
+                          example: false
+                        tweetStyle:
+                          type:
+                          - string
+                          - 'null'
+                          enum:
+                          - OneLiner
+                          - Paragraphs
+                          - Explainer
+                          description: Formatting style for tweets. OneLiner for concise tweets, Paragraphs for story-style tweets, Explainer for educational content.
+                          example: Paragraphs
+                        callbackData:
+                          type:
+                          - string
+                          - 'null'
+                          description: User-specific callback data
+                          example: user-data-123
+                        dailyCount:
+                          type: integer
+                          description: Number of executions per day
+                          example: 2
+                        scheduleEndDate:
+                          type:
+                          - string
+                          - 'null'
+                          format: date-time
+                          description: End date for the recurring template (null = indefinite)
+                          example: '2024-12-31T23:59:59Z'
+                        lastRunAt:
+                          type:
+                          - string
+                          - 'null'
+                          format: date-time
+                          description: Last execution timestamp
+                          example: '2024-01-15T10:30:00Z'
+                        nextRunAt:
+                          type:
+                          - string
+                          - 'null'
+                          format: date-time
+                          description: Next scheduled execution (null = paused)
+                          example: '2024-01-15T14:30:00Z'
+                        createdOn:
+                          type: string
+                          format: date-time
+                          description: Template creation timestamp
+                          example: '2024-01-01T00:00:00Z'
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Invalid token
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+      operationId: getXRecurring
+      x-operation-id-source: derived
+  /x/recurring/{id}:
+    post:
+      summary: Update a recurring X (Twitter) template
+      description: Updates specific fields of a recurring template. Can be used to pause/resume, change frequency, update end date, or modify prompt.
+      tags:
+      - X
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The unique ID of the recurring template to update
+        example: 550e8400-e29b-41d4-a716-446655440000
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+                  description: New style instructions for generation
+                  example: Use a more professional tone
+                dailyCount:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  description: New number of executions per day
+                  example: 3
+                scheduleEndDate:
+                  type:
+                  - string
+                  - 'null'
+                  format: date-time
+                  description: New end date for the recurring executions (null to remove end date)
+                  example: '2025-01-31T23:59:59Z'
+                isActive:
+                  type: boolean
+                  description: Set to false to pause the recurring template, true to resume
+                  example: false
+                feedIds:
+                  type: array
+                  items:
+                    type: integer
+                  description: Feed IDs to use as content sources (replaces existing)
+                  example:
+                  - 101
+                  - 202
+                deepResearchIds:
+                  type: array
+                  items:
+                    type: string
+                  description: Deep research template IDs to use as content sources (replaces existing)
+                  example:
+                  - 550e8400-e29b-41d4-a716-446655440000
+      responses:
+        '200':
+          description: Recurring template updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Recurring template updated successfully
+                  template:
+                    type: object
+                    description: The updated template with all fields (same structure as GET /x/recurring response items)
+        '400':
+          description: Bad request - validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: dailyCount must be between 1 and 100
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Invalid token
+        '404':
+          description: Recurring template not found or unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Recurring template not found or unauthorized
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+      operationId: postXRecurringById
+      x-operation-id-source: derived
+components:
+  schemas:
+    XPostSource:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Classification of the source (e.g. feed, resource, deep-research)
+          example: feed-item
+        sourceId:
+          type:
+          - string
+          - 'null'
+          description: Optional identifier for the source record
+          example: c0a8015c-82ff-455b-b3d5-8bfab98809c2
+        reference:
+          type:
+          - string
+          - 'null'
+          description: User-friendly reference like a URL or handle
+          example: https://twitter.com/autocontentapi/status/123
+        description:
+          type:
+          - string
+          - 'null'
+          description: Short summary of the source content
+          example: 'Reddit: Launch post announcing v2'
+        metadata:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+          description: Arbitrary metadata captured for the source
+    XPost:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique ID of the post (use this for refinement)
+          example: 550e8400-e29b-41d4-a716-446655440000
+        requestId:
+          type: string
+          example: 660e8400-e29b-41d4-a716-446655440000
+        result:
+          type: string
+          description: The generated content or metadata
+        type:
+          type: string
+          description: The post type (e.g., tweet or thread item)
+          example: tweet
+        order:
+          type: integer
+          description: Order in the thread (starts at 0)
+          example: 0
+        createdOn:
+          type: string
+          format: date-time
+          example: '2024-01-15T10:35:00Z'
+        tweetImageUrl:
+          type:
+          - string
+          - 'null'
+          description: Main image for the tweet (from user upload or provided URL)
+          example: https://cdn.example.com/user-image.jpg
+        dataTableImageUrl:
+          type:
+          - string
+          - 'null'
+          description: Optional URL to a generated data table image
+          example: https://cdn.example.com/table.png
+        barChartImageUrl:
+          type:
+          - string
+          - 'null'
+          description: Optional URL to a generated bar chart image
+          example: https://cdn.example.com/chart.png
+        sources:
+          type: array
+          description: Provenance entries describing where the content came from
+          items:
+            $ref: '#/components/schemas/XPostSource'
+        shareUrl:
+          type: string
+          description: Share URL for the post (only in getPodcasts response)
+          example: https://autocontentapi.com/share/podcast/550e8400-e29b-41d4-a716-446655440000/20240115
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

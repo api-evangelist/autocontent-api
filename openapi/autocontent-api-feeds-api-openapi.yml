@@ -1,0 +1,479 @@
+openapi: 3.2.0
+info:
+  title: Content Feeds API
+  version: 1.0.0
+  description: API documentation for the Content API
+servers:
+- url: https://api.autocontentapi.com
+tags:
+- name: Feeds
+  description: Social media feed management operations
+paths:
+  /feeds:
+    get:
+      summary: Get all feeds (public + user's private feeds)
+      description: 'Retrieves all public feeds (feeds with no token) and user''s private feeds if token is provided.
+
+
+        **Public Access:**
+
+        - Public feeds are available without authentication
+
+        - Returns all feeds where token is null
+
+
+        **Authenticated Access:**
+
+        - Returns public feeds + user''s private feeds
+
+        - Requires valid API token in Authorization header'
+      tags:
+      - Feeds
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: List of feeds (public + user's private feeds)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Feed'
+        '500':
+          description: Internal server error
+      operationId: getFeeds
+      x-operation-id-source: derived
+    post:
+      summary: Create a new feed
+      description: 'Creates a new feed associated with the authenticated user.
+
+
+        **Feed Types:**
+
+        - feedTypeId=1: X/Twitter feed (internalId = username)
+
+        - feedTypeId=2: Reddit feed (internalId = subreddit name without r/ prefix)
+
+        - feedTypeId=3: YouTube channel feed (channel handle/URL, resolved to channel source ID automatically)
+
+        - feedTypeId=4: RSS feed (internalId = feed URL)
+
+        - feedTypeId=5: X News feed (internalId = topic/search query, e.g. "ai")
+
+
+        **Access Control:**
+
+        - Requires valid API token
+
+        - Feed will be private to the creating user
+
+        - PRO subscription required'
+      tags:
+      - Feeds
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFeedRequest'
+      responses:
+        '201':
+          description: Feed created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  feedId:
+                    type: integer
+                    description: ID of the created feed
+                    example: 1
+                  message:
+                    type: string
+                    example: Feed created successfully
+        '400':
+          description: Bad request - Missing required fields, feed limit reached, or other validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    examples:
+                      missing_name:
+                        value: Missing feed name
+                      feed_limit:
+                        value: Feed limit reached. You can create up to 4 feeds. You currently have 4 feeds.
+        '401':
+          description: Unauthorized - valid API token required
+        '429':
+          description: Rate limit exceeded - too many requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Rate limit exceeded. Please wait 3 seconds before creating another feed.
+        '500':
+          description: Internal server error during feed creation
+      operationId: postFeeds
+      x-operation-id-source: derived
+  /feeds/{id}:
+    get:
+      summary: Get a specific feed by ID
+      description: 'Retrieves a specific feed by its ID.
+
+        Public feeds are accessible without authentication.
+
+        Private feeds require appropriate token validation.'
+      tags:
+      - Feeds
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: Feed ID
+        example: 1
+      responses:
+        '200':
+          description: Feed details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feed'
+        '400':
+          description: Bad request - Invalid feed ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    examples:
+                      missing_id:
+                        value: Missing feed ID
+                      invalid_id:
+                        value: Invalid feed ID
+        '404':
+          description: Feed not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Feed not found
+        '500':
+          description: Internal server error
+      operationId: getFeedsById
+      x-operation-id-source: derived
+  /feeds/delete:
+    post:
+      summary: Delete a feed
+      description: 'Deletes a feed owned by the authenticated user.
+
+
+        **Security:**
+
+        - Only the feed owner can delete their feeds
+
+        - Requires valid API token matching the feed''s token'
+      tags:
+      - Feeds
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteFeedRequest'
+      responses:
+        '200':
+          description: Feed deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Feed deleted successfully
+        '400':
+          description: Bad request - Missing or invalid feed ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    examples:
+                      missing_id:
+                        value: Missing feed ID
+                      invalid_id:
+                        value: Invalid feed ID
+        '401':
+          description: Unauthorized - valid API token required
+        '404':
+          description: Feed not found or cannot be deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Feed not found or cannot be deleted
+        '500':
+          description: Internal server error during feed deletion
+      operationId: postFeedsDelete
+      x-operation-id-source: derived
+  /feeds/subscriptions:
+    get:
+      summary: List feed subscriptions for the authenticated token
+      description: Returns active feed automations associated with the authenticated user. Use `includeRemoved=true` to include archived subscriptions.
+      tags:
+      - Feeds
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: includeRemoved
+        schema:
+          type: boolean
+        required: false
+        description: Include subscriptions that have been removed when set to true.
+      responses:
+        '200':
+          description: Array of feed subscriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeedSubscription'
+        '401':
+          description: Unauthorized - valid API token required
+        '500':
+          description: Internal server error while fetching subscriptions
+      operationId: getFeedsSubscriptions
+      x-operation-id-source: derived
+    post:
+      summary: Create a feed subscription
+      description: Links a feed to a schedule template (ClientRequest) so that new feed items trigger automated content generation.
+      tags:
+      - Feeds
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - feedId
+              - requestId
+              properties:
+                feedId:
+                  type: integer
+                  description: Identifier of the feed to subscribe to.
+                  example: 42
+                requestId:
+                  type: string
+                  description: Schedule template (ClientRequest) to clone when new items arrive.
+                  example: 123e4567-e89b-12d3-a456-426614174000
+                lastProcessedItemId:
+                  type: string
+                  description: Optional feed item identifier to mark as already processed.
+      responses:
+        '201':
+          description: Subscription created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedSubscription'
+        '400':
+          description: Validation error
+        '404':
+          description: Feed or template not found
+        '409':
+          description: Subscription already exists for this feed/template pair
+        '500':
+          description: Internal server error during creation
+      operationId: postFeedsSubscriptions
+      x-operation-id-source: derived
+  /feeds/subscriptions/{subscriptionId}:
+    delete:
+      summary: Remove a feed subscription
+      description: Soft-deletes a feed subscription by setting its removedOn timestamp.
+      tags:
+      - Feeds
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: subscriptionId
+        required: true
+        schema:
+          type: string
+        description: Identifier of the subscription to remove.
+      responses:
+        '200':
+          description: Subscription removed
+        '400':
+          description: Missing or invalid subscription identifier
+        '404':
+          description: Subscription not found or already removed
+        '500':
+          description: Internal server error during removal
+      operationId: deleteFeedsSubscriptionsBySubscriptionId
+      x-operation-id-source: derived
+components:
+  schemas:
+    FeedSubscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the subscription
+          example: 123e4567-e89b-12d3-a456-426614174000
+        feedId:
+          type: integer
+          description: Identifier of the subscribed feed
+          example: 42
+        token:
+          type: string
+          description: Token that owns the subscription
+        requestId:
+          type: string
+          description: ClientRequest template identifier used for automation
+        createdOn:
+          type: string
+          format: date-time
+          description: When the subscription was created
+        removedOn:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the subscription was removed, if applicable
+        lastProcessedItemId:
+          type:
+          - string
+          - 'null'
+          description: Identifier of the last feed item processed for this subscription
+        lastProcessedOn:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp of the last processed feed item
+        request:
+          type:
+          - object
+          - 'null'
+          description: Snapshot of the underlying template request
+    CreateFeedRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name of the feed
+          example: Tech News Twitter Feed
+        feedTypeId:
+          type: integer
+          description: Type of feed (1 for X/Twitter, 2 for Reddit, 3 for YouTube channel, 4 for RSS, 5 for X News topic)
+          example: 1
+        internalId:
+          type: string
+          description: Internal identifier - Twitter username for X, subreddit name for Reddit (without r/ prefix), topic/search query for X News (feedTypeId=5), feed URL for RSS. For YouTube channels this is populated automatically.
+          example: elonmusk
+        channel:
+          type: string
+          description: (YouTube only) Channel handle, URL, or ID. Either `channel` or `url` may be provided.
+          example: https://youtube.com/@AutoContentAPI
+        url:
+          type: string
+          description: (YouTube only) Channel URL alternative field.
+          example: https://youtube.com/@AutoContentAPI
+    DeleteFeedRequest:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: integer
+          description: ID of the feed to delete
+          example: 1
+    Feed:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the feed
+          example: 1
+        name:
+          type: string
+          description: Name of the feed
+          example: Tech News Twitter Feed
+        token:
+          type: string
+          description: Client token (null for public feeds)
+          example: abc123-def456-ghi789
+        feedTypeId:
+          type: integer
+          description: Type of feed (1 for X/Twitter, 2 for Reddit, 3 for YouTube channel, 4 for RSS, 5 for X News topic)
+          example: 1
+        internalId:
+          type: string
+          description: Internal identifier for the feed source (username for X, subreddit for Reddit, channel source ID for YouTube)
+          example: elonmusk
+        createdOn:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: '2023-01-01T12:00:00Z'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,61 +1,1345 @@
 openapi: 3.2.0
 info:
-  title: AutoContent Content Podcast API
-  description: 'Best-effort OpenAPI 3.1 description of the AutoContent API for generating
-
-    podcasts, videos, slide decks, infographics, transcripts and other content
-
-    types. Derived from the public documentation index at
-
-    https://docs.autocontentapi.com/llms-full.txt and the developer portal at
-
-    https://autocontentapi.com/docs.
-
-    '
-  version: '1'
-  contact:
-    name: AutoContent API Docs
-    url: https://docs.autocontentapi.com/
+  title: Autocontent Podcast API
+  version: '1.0'
+  description: 'Operations tagged Podcast across 2 of this provider''s published API definitions: autocontent-api-legacy-content-openapi.json, autocontent-api-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.autocontentapi.com
-  description: AutoContent API production
-security:
-- bearerAuth: []
 tags:
 - name: Podcast
+  description: Podcast operations and RSS feeds
 paths:
   /podcast/rss/{podcastId}:
+    get:
+      summary: Get iTunes-compatible RSS feed for podcast distribution
+      description: 'Generates a public RSS feed compatible with Spotify, Apple Music, and other podcast platforms.
+
+        This endpoint is designed for automated platform distribution - no authentication required.
+
+
+        **Platform Integration:**
+
+        - Submit this RSS URL to Spotify for Podcasters, Apple Podcasts Connect
+
+        - Platforms automatically pull new episodes as they''re added via API
+
+        - Supports iTunes namespace for Apple Podcasts compatibility
+
+        - Includes proper enclosure tags with audio URLs and metadata
+
+
+        **Automation Workflow:**
+
+        1. Create podcast show → Get RSS URL from response
+
+        2. Submit RSS URL to podcast platforms (one-time setup)
+
+        3. Add episodes via API → Platforms automatically discover new content'
+      tags:
+      - Podcast
+      parameters:
+      - in: path
+        name: podcastId
+        required: true
+        schema:
+          type: string
+        description: Podcast show ID to generate RSS feed for
+        example: abc123-def456-ghi789
+      responses:
+        '200':
+          description: iTunes-compatible RSS XML feed ready for platform submission
+          content:
+            application/xml:
+              schema:
+                type: string
+                description: RSS 2.0 XML feed with iTunes namespace extensions
+              example: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\" xmlns:itunes=\"http://www.itunes.com/dtds/podcast-1.0.dtd\">\n  <channel>\n    <title>My Automated Podcast</title>\n    <itunes:author>AI Content Creator</itunes:author>\n    <!-- Episodes automatically included as added via API -->\n  </channel>\n</rss>\n"
+        '400':
+          description: Missing or invalid podcast ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Missing podcastId parameter
+        '500':
+          description: Internal server error during RSS generation
+      operationId: getPodcastRssByPodcastId
+      x-operation-id-source: derived
     parameters:
     - in: path
       name: podcastId
       required: true
       schema:
         type: string
-    get:
-      tags:
-      - Podcast
-      summary: Get podcast RSS feed
-      operationId: getPodcastRss
-      responses:
-        '200':
-          description: RSS XML returned
+    servers:
+    - url: https://api.autocontentapi.com
   /podcast/shows:
     get:
+      summary: Get all podcast shows for automated management
+      description: 'Retrieves all podcast shows with their RSS URLs for platform distribution.
+
+        Each show includes its RSS feed URL for easy platform integration.
+
+        Supports optional pagination.'
       tags:
       - Podcast
-      summary: List podcast shows
-      operationId: listShows
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+        required: false
+        description: Page number for pagination (starts at 1). If not provided, returns all results.
+        example: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+        required: false
+        description: Number of items per page (max 100, default 50 if page is specified)
+        example: 20
       responses:
         '200':
-          description: Shows returned
+          description: List of podcast shows with RSS URLs for platform submission
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: array
+                  description: Non-paginated response (when page and limit are not provided)
+                  items:
+                    $ref: '#/components/schemas/PodcastShow'
+                - type: object
+                  description: Paginated response (when page or limit are provided)
+                  properties:
+                    shows:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/PodcastShow'
+                    totalCount:
+                      type: integer
+                      description: Total number of podcast shows
+                      example: 10
+                    page:
+                      type: integer
+                      description: Current page number
+                      example: 1
+                    pageSize:
+                      type: integer
+                      description: Number of items per page
+                      example: 20
+                    totalPages:
+                      type: integer
+                      description: Total number of pages
+                      example: 1
+        '401':
+          description: Unauthorized - valid API token required
+        '500':
+          description: Internal server error
+      operationId: getPodcastShows
+      x-operation-id-source: derived
     post:
+      summary: Create a new podcast show for automated distribution
+      description: 'Creates a new podcast show and returns the RSS URL for platform submission.
+
+
+        **Platform Setup Workflow:**
+
+        1. Create show via this endpoint → Get RSS URL in response
+
+        2. Submit RSS URL to:
+
+        - Spotify for Podcasters (https://podcasters.spotify.com)
+
+        - Apple Podcasts Connect (https://podcastsconnect.apple.com)
+
+        - Google Podcasts Manager
+
+        - Other podcast platforms
+
+        3. Start adding episodes via API → Platforms automatically discover new content
+
+
+        **Required Metadata:** All major podcast platforms require name, description, author, website link, and owner email for contact and verification purposes.'
       tags:
       - Podcast
-      summary: Create podcast show
-      operationId: createShow
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePodcastShowRequest'
       responses:
         '201':
-          description: Show created
+          description: Podcast show created successfully with RSS URL for platform distribution
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  podcastId:
+                    type: string
+                    description: Unique ID of the created podcast show
+                    example: abc123-def456-ghi789
+                  rssUrl:
+                    type: string
+                    description: RSS feed URL to submit to Spotify, Apple Music, and other platforms
+                    example: https://autocontentapi.com/podcast/rss/abc123-def456-ghi789
+        '400':
+          description: Bad request - Missing required fields for platform compatibility
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    examples:
+                      missing_name:
+                        value: Missing podcast name
+                      missing_description:
+                        value: Missing podcast description
+                      missing_author:
+                        value: Missing podcast author
+                      missing_link:
+                        value: Missing podcast link
+                      missing_image_url:
+                        value: Missing podcast image URL
+                      missing_email:
+                        value: Missing owner email
+        '401':
+          description: Unauthorized - valid API token required
+        '500':
+          description: Internal server error during podcast creation
+      operationId: postPodcastShows
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /podcast/shows/with-image:
+    post:
+      summary: Create a new podcast show with image upload for automated distribution
+      description: 'Creates a new podcast show with image upload and returns the RSS URL for platform submission.
+
+        This endpoint accepts multipart/form-data to allow direct image upload alongside podcast metadata.
+
+
+        **Platform Setup Workflow:**
+
+        1. Create show via this endpoint → Get RSS URL in response
+
+        2. Submit RSS URL to:
+
+        - Spotify for Podcasters (https://podcasters.spotify.com)
+
+        - Apple Podcasts Connect (https://podcastsconnect.apple.com)
+
+        - Google Podcasts Manager
+
+        - Other podcast platforms
+
+        3. Start adding episodes via API → Platforms automatically discover new content
+
+
+        **Required Metadata:** All major podcast platforms require name, description, author, website link, and owner email for contact and verification purposes.'
+      tags:
+      - Podcast
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - name
+              - description
+              - author
+              - link
+              - email
+              - imageFile
+              properties:
+                name:
+                  type: string
+                  description: Podcast show name (displayed on Spotify, Apple Music, etc.)
+                  example: AI-Generated Tech Talk
+                description:
+                  type: string
+                  description: Show description for platform listings and RSS feed
+                  example: Weekly tech discussions generated by AI, covering the latest in technology and innovation.
+                author:
+                  type: string
+                  description: Host/author name displayed on podcast platforms
+                  example: AI Content Creator
+                link:
+                  type: string
+                  format: uri
+                  description: Official website URL for the podcast show
+                  example: https://mywebsite.com/podcast
+                email:
+                  type: string
+                  format: email
+                  description: Owner email address for RSS feed and platform registration
+                  example: podcast@mywebsite.com
+                imageFile:
+                  type: string
+                  format: binary
+                  description: Podcast show image/artwork file (JPG, PNG, etc.)
+      responses:
+        '201':
+          description: Podcast show created successfully with RSS URL for platform distribution
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  podcastId:
+                    type: string
+                    description: Unique ID of the created podcast show
+                    example: abc123-def456-ghi789
+                  rssUrl:
+                    type: string
+                    description: RSS feed URL to submit to Spotify, Apple Music, and other platforms
+                    example: https://autocontentapi.com/podcast/rss/abc123-def456-ghi789
+                  imageUrl:
+                    type: string
+                    description: URL of the uploaded podcast artwork image
+                    example: https://autocontentapi.com/uploads/podcast-artwork-abc123.jpg
+        '400':
+          description: Bad request - Missing required fields or invalid image file
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    examples:
+                      missing_name:
+                        value: Missing podcast name
+                      missing_description:
+                        value: Missing podcast description
+                      missing_author:
+                        value: Missing podcast author
+                      missing_link:
+                        value: Missing podcast link
+                      missing_email:
+                        value: Missing owner email
+                      missing_image:
+                        value: Missing image file
+                      invalid_image:
+                        value: Invalid image file format
+        '401':
+          description: Unauthorized - valid API token required
+        '500':
+          description: Internal server error during podcast creation
+      operationId: postPodcastShowsWithImage
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /podcast/episodes:
+    get:
+      summary: Get all podcast episodes for user (deprecated)
+      deprecated: true
+      description: 'Deprecated: this broad all-episodes endpoint is expensive for large accounts and will be removed later.
+
+        Use `/podcast/episodes/unallocated` for episodes not assigned to any show, or `/podcast/shows/{podcastId}/episodes` for show-specific episode lists.
+
+
+        Retrieves all podcast episodes owned by the user, including:
+
+        - Episodes assigned to one or more podcast shows (with podcast show IDs)
+
+        - Orphaned episodes not yet assigned to any podcast show (with empty podcastShowIds array)
+
+
+        Each episode includes an array of podcast show IDs it belongs to, supporting episodes that appear in multiple shows.
+
+        Useful for getting a comprehensive view of all published episodes and their distribution across shows.
+
+        Supports optional pagination.'
+      tags:
+      - Podcast
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+        required: false
+        description: Page number for pagination (starts at 1). If not provided, returns all results.
+        example: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+        required: false
+        description: Number of items per page (max 100, default 50 if page is specified)
+        example: 20
+      responses:
+        '200':
+          description: List of all episodes with platform-ready metadata and associated podcast show IDs
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: array
+                  description: Non-paginated response (when page and limit are not provided)
+                  items:
+                    allOf:
+                    - $ref: '#/components/schemas/PodcastEpisode'
+                    - type: object
+                      properties:
+                        podcastShowIds:
+                          type: array
+                          description: Array of podcast show IDs this episode belongs to (empty for orphaned episodes)
+                          items:
+                            type: string
+                          example:
+                          - abc123-def456
+                          - ghi789-jkl012
+                - type: object
+                  description: Paginated response (when page or limit are provided)
+                  properties:
+                    episodes:
+                      type: array
+                      items:
+                        allOf:
+                        - $ref: '#/components/schemas/PodcastEpisode'
+                        - type: object
+                          properties:
+                            podcastShowIds:
+                              type: array
+                              description: Array of podcast show IDs this episode belongs to (empty for orphaned episodes)
+                              items:
+                                type: string
+                              example:
+                              - abc123-def456
+                              - ghi789-jkl012
+                    totalCount:
+                      type: integer
+                      description: Total number of episodes
+                      example: 50
+                    page:
+                      type: integer
+                      description: Current page number
+                      example: 1
+                    pageSize:
+                      type: integer
+                      description: Number of items per page
+                      example: 20
+                    totalPages:
+                      type: integer
+                      description: Total number of pages
+                      example: 3
+        '401':
+          description: Unauthorized - valid API token required
+        '500':
+          description: Internal server error
+      operationId: getPodcastEpisodes
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /podcast/episodes/unallocated:
+    get:
+      summary: Get unallocated podcast episodes for user
+      description: 'Retrieves generated audio episodes that are not assigned to any podcast show.
+
+        This is the preferred paginated endpoint for the `/podcasts/shows/unallocated` app screen.'
+      tags:
+      - Podcast
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+        required: false
+        description: Page number for pagination (starts at 1).
+        example: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+        required: false
+        description: Number of items per page (max 100, default 50).
+        example: 100
+      responses:
+        '200':
+          description: Paginated list of unallocated podcast episodes.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  episodes:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/components/schemas/PodcastEpisode'
+                      - type: object
+                        properties:
+                          podcastShowIds:
+                            type: array
+                            description: Always empty for unallocated episodes.
+                            items:
+                              type: string
+                            example: []
+                  totalCount:
+                    type: integer
+                    description: Total number of unallocated episodes.
+                    example: 421
+                  page:
+                    type: integer
+                    description: Current page number.
+                    example: 1
+                  pageSize:
+                    type: integer
+                    description: Number of items per page.
+                    example: 100
+                  totalPages:
+                    type: integer
+                    description: Total number of pages.
+                    example: 5
+                  draftEpisodes:
+                    type: array
+                    description: Always empty for this endpoint.
+                    items:
+                      type: object
+                    example: []
+        '401':
+          description: Unauthorized - valid API token required
+        '500':
+          description: Internal server error
+      operationId: getPodcastEpisodesUnallocated
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /podcast/shows/{podcastId}/episodes:
+    get:
+      summary: Get all episodes for automated podcast management
+      description: 'Retrieves all episodes for a specific podcast show.
+
+        Each episode includes an array of podcast show IDs it belongs to (including the specified one and any others).
+
+        Useful for monitoring automated podcast publishing and episode management.
+
+        Supports optional pagination.'
+      tags:
+      - Podcast
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: podcastId
+        required: true
+        schema:
+          type: string
+        description: The podcast show ID
+        example: abc123-def456-ghi789
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+        required: false
+        description: Page number for pagination (starts at 1). If not provided, returns all results.
+        example: 1
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+        required: false
+        description: Number of items per page (max 100, default 50 if page is specified)
+        example: 20
+      responses:
+        '200':
+          description: List of episodes with platform-ready metadata and associated podcast show IDs
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: array
+                  description: Non-paginated response (when page and limit are not provided)
+                  items:
+                    allOf:
+                    - $ref: '#/components/schemas/PodcastEpisode'
+                    - type: object
+                      properties:
+                        podcastShowIds:
+                          type: array
+                          description: Array of podcast show IDs this episode belongs to
+                          items:
+                            type: string
+                          example:
+                          - abc123-def456
+                          - ghi789-jkl012
+                - type: object
+                  description: Paginated response (when page or limit are provided)
+                  properties:
+                    episodes:
+                      type: array
+                      items:
+                        allOf:
+                        - $ref: '#/components/schemas/PodcastEpisode'
+                        - type: object
+                          properties:
+                            podcastShowIds:
+                              type: array
+                              description: Array of podcast show IDs this episode belongs to
+                              items:
+                                type: string
+                              example:
+                              - abc123-def456
+                              - ghi789-jkl012
+                    totalCount:
+                      type: integer
+                      description: Total number of episodes for this podcast show
+                      example: 25
+                    page:
+                      type: integer
+                      description: Current page number
+                      example: 1
+                    pageSize:
+                      type: integer
+                      description: Number of items per page
+                      example: 20
+                    totalPages:
+                      type: integer
+                      description: Total number of pages
+                      example: 2
+        '400':
+          description: Bad request - Invalid podcast ID
+        '401':
+          description: Unauthorized - valid API token required
+        '500':
+          description: Internal server error
+      operationId: getPodcastShowsByPodcastIdEpisodes
+      x-operation-id-source: derived
+    post:
+      summary: Add episode to podcast for automated distribution
+      description: 'Converts existing audio content into a podcast episode for automated platform distribution.
+
+
+        **Automation Workflow:**
+
+        1. Generate audio content via content API → Get requestId
+
+        2. Add episode via this endpoint → Links audio to podcast show
+
+        3. RSS feed automatically updates with new episode
+
+        4. Spotify, Apple Music, etc. automatically discover and publish new episode
+
+
+        **Content Linking:** Uses requestId to link existing audio content, enabling seamless
+
+        conversion of any generated audio into podcast episodes without file uploads.'
+      tags:
+      - Podcast
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: podcastId
+        required: true
+        schema:
+          type: string
+        description: The podcast show ID to add episode to
+        example: abc123-def456-ghi789
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - requestId
+              properties:
+                requestId:
+                  type: string
+                  description: ID of existing audio content to convert into podcast episode
+                  example: req_789xyz123abc
+                title:
+                  type: string
+                  description: Custom episode title (optional - defaults to original audio title)
+                  example: 'Episode 1: The Future of AI'
+                description:
+                  type: string
+                  description: Custom episode description (optional - defaults to original audio title)
+                  example: In this episode, we explore the exciting developments in artificial intelligence...
+      responses:
+        '201':
+          description: Episode added successfully - will appear on podcast platforms automatically
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  episodeId:
+                    type: integer
+                    description: ID of the created episode
+                    example: 42
+                  message:
+                    type: string
+                    example: Episode added successfully
+        '400':
+          description: Bad request - Missing required fields or invalid IDs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    examples:
+                      missing_podcast_id:
+                        value: Missing podcast ID
+                      missing_request_id:
+                        value: Missing request ID
+        '401':
+          description: Unauthorized - valid API token required
+        '500':
+          description: Internal server error during episode creation
+      operationId: postPodcastShowsByPodcastIdEpisodes
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /podcast/episodes/remove:
+    post:
+      summary: Remove episode from automated podcast distribution
+      description: 'Removes an episode from the podcast show and RSS feed.
+
+        The episode will be automatically removed from podcast platforms on their next RSS feed refresh.'
+      tags:
+      - Podcast
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - episodeId
+              properties:
+                episodeId:
+                  type: integer
+                  description: The episode ID to remove from podcast distribution
+                  example: 42
+      responses:
+        '200':
+          description: Episode removed successfully - will be removed from platforms automatically
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Episode removed successfully
+        '400':
+          description: Bad request - Missing or invalid episode ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    examples:
+                      missing_episode_id:
+                        value: Missing episode ID
+                      invalid_episode_id:
+                        value: Invalid episode ID
+        '401':
+          description: Unauthorized - valid API token required
+        '404':
+          description: Episode not found or cannot be deleted
+        '500':
+          description: Internal server error during episode removal
+      operationId: postPodcastEpisodesRemove
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /podcast/episodes/{episodeId}:
+    post:
+      summary: Update podcast episode title and description
+      description: 'Updates the title and description of a specific podcast episode.
+
+        The episode must belong to a podcast owned by the authenticated user.'
+      tags:
+      - Podcast
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: episodeId
+        required: true
+        schema:
+          type: integer
+        description: The ID of the episode to update
+        example: 42
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              - description
+              properties:
+                title:
+                  type: string
+                  description: New episode title
+                  example: Updated Episode Title
+                description:
+                  type: string
+                  description: New episode description
+                  example: Updated episode description with more details...
+      responses:
+        '200':
+          description: Episode updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Episode updated successfully
+        '400':
+          description: Bad request - Missing required fields or invalid episode ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    examples:
+                      missing_episode_id:
+                        value: Missing episode ID
+                      invalid_episode_id:
+                        value: Invalid episode ID
+                      missing_title:
+                        value: Missing title or description
+        '401':
+          description: Unauthorized - valid API token required
+        '404':
+          description: Episode not found or cannot be updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Episode not found or cannot be updated
+        '500':
+          description: Internal server error during episode update
+      operationId: postPodcastEpisodesByEpisodeId
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /podcast/import-rss:
+    post:
+      summary: Import podcast from RSS feed URL
+      description: 'Imports an entire podcast show and its episodes from an existing RSS feed URL.
+
+        This is perfect for migrating podcasts from other platforms (Buzzsprout, Anchor, Podbean, etc.) to AutoContent API.
+
+
+        **Features:**
+
+        - Preserves ALL RSS metadata (language, copyright, categories, season/episode numbers, etc.)
+
+        - Smart duplicate detection using GUIDs
+
+        - Automatically imports and stores podcast artwork
+
+        - Updates existing podcasts if they already exist
+
+        - Generates new RSS feed URL that maintains all original metadata
+
+
+        **Migration Workflow:**
+
+        1. Import your existing podcast from any platform using this endpoint
+
+        2. All metadata is preserved (language, categories, episode numbers, etc.)
+
+        3. Get a new RSS URL that you can submit to Spotify, Apple Podcasts, etc.
+
+        4. Your podcast continues seamlessly with all historical data intact'
+      tags:
+      - Podcast
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - rssUrl
+              properties:
+                rssUrl:
+                  type: string
+                  format: uri
+                  description: The RSS feed URL to import from (must end with .rss or contain 'rss' or 'feed')
+                  example: https://example.com/podcast/feed.rss
+                email:
+                  type: string
+                  format: email
+                  description: Optional owner email override when the source RSS feed does not include itunes:owner email.
+                  example: podcast@mywebsite.com
+      responses:
+        '200':
+          description: Podcast imported successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  podcastId:
+                    type: string
+                    description: The ID of the imported/updated podcast show
+                    example: abc123-def456-ghi789
+                  rssUrl:
+                    type: string
+                    description: Your new RSS feed URL for distribution to podcast platforms
+                    example: https://api.autocontentapi.com/podcast/rss/abc123-def456-ghi789
+        '400':
+          description: Bad request - Invalid or missing RSS URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    examples:
+                      missing_url:
+                        value: Missing RSS URL
+                      invalid_url:
+                        value: Invalid RSS URL. URL should be a valid RSS feed
+                      missing_owner_email:
+                        value: Missing podcast owner email. Provide email in the request body or ensure the RSS feed includes itunes:owner email.
+                      no_podcast_info:
+                        value: Could not extract podcast information from RSS feed
+        '401':
+          description: Unauthorized - valid API token required
+        '500':
+          description: Internal server error during import
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: 'Failed to parse RSS feed: Invalid XML structure'
+      operationId: postPodcastImportRss
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /podcast/remove:
+    post:
+      summary: Remove podcast from distribution
+      description: 'Endpoint for removing individual podcast episodes or shows.
+
+
+        **Note:** This marks content as deleted rather than physically removing it,
+
+        allowing for potential recovery and maintaining referential integrity.'
+      tags:
+      - Podcast
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - id
+              properties:
+                id:
+                  type: string
+                  description: The podcast or episode ID to mark as deleted
+                  example: abc123-def456-ghi789
+      responses:
+        '200':
+          description: Podcast marked as deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Podcast deleted successfully
+        '400':
+          description: Bad request - Missing podcast id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Missing podcast id
+        '401':
+          description: Unauthorized - valid API token required
+        '404':
+          description: Podcast not found or cannot be deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Podcast not found or cannot be deleted
+        '500':
+          description: Internal server error during podcast removal
+      operationId: postPodcastRemove
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /podcast/episodes/csv:
+    get:
+      summary: Download all podcast episodes as CSV
+      description: 'Downloads all episodes for the authenticated user as a CSV file.
+
+        The CSV includes: id, audioUrl, title, and requestedOn fields.
+
+        Useful for data export, analysis, or backup purposes.'
+      tags:
+      - Podcast
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: CSV file containing all podcast episodes
+          content:
+            text/csv:
+              schema:
+                type: string
+                example: 'id,audioUrl,title,requestedOn
+
+                  "episode1","https://example.com/audio1.mp3","Episode 1: Introduction","2024-01-15T10:30:00.000Z"
+
+                  "episode2","https://example.com/audio2.mp3","Episode 2: Deep Dive","2024-01-16T11:00:00.000Z"
+
+                  '
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                example: attachment; filename="all-episodes-2024-01-20T14-30-00.csv"
+            Content-Type:
+              schema:
+                type: string
+                example: text/csv
+        '401':
+          description: Unauthorized - valid API token required
+        '500':
+          description: Internal server error during CSV generation
+      operationId: getPodcastEpisodesCsv
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /podcast/shows/{podcastId}/episodes/csv:
+    get:
+      summary: Download podcast show episodes as CSV
+      description: 'Downloads all episodes for a specific podcast show as a CSV file.
+
+        The CSV includes: id, audioUrl, title, and requestedOn fields.
+
+        Useful for exporting podcast show data for analysis or migration.'
+      tags:
+      - Podcast
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: podcastId
+        required: true
+        schema:
+          type: string
+        description: The podcast show ID
+        example: abc123-def456-ghi789
+      responses:
+        '200':
+          description: CSV file containing podcast show episodes
+          content:
+            text/csv:
+              schema:
+                type: string
+                example: 'id,audioUrl,title,requestedOn
+
+                  "episode1","https://example.com/audio1.mp3","Episode 1: Introduction","2024-01-15T10:30:00.000Z"
+
+                  "episode2","https://example.com/audio2.mp3","Episode 2: Deep Dive","2024-01-16T11:00:00.000Z"
+
+                  '
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                example: attachment; filename="podcast-abc123-episodes-2024-01-20T14-30-00.csv"
+            Content-Type:
+              schema:
+                type: string
+                example: text/csv
+        '401':
+          description: Unauthorized - valid API token required
+        '500':
+          description: Internal server error during CSV generation
+      operationId: getPodcastShowsByPodcastIdEpisodesCsv
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /podcast/episodes/audio-zip:
+    get:
+      summary: Download all podcast episode audio files as a ZIP archive
+      description: 'Streams a ZIP archive containing audio files for every episode owned by the authenticated user.
+
+        Only episodes with a valid `audioUrl` are included in the archive.'
+      tags:
+      - Podcast
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: ZIP archive containing all available episode audio files
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                example: attachment; filename="all-episodes-2024-01-20T14-30-00.zip"
+            Content-Type:
+              schema:
+                type: string
+                example: application/zip
+        '401':
+          description: Unauthorized - valid API token required
+        '404':
+          description: No downloadable audio files were found
+        '500':
+          description: Internal server error while building the audio archive
+      operationId: getPodcastEpisodesAudioZip
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /podcast/shows/{podcastId}/episodes/audio-zip:
+    get:
+      summary: Download podcast show episode audio files as a ZIP archive
+      description: 'Streams a ZIP archive with audio files for the specified podcast show. Only episodes
+
+        containing a valid `audioUrl` are included. If no files can be gathered, a 404 is returned.'
+      tags:
+      - Podcast
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: podcastId
+        required: true
+        schema:
+          type: string
+        description: The podcast show ID
+        example: abc123-def456-ghi789
+      responses:
+        '200':
+          description: ZIP archive containing the show's available episode audio files
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                example: attachment; filename="podcast-abc123-episodes-2024-01-20T14-30-00.zip"
+            Content-Type:
+              schema:
+                type: string
+                example: application/zip
+        '401':
+          description: Unauthorized - valid API token required
+        '404':
+          description: No downloadable audio files were found for the show
+        '500':
+          description: Internal server error while building the audio archive
+      operationId: getPodcastShowsByPodcastIdEpisodesAudioZip
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /podcast/ideas:
+    post:
+      summary: Generate podcast ideas (public, origin-restricted)
+      description: 'Returns 3–8 podcast ideas. Each idea includes a podcast name, description,
+
+        exactly four episode titles, and AI-estimated 0–100 scores for questionComplexity,
+
+        topicalDepth, searchVolumeConversational, and contentFreshness.
+
+        No JWT required, but the request must come from an allowlisted Origin
+
+        (autocontentapi.com / app.autocontentapi.com / localhost) OR carry a valid
+
+        `X-Free-Tools-Secret` header (used by the Next.js proxy). Other callers
+
+        receive 403. Limits: 2 requests per IP per 24h, 30 total per 24h,
+
+        2 concurrent per IP.'
+      tags:
+      - Podcast
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                topic:
+                  type:
+                  - string
+                  - 'null'
+                  description: Optional topic to tailor podcast ideas. If omitted or null, the AI will propose topics.
+                  example: AI in healthcare
+      responses:
+        '200':
+          description: Structured list of podcast ideas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  requestId:
+                    type: string
+                  ideas:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        episodes:
+                          type: array
+                          items:
+                            type: string
+                          minItems: 4
+                          maxItems: 4
+                        stats:
+                          type: object
+                          properties:
+                            questionComplexity:
+                              type: integer
+                              minimum: 0
+                              maximum: 100
+                            topicalDepth:
+                              type: integer
+                              minimum: 0
+                              maximum: 100
+                            searchVolumeConversational:
+                              type: integer
+                              minimum: 0
+                              maximum: 100
+                            contentFreshness:
+                              type: integer
+                              minimum: 0
+                              maximum: 100
+        '429':
+          description: Rate limit exceeded (10/day) or too many concurrent requests (2/IP)
+        '500':
+          description: Internal server error
+      operationId: postPodcastIdeas
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /podcast/shows/{podcastId}:
     parameters:
     - in: path
@@ -71,6 +1355,8 @@ paths:
       responses:
         '200':
           description: Show returned
+      security:
+      - bearerAuth: []
     put:
       tags:
       - Podcast
@@ -79,6 +1365,8 @@ paths:
       responses:
         '200':
           description: Show updated
+      security:
+      - bearerAuth: []
     delete:
       tags:
       - Podcast
@@ -87,10 +1375,138 @@ paths:
       responses:
         '204':
           description: Show deleted
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.autocontentapi.com
+      description: AutoContent API production
 components:
+  schemas:
+    CreatePodcastShowRequest:
+      type: object
+      required:
+      - name
+      - description
+      - author
+      - link
+      - imageUrl
+      - email
+      properties:
+        name:
+          type: string
+          description: Podcast show name (displayed on Spotify, Apple Music, etc.)
+          example: AI-Generated Tech Talk
+        description:
+          type: string
+          description: Show description for platform listings and RSS feed
+          example: Weekly tech discussions generated by AI, covering the latest in technology and innovation.
+        author:
+          type: string
+          description: Host/author name displayed on podcast platforms
+          example: AI Content Creator
+        link:
+          type: string
+          format: uri
+          description: Official website URL for the podcast show
+          example: https://mywebsite.com/podcast
+        imageUrl:
+          type: string
+          format: uri
+          description: URL of the podcast show image/artwork
+          example: https://mywebsite.com/podcast-artwork.jpg
+        email:
+          type: string
+          format: email
+          description: Owner email address for RSS feed and platform registration
+          example: podcast@mywebsite.com
+        language:
+          type: string
+          description: Primary language for generated podcast episodes (defaults to English)
+          example: Italian
+    PodcastEpisode:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the episode
+        podcastId:
+          type: string
+          description: ID of the podcast show this episode belongs to
+        requestId:
+          type: string
+          description: ID of the client request that created the source audio content
+        title:
+          type: string
+          description: Episode title (displayed on podcast platforms)
+        description:
+          type: string
+          description: Episode description (displayed on podcast platforms)
+        audioTitle:
+          type: string
+          description: Original title from the generated audio content
+        audioUrl:
+          type: string
+          description: Direct URL to the episode audio file (MP3 format for platform compatibility)
+        requestedOn:
+          type: string
+          format: date-time
+          description: When the episode was requested/created
+        succeededOn:
+          type: string
+          format: date-time
+          description: When the episode processing completed successfully
+        scheduledOn:
+          type: string
+          format: date-time
+          description: When the episode is scheduled to be published (if scheduled)
+        fileSize:
+          type: integer
+          description: Audio file size in bytes (required for RSS enclosure tag)
+        durationSeconds:
+          type: integer
+          description: Episode duration in seconds (displayed on podcast platforms)
+    PodcastShow:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the podcast show
+        name:
+          type: string
+          description: Name of the podcast show (displayed on Spotify, Apple Music, etc.)
+        description:
+          type: string
+          description: Description of the podcast show (used in platform listings)
+        author:
+          type: string
+          description: Author/host name (displayed on podcast platforms)
+        link:
+          type: string
+          description: Website link for the podcast show
+        email:
+          type: string
+          format: email
+          description: Owner email address (used in RSS feed and platform settings)
+        token:
+          type: string
+          description: Client token for authentication
+        createdOn:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedOn:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        rssUrl:
+          type: string
+          description: RSS feed URL for automated distribution to Spotify, Apple Music, and other podcast platforms
+          example: https://autocontentapi.com/podcast/rss/abc123
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: AutoContent API key as a Bearer token in the Authorization header.
+x-refined-from:
+- autocontent-api-legacy-content-openapi.json
+- autocontent-api-openapi.yml

@@ -1,0 +1,110 @@
+openapi: 3.2.0
+info:
+  title: Content Quizzes API
+  version: 1.0.0
+  description: API documentation for the Content API
+servers:
+- url: https://api.autocontentapi.com
+tags:
+- name: Quizzes
+  description: Quiz assets generated per token
+paths:
+  /quizzes/get:
+    get:
+      summary: Get quizzes
+      description: Returns paginated quizzes created by the authenticated token, including in-progress requests (default 20 per page, max 100).
+      tags:
+      - Quizzes
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+        description: Page number (default 1)
+      - in: query
+        name: pageSize
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+        description: Items per page (default 20, max 100)
+      responses:
+        '200':
+          description: Paginated list of quizzes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Quiz'
+                  totalCount:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalPages:
+                    type: integer
+        '401':
+          description: Unauthorized
+      operationId: getQuizzesGet
+      x-operation-id-source: derived
+  /quizzes/{quizId}/download:
+    get:
+      summary: Download quiz
+      description: Downloads the generated quiz JSON for the authenticated token.
+      tags:
+      - Quizzes
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: quizId
+        required: true
+        schema:
+          type: string
+        description: Quiz request identifier
+      responses:
+        '200':
+          description: Quiz JSON download
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+        '404':
+          description: Quiz not found or not ready
+      operationId: getQuizzesByQuizIdDownload
+      x-operation-id-source: derived
+components:
+  schemas:
+    Quiz:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the quiz (matches request id)
+        quizJson:
+          type:
+          - string
+          - 'null'
+          description: Quiz JSON content (null while processing)
+        status:
+          type: integer
+          description: Current progress percentage (100 when completed)
+        createdOn:
+          type: string
+          format: date-time
+          description: UTC timestamp when the quiz was created (or requested if still in progress)
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

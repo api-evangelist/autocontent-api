@@ -6,8 +6,14 @@ artifacts:
   agentic-access/autocontent-api-agentic-access.yml:
     method: generated
     evidence: declared in the artifact
+  asyncapi/autocontent-api-webhooks.yml:
+    method: searched
+    evidence: declared in the artifact
   authentication/autocontent-api-authentication.yml:
-    method: derived
+    method: searched
+    evidence: declared in the artifact
+  cli/autocontent-api-cli.yml:
+    method: searched
     evidence: declared in the artifact
   collections/autocontent-api-content-api.opencollection.json:
     method: derived
@@ -45,73 +51,22 @@ artifacts:
   collections/autocontent-api.postman_collection.json:
     method: derived
     evidence: openapi/autocontent-api
+  conformance/autocontent-api-conformance.yml:
+    method: unknown
+    evidence: no authorship recorded
+  conventions/autocontent-api-conventions.yml:
+    method: searched
+    evidence: declared in the artifact
+  data-model/autocontent-api-data-model.yml:
+    method: derived
+    evidence: declared in the artifact
+  errors/autocontent-api-problem-types.yml:
+    method: searched
+    evidence: declared in the artifact
   finops/autocontent-api-finops.yml:
     method: generated
     evidence: declared in the artifact
-  kin/checks-2026-08-28T221322.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-23T094130.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-23T182523.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-26T223651.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-27T083119.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-27T190208.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T115055.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T170848.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T172558.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T192327.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-28T200725.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-31T133250.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-31T151044.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-31T162206.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-07-31T202106.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-01T163141.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-01T163302.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-01T171935.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-03T113057.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-03T161012.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-04T083143.yml:
-    method: generated
-    evidence: Kin Score snapshot written by score.rb
-  kin/score-2026-08-05T153418.yml:
+  kin/checks-2026-09-05T072335.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
   kin/score-2026-08-06T210741.yml:
@@ -195,30 +150,144 @@ artifacts:
   kin/score-2026-08-28T221322.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-29T213958.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-29T230545.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-30T203505.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-30T220315.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-08-31T223420.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-01T063623.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-01T210448.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-01T222808.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-02T211804.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-02T224043.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-03T161828.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-03T174231.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-04T062714.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-04T212454.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-04T224856.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-05T055819.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-05T072335.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  lifecycle/autocontent-api-lifecycle.yml:
+    method: searched
+    evidence: declared in the artifact
+  llms/autocontent-api-docs-llms.txt:
+    method: searched
+    evidence: 'derive-llms-provenance.py: harvested'
   llms/autocontent-api-llms.txt:
     method: searched
     evidence: 'derive-llms-provenance.py: harvested'
-  openapi/autocontent-api-content-api-openapi.yml:
+  mcp/autocontent-api-mcp.yml:
     method: unknown
     evidence: no authorship recorded
+  mcp/autocontent-api-tool-crosswalk.yml:
+    method: derived
+    evidence: declared in the artifact
+  openapi/_original/autocontent-api-openapi.yml:
+    method: harvested
+    evidence: fetched from the provider as-is; byte-identical to the source
+  openapi/autocontent-api-content-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/autocontent-api-dedicated-account-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/autocontent-api-legacy-content-openapi.json:
+    method: unknown
+    evidence: no authorship recorded
+  openapi/autocontent-api-platform-v1-openapi.json:
     method: unknown
     evidence: no authorship recorded
   openapi/autocontent-api-podcast-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/autocontent-api-share-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   openapi/autocontent-api-video-api-openapi.yml:
-    method: unknown
-    evidence: no authorship recorded
-  plans/autocontent-api-plans-pricing.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  overlays/autocontent-api-legacy-content-overlay.yaml:
     method: generated
+    evidence: declared in the artifact
+  overlays/autocontent-api-platform-v1-overlay.yaml:
+    method: generated
+    evidence: declared in the artifact
+  packages/autocontent-api-packages.yml:
+    method: searched
+    evidence: declared in the artifact
+  plans/autocontent-api-plans-pricing.yml:
+    method: searched
     evidence: declared in the artifact
   rate-limits/autocontent-api-rate-limits.yml:
+    method: searched
+    evidence: declared in the artifact
+  scopes/autocontent-api-scopes.yml:
+    method: unknown
+    evidence: no authorship recorded
+  security/autocontent-api-domain-security.yml:
+    method: unknown
+    evidence: no authorship recorded
+  skills/_index.yml:
     method: generated
     evidence: declared in the artifact
-  security/autocontent-api-domain-security.yml:
+  skills/autocontent-api-consume-webhooks.md:
+    method: generated
+    evidence: declared in the artifact
+  skills/autocontent-api-generate-assets.md:
+    method: generated
+    evidence: declared in the artifact
+  skills/autocontent-api-recover-from-errors.md:
+    method: generated
+    evidence: declared in the artifact
+  skills/autocontent-api-run-content-loop.md:
+    method: generated
+    evidence: declared in the artifact
+  well-known/autocontent-api-auth-oauth-authorization-server.json:
+    method: unknown
+    evidence: no authorship recorded
+  well-known/autocontent-api-auth-openid-configuration.json:
+    method: unknown
+    evidence: no authorship recorded
+  well-known/autocontent-api-mcp-oauth-protected-resource.json:
+    method: unknown
+    evidence: no authorship recorded
+  well-known/autocontent-api-platform-oauth-protected-resource.json:
+    method: unknown
+    evidence: no authorship recorded
+  well-known/autocontent-api-well-known.yml:
     method: unknown
     evidence: no authorship recorded

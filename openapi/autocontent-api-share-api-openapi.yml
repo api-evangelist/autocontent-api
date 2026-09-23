@@ -1,30 +1,73 @@
 openapi: 3.2.0
 info:
-  title: AutoContent Content Share API
-  description: 'Best-effort OpenAPI 3.1 description of the AutoContent API for generating
-
-    podcasts, videos, slide decks, infographics, transcripts and other content
-
-    types. Derived from the public documentation index at
-
-    https://docs.autocontentapi.com/llms-full.txt and the developer portal at
-
-    https://autocontentapi.com/docs.
-
-    '
-  version: '1'
-  contact:
-    name: AutoContent API Docs
-    url: https://docs.autocontentapi.com/
+  title: Autocontent Share API
+  version: '1.0'
+  description: 'Operations tagged Share across 2 of this provider''s published API definitions: autocontent-api-legacy-content-openapi.json, autocontent-api-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.autocontentapi.com
-  description: AutoContent API production
-security:
-- bearerAuth: []
 tags:
 - name: Share
+  description: Public sharing operations without authentication
 paths:
   /share/podcast/{requestId}/{t}:
+    get:
+      summary: Get a shared podcast
+      description: Publicly retrieve a podcast by requestId and date string without requiring authentication
+      tags:
+      - Share
+      parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+        description: The ID of the podcast to retrieve
+      - in: path
+        name: t
+        required: true
+        schema:
+          type: string
+        description: Date in YYYYMMDD format to validate the request
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: integer
+                  requestedOn:
+                    type: string
+                    format: date-time
+                  succeededOn:
+                    type: string
+                    format: date-time
+                  requestTypeId:
+                    type: integer
+                  audioTitle:
+                    type: string
+                  audioUrl:
+                    type: string
+                  responseText:
+                    type: string
+                  script:
+                    type: string
+                  voice1:
+                    type: integer
+                  voice2:
+                    type: integer
+                  language:
+                    type: string
+        '400':
+          description: Bad Request - Invalid parameters
+        '404':
+          description: Podcast not found
+      operationId: getSharePodcastByRequestIdByT
+      x-operation-id-source: derived
     parameters:
     - in: path
       name: requestId
@@ -36,16 +79,61 @@ paths:
       required: true
       schema:
         type: string
-    get:
-      tags:
-      - Share
-      summary: Get shared podcast
-      operationId: sharePodcast
-      security: []
-      responses:
-        '200':
-          description: Shared podcast returned
+    servers:
+    - url: https://api.autocontentapi.com
   /share/video/{requestId}/{t}:
+    get:
+      summary: Get a shared video
+      description: Publicly retrieve a generated video by requestId and date string without requiring authentication
+      tags:
+      - Share
+      parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+        description: The ID of the video to retrieve
+      - in: path
+        name: t
+        required: true
+        schema:
+          type: string
+        description: Date in YYYYMMDD format to validate the request
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: integer
+                  requestedOn:
+                    type: string
+                    format: date-time
+                  succeededOn:
+                    type: string
+                    format: date-time
+                  videoTitle:
+                    type: string
+                  videoUrl:
+                    type: string
+                  imageUrl:
+                    type: string
+                  responseText:
+                    type: string
+                  language:
+                    type: string
+        '400':
+          description: Bad Request - Invalid parameters
+        '404':
+          description: Video not found
+      operationId: getShareVideoByRequestIdByT
+      x-operation-id-source: derived
     parameters:
     - in: path
       name: requestId
@@ -57,16 +145,50 @@ paths:
       required: true
       schema:
         type: string
-    get:
-      tags:
-      - Share
-      summary: Get shared video
-      operationId: shareVideo
-      security: []
-      responses:
-        '200':
-          description: Shared video returned
+    servers:
+    - url: https://api.autocontentapi.com
   /share/infographic/{requestId}/{t}:
+    get:
+      summary: Get a shared infographic
+      description: Publicly retrieve an infographic by requestId and date string without requiring authentication
+      tags:
+      - Share
+      parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+        description: The ID of the infographic to retrieve
+      - in: path
+        name: t
+        required: true
+        schema:
+          type: string
+        description: Date in YYYYMMDD format to validate the request
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  requestedOn:
+                    type: string
+                    format: date-time
+                  title:
+                    type: string
+                  imageUrl:
+                    type: string
+        '400':
+          description: Bad Request - Invalid parameters
+        '404':
+          description: Infographic not found
+      operationId: getShareInfographicByRequestIdByT
+      x-operation-id-source: derived
     parameters:
     - in: path
       name: requestId
@@ -78,16 +200,50 @@ paths:
       required: true
       schema:
         type: string
-    get:
-      tags:
-      - Share
-      summary: Get shared infographic
-      operationId: shareInfographic
-      security: []
-      responses:
-        '200':
-          description: Shared infographic returned
+    servers:
+    - url: https://api.autocontentapi.com
   /share/slide-deck/{requestId}/{t}:
+    get:
+      summary: Get a shared slide deck
+      description: Publicly retrieve a slide deck by requestId and date string without requiring authentication
+      tags:
+      - Share
+      parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+        description: The ID of the slide deck to retrieve
+      - in: path
+        name: t
+        required: true
+        schema:
+          type: string
+        description: Date in YYYYMMDD format to validate the request
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  requestedOn:
+                    type: string
+                    format: date-time
+                  title:
+                    type: string
+                  deckUrl:
+                    type: string
+        '400':
+          description: Bad Request - Invalid parameters
+        '404':
+          description: Slide deck not found
+      operationId: getShareSlideDeckByRequestIdByT
+      x-operation-id-source: derived
     parameters:
     - in: path
       name: requestId
@@ -99,16 +255,48 @@ paths:
       required: true
       schema:
         type: string
-    get:
-      tags:
-      - Share
-      summary: Get shared slide deck
-      operationId: shareSlideDeck
-      security: []
-      responses:
-        '200':
-          description: Shared slide deck returned
+    servers:
+    - url: https://api.autocontentapi.com
   /share/quiz/{requestId}/{t}:
+    get:
+      summary: Get a shared quiz
+      description: Publicly retrieve a quiz by requestId and date string without requiring authentication
+      tags:
+      - Share
+      parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema:
+          type: string
+        description: The ID of the quiz to retrieve
+      - in: path
+        name: t
+        required: true
+        schema:
+          type: string
+        description: Date in YYYYMMDD format to validate the request
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  requestedOn:
+                    type: string
+                    format: date-time
+                  quizJson:
+                    type: string
+        '400':
+          description: Bad Request - Invalid parameters
+        '404':
+          description: Quiz not found
+      operationId: getShareQuizByRequestIdByT
+      x-operation-id-source: derived
     parameters:
     - in: path
       name: requestId
@@ -120,19 +308,14 @@ paths:
       required: true
       schema:
         type: string
-    get:
-      tags:
-      - Share
-      summary: Get shared quiz
-      operationId: shareQuiz
-      security: []
-      responses:
-        '200':
-          description: Shared quiz returned
+    servers:
+    - url: https://api.autocontentapi.com
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: AutoContent API key as a Bearer token in the Authorization header.
+x-refined-from:
+- autocontent-api-legacy-content-openapi.json
+- autocontent-api-openapi.yml

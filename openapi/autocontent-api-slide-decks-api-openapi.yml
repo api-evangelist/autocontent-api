@@ -1,0 +1,209 @@
+openapi: 3.2.0
+info:
+  title: Content Slide Decks API
+  version: 1.0.0
+  description: API documentation for the Content API
+servers:
+- url: https://api.autocontentapi.com
+tags:
+- name: Slide Decks
+  description: Slide deck assets generated per token
+paths:
+  /slide-decks/get:
+    get:
+      summary: Get slide decks
+      description: Returns paginated slide decks created by the authenticated token, including in-progress requests (default 20 per page, max 100).
+      tags:
+      - Slide Decks
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+        description: Page number (default 1)
+      - in: query
+        name: pageSize
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+        description: Items per page (default 20, max 100)
+      responses:
+        '200':
+          description: Paginated list of slide decks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SlideDeck'
+                  totalCount:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalPages:
+                    type: integer
+        '401':
+          description: Unauthorized
+      operationId: getSlideDecksGet
+      x-operation-id-source: derived
+  /slide-decks/{slideDeckId}/download:
+    get:
+      summary: Download slide deck
+      description: Streams the generated slide deck file (PDF or PPT) for the authenticated token.
+      tags:
+      - Slide Decks
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: slideDeckId
+        required: true
+        schema:
+          type: string
+        description: Slide deck request identifier
+      responses:
+        '200':
+          description: Binary slide deck stream
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized
+        '404':
+          description: Slide deck not found or not ready
+        '502':
+          description: Upstream asset unavailable
+      operationId: getSlideDecksBySlideDeckIdDownload
+      x-operation-id-source: derived
+  /slide-decks/{slideDeckId}/preview:
+    get:
+      summary: Preview slide deck
+      description: Streams the generated slide deck file inline for browser previews.
+      tags:
+      - Slide Decks
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: slideDeckId
+        required: true
+        schema:
+          type: string
+        description: Slide deck request identifier
+      responses:
+        '200':
+          description: Inline slide deck stream
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/vnd.ms-powerpoint:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized
+        '404':
+          description: Slide deck not found or not ready
+        '502':
+          description: Upstream asset unavailable
+      operationId: getSlideDecksBySlideDeckIdPreview
+      x-operation-id-source: derived
+  /slide-decks/public/{slideDeckId}/preview:
+    get:
+      summary: Public preview slide deck
+      description: Streams the slide deck inline without authentication for marketing/demo pages.
+      tags:
+      - Slide Decks
+      parameters:
+      - in: path
+        name: slideDeckId
+        required: true
+        schema:
+          type: string
+        description: Slide deck request identifier
+      responses:
+        '200':
+          description: Inline slide deck stream
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Slide deck not found or not ready
+        '502':
+          description: Upstream asset unavailable
+      operationId: getSlideDecksPublicBySlideDeckIdPreview
+      x-operation-id-source: derived
+  /slide-decks/public-preview:
+    get:
+      summary: Public preview slide deck by URL
+      description: Streams a whitelisted slide deck URL inline (PDF) without authentication.
+      tags:
+      - Slide Decks
+      parameters:
+      - in: query
+        name: url
+        required: true
+        schema:
+          type: string
+          format: uri
+        description: Direct URL to the slide deck asset (limited to autocontentapi.blob.core.windows.net)
+      responses:
+        '200':
+          description: Inline slide deck stream
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Missing or invalid URL
+        '502':
+          description: Upstream asset unavailable
+      operationId: getSlideDecksPublicPreview
+      x-operation-id-source: derived
+components:
+  schemas:
+    SlideDeck:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the slide deck (matches request id)
+        url:
+          type:
+          - string
+          - 'null'
+          format: uri
+          description: URL of the generated slide deck (null while processing)
+        title:
+          type:
+          - string
+          - 'null'
+          description: Optional title for the slide deck
+        status:
+          type: integer
+          description: Current progress percentage (100 when completed)
+        createdOn:
+          type: string
+          format: date-time
+          description: UTC timestamp when the slide deck was created (or requested if still in progress)
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

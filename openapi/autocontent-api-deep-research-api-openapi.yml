@@ -1,0 +1,623 @@
+openapi: 3.2.0
+info:
+  title: Content Deep Research API
+  version: 1.0.0
+  description: API documentation for the Content API
+servers:
+- url: https://api.autocontentapi.com
+tags:
+- name: Deep Research
+  description: Advanced research operations
+paths:
+  /deep-research/research:
+    post:
+      summary: Perform deep research on a given query
+      description: Conducts advanced research on the provided text query and returns results in the specified output format
+      tags:
+      - Deep Research
+      operationId: research
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - text
+              - outputType
+              properties:
+                text:
+                  type: string
+                  description: The research query text
+                  example: What are the latest developments in artificial intelligence?
+                outputType:
+                  type: string
+                  enum:
+                  - text
+                  - json
+                  description: The format of the output result. When set to json, the response is serialized JSON.
+                  example: json
+                jsonFormat:
+                  type: string
+                  description: Optional instructions or template describing the JSON structure to generate.
+                  example: "{\n  \"summary\": \"\",\n  \"keyFindings\": [],\n  \"sources\": []\n}\n"
+                provider:
+                  type: string
+                  enum:
+                  - gemini
+                  - openai
+                  description: The AI provider to use for research (defaults to gemini)
+                  example: gemini
+                projectIds:
+                  type: array
+                  items:
+                    type: string
+                  description: Optional array of project IDs to add context from their descriptions
+                  example:
+                  - proj-123
+                  - proj-456
+                files:
+                  type: array
+                  description: Optional array of file URLs or uploaded file IDs (from /files) to attach to the research request
+                  items:
+                    type: string
+                  example:
+                  - https://example.com/reference.pdf
+                  - 2c9fe88f-d3e2-41a8-9156-76c5e34dbfdd
+                callbackData:
+                  type: string
+                  description: Optional callback data to be returned with the response
+                  example: user-specific-data
+                isScheduled:
+                  type: boolean
+                  description: If true, creates a recurring schedule instead of a one-time request
+                  example: false
+                dailyCount:
+                  type: integer
+                  minimum: 1
+                  maximum: 24
+                  description: Number of times per day to execute the research (default 1, only used when isScheduled is true)
+                  example: 2
+                scheduleEndDate:
+                  type: string
+                  format: date-time
+                  description: Optional end date for the schedule (only used when isScheduled is true). If not provided, schedule runs indefinitely.
+                  example: '2024-12-31T23:59:59Z'
+      responses:
+        '200':
+          description: Research request or schedule submitted successfully
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: object
+                  description: Response for a one-time research request
+                  properties:
+                    request_id:
+                      type: string
+                      description: The unique ID of the created research request
+                      example: 550e8400-e29b-41d4-a716-446655440000
+                - type: object
+                  description: Response for a scheduled research request
+                  properties:
+                    schedule_id:
+                      type: string
+                      description: The unique ID of the created schedule
+                      example: 550e8400-e29b-41d4-a716-446655440000
+                    message:
+                      type: string
+                      description: Confirmation message for the schedule
+                      example: Deep research scheduled 2 time(s) per day until 2024-12-31T23:59:59.000Z
+                    dailyCount:
+                      type: integer
+                      description: Number of times per day the research will execute
+                      example: 2
+                    endDate:
+                      type: string
+                      format: date-time
+                      description: End date for the schedule, or null if no end date
+                      example: '2024-12-31T23:59:59Z'
+        '400':
+          description: Bad request - validation error or unauthorized access
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Invalid token
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Internal server error
+    get:
+      summary: Get all deep research requests
+      description: Retrieves all deep research requests made by the authenticated user
+      tags:
+      - Deep Research
+      operationId: getResearches
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully retrieved deep research requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: The request ID
+                      example: 550e8400-e29b-41d4-a716-446655440000
+                    requestedOn:
+                      type: string
+                      format: date-time
+                      description: When the request was made
+                      example: '2024-01-15T10:30:00Z'
+                    succeededOn:
+                      type: string
+                      format: date-time
+                      description: When the request was completed
+                      example: '2024-01-15T10:35:00Z'
+                    status:
+                      type: integer
+                      description: Request status (0=pending, 5=processing, 100=completed)
+                      example: 100
+                    errorOn:
+                      type: string
+                      format: date-time
+                      description: When the error occurred
+                      example: null
+                    errorMessage:
+                      type: string
+                      description: Error message if request failed
+                      example: null
+                    errorCode:
+                      type: integer
+                      description: Error code if request failed
+                      example: 0
+                    prompt:
+                      type: string
+                      description: The research query text
+                      example: What are the latest developments in artificial intelligence?
+                    outputType:
+                      type: string
+                      description: Output format used for the response (text or json)
+                      example: json
+                    jsonFormat:
+                      type: string
+                      description: JSON formatting instructions applied when outputType is json
+                      example: '{"summary":"","keyInsights":[]}'
+                    isScheduleTemplate:
+                      type: boolean
+                      description: True if this item is a schedule template rather than an executed request
+                      example: true
+                    scheduleId:
+                      type: string
+                      description: The ID of the schedule template
+                      example: 550e8400-e29b-41d4-a716-446655440000
+                    dailyCount:
+                      type: integer
+                      description: Number of times per day this schedule will execute
+                      example: 2
+                    scheduleEndDate:
+                      type: string
+                      format: date-time
+                      description: End date for the schedule, or null if it runs indefinitely
+                      example: '2024-12-31T23:59:59Z'
+                    lastScheduleExecutionOn:
+                      type: string
+                      format: date-time
+                      description: The most recent time this schedule executed
+                      example: '2024-01-16T09:00:00Z'
+                    nextScheduleExecutionOn:
+                      type: string
+                      format: date-time
+                      description: The next scheduled execution time
+                      example: '2024-01-16T12:00:00Z'
+  /deep-research/research/{id}:
+    get:
+      summary: Get a specific deep research request by ID
+      description: Retrieves a single deep research request by its unique ID
+      tags:
+      - Deep Research
+      operationId: getResearchById
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: The ID of the deep research request to retrieve
+      responses:
+        '200':
+          description: Successfully retrieved deep research request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The request ID
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                  requestedOn:
+                    type: string
+                    format: date-time
+                    description: When the request was made
+                    example: '2024-01-15T10:30:00Z'
+                  succeededOn:
+                    type: string
+                    format: date-time
+                    description: When the request was completed
+                    example: '2024-01-15T10:35:00Z'
+                  status:
+                    type: integer
+                    description: Request status (0=pending, 5=processing, 100=completed)
+                    example: 100
+                  errorOn:
+                    type: string
+                    format: date-time
+                    description: When the error occurred
+                    example: null
+                  errorMessage:
+                    type: string
+                    description: Error message if request failed
+                    example: null
+                  errorCode:
+                    type: integer
+                    description: Error code if request failed
+                    example: 0
+                  prompt:
+                    type: string
+                    description: The research query text
+                    example: What are the latest developments in artificial intelligence?
+                  outputType:
+                    type: string
+                    description: Output format used for the response (text or json)
+                    example: json
+                  jsonFormat:
+                    type: string
+                    description: JSON formatting instructions applied when outputType is json
+                    example: '{"summary":"","keyInsights":[]}'
+                  isScheduleTemplate:
+                    type: boolean
+                    description: True if this item is a schedule template rather than an executed request
+                    example: true
+                  scheduleId:
+                    type: string
+                    description: The ID of the schedule template
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                  dailyCount:
+                    type: integer
+                    description: Number of times per day this schedule will execute
+                    example: 2
+                  scheduleEndDate:
+                    type: string
+                    format: date-time
+                    description: End date for the schedule, or null if it runs indefinitely
+                    example: '2024-12-31T23:59:59Z'
+                  lastScheduleExecutionOn:
+                    type: string
+                    format: date-time
+                    description: The most recent time this schedule executed
+                    example: '2024-01-16T09:00:00Z'
+                  nextScheduleExecutionOn:
+                    type: string
+                    format: date-time
+                    description: The next scheduled execution time
+                    example: '2024-01-16T12:00:00Z'
+                  responseText:
+                    type: string
+                    description: The research result content. When outputType is json, this value is a serialized JSON string.
+                    example: '{"summary":"AI advancements","keyInsights":["..."]}'
+        '404':
+          description: Deep research request not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Deep research request not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Internal server error
+  /deep-research/recurring:
+    get:
+      summary: Get recurring deep research templates
+      description: Returns all recurring deep research templates for the authenticated user with their configuration and scheduling details.
+      tags:
+      - Deep Research
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully retrieved recurring templates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  templates:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Unique ID of the recurring template
+                          example: 550e8400-e29b-41d4-a716-446655440000
+                        text:
+                          type: string
+                          description: The research query text
+                          example: Latest developments in quantum computing
+                        provider:
+                          type: string
+                          enum:
+                          - gemini
+                          - openai
+                          description: The AI provider for research
+                          example: gemini
+                        outputType:
+                          type: string
+                          description: Output format type
+                          example: json
+                        jsonFormat:
+                          type:
+                          - string
+                          - 'null'
+                          description: JSON formatting template applied when outputType is json
+                          example: '{"summary":"","takeaways":[]}'
+                        deletedOn:
+                          type:
+                          - string
+                          - 'null'
+                          format: date-time
+                          description: When the template was deleted (null if not deleted)
+                          example: null
+                        callbackData:
+                          type:
+                          - string
+                          - 'null'
+                          description: User-specific callback data
+                          example: user-data-123
+                        dailyCount:
+                          type: integer
+                          description: Number of executions per day
+                          example: 2
+                        scheduleEndDate:
+                          type:
+                          - string
+                          - 'null'
+                          format: date-time
+                          description: End date for the recurring template (null = indefinite)
+                          example: '2024-12-31T23:59:59Z'
+                        lastRunAt:
+                          type:
+                          - string
+                          - 'null'
+                          format: date-time
+                          description: Last execution timestamp
+                          example: '2024-01-15T10:30:00Z'
+                        nextRunAt:
+                          type:
+                          - string
+                          - 'null'
+                          format: date-time
+                          description: Next scheduled execution (null = paused)
+                          example: '2024-01-15T14:30:00Z'
+                        createdOn:
+                          type: string
+                          format: date-time
+                          description: Template creation timestamp
+                          example: '2024-01-01T00:00:00Z'
+        '400':
+          description: Bad request - amateur subscription
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Deep research is only available to PRO subscribers.
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Invalid token
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+      operationId: getDeepResearchRecurring
+      x-operation-id-source: derived
+  /deep-research/recurring/{id}:
+    post:
+      summary: Update a recurring deep research template
+      description: Updates specific fields of a recurring template. Can be used to pause/resume, change frequency, update end date, or modify the research text.
+      tags:
+      - Deep Research
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The unique ID of the recurring template to update
+        example: 550e8400-e29b-41d4-a716-446655440000
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: New research query text
+                  example: Updated research on AI ethics
+                dailyCount:
+                  type: integer
+                  minimum: 1
+                  maximum: 24
+                  description: New number of executions per day
+                  example: 3
+                scheduleEndDate:
+                  type:
+                  - string
+                  - 'null'
+                  format: date-time
+                  description: New end date for the recurring executions (null to remove end date)
+                  example: '2025-01-31T23:59:59Z'
+                isActive:
+                  type: boolean
+                  description: Set to false to pause the recurring template, true to resume
+                  example: false
+      responses:
+        '200':
+          description: Recurring template updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Recurring template updated successfully
+                  template:
+                    type: object
+                    description: The updated template with all fields (same structure as GET /deep-research/recurring response items)
+        '400':
+          description: Bad request - validation error or amateur subscription
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: dailyCount must be between 1 and 24
+        '401':
+          description: Unauthorized - invalid or missing token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Invalid token
+        '404':
+          description: Recurring template not found or unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Recurring template not found or unauthorized
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+      operationId: postDeepResearchRecurringById
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

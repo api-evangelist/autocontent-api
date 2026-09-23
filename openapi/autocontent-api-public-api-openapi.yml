@@ -1,0 +1,263 @@
+openapi: 3.2.0
+info:
+  title: Content Public API
+  version: 1.0.0
+  description: API documentation for the Content API
+servers:
+- url: https://api.autocontentapi.com
+tags:
+- name: Public
+paths:
+  /public/podcasts:
+    get:
+      summary: Get all public podcasts
+      description: Publicly retrieve all public podcasts without requiring authentication (transcript excluded for performance)
+      tags:
+      - Public
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        categoryId:
+                          type: integer
+                        audioUrl:
+                          type: string
+                        title:
+                          type: string
+                        summary:
+                          type: string
+                        imageUrl:
+                          type: string
+                        quizUrl:
+                          type:
+                          - string
+                          - 'null'
+                        infographicUrl:
+                          type:
+                          - string
+                          - 'null'
+                        slideDeckUrl:
+                          type:
+                          - string
+                          - 'null'
+                        videoExplainerUrl:
+                          type:
+                          - string
+                          - 'null'
+                        videoExplainerPosterUrl:
+                          type:
+                          - string
+                          - 'null'
+                        fileSize:
+                          type: integer
+                        durationSeconds:
+                          type: integer
+        '500':
+          description: Internal server error
+      operationId: getPublicPodcasts
+      x-operation-id-source: derived
+  /public/podcasts/category/{categoryId}:
+    get:
+      summary: Get public podcasts by category
+      description: Publicly retrieve public podcasts filtered by category ID without requiring authentication (transcript excluded for performance)
+      tags:
+      - Public
+      parameters:
+      - in: path
+        name: categoryId
+        required: true
+        schema:
+          type: integer
+        description: The category ID to filter podcasts by
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        categoryId:
+                          type: integer
+                        audioUrl:
+                          type: string
+                        title:
+                          type: string
+                        summary:
+                          type: string
+                        imageUrl:
+                          type: string
+                        quizUrl:
+                          type:
+                          - string
+                          - 'null'
+                        infographicUrl:
+                          type:
+                          - string
+                          - 'null'
+                        slideDeckUrl:
+                          type:
+                          - string
+                          - 'null'
+                        videoExplainerUrl:
+                          type:
+                          - string
+                          - 'null'
+                        videoExplainerPosterUrl:
+                          type:
+                          - string
+                          - 'null'
+                        fileSize:
+                          type: integer
+                        durationSeconds:
+                          type: integer
+        '400':
+          description: Bad Request - Invalid categoryId parameter
+        '500':
+          description: Internal server error
+      operationId: getPublicPodcastsCategoryByCategoryId
+      x-operation-id-source: derived
+  /public/podcasts/{id}:
+    get:
+      summary: Get a single public podcast with full details
+      description: Publicly retrieve a single public podcast by ID with full details including transcript
+      tags:
+      - Public
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: The podcast ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      categoryId:
+                        type: integer
+                      audioUrl:
+                        type: string
+                      title:
+                        type: string
+                      transcript:
+                        type: string
+                      summary:
+                        type: string
+                      imageUrl:
+                        type: string
+                      quizUrl:
+                        type:
+                        - string
+                        - 'null'
+                      fileSize:
+                        type: integer
+                      durationSeconds:
+                        type: integer
+                      slug:
+                        type: string
+        '400':
+          description: Bad Request - Invalid id parameter
+        '404':
+          description: Podcast not found
+        '500':
+          description: Internal server error
+      operationId: getPublicPodcastsById
+      x-operation-id-source: derived
+  /public/podcasts/slug/{slug}:
+    get:
+      summary: Get a single public podcast by slug with full details
+      description: Publicly retrieve a single public podcast by slug with full details including transcript
+      tags:
+      - Public
+      parameters:
+      - in: path
+        name: slug
+        required: true
+        schema:
+          type: string
+        description: The podcast slug
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      categoryId:
+                        type: integer
+                      audioUrl:
+                        type: string
+                      title:
+                        type: string
+                      transcript:
+                        type: string
+                      summary:
+                        type: string
+                      imageUrl:
+                        type: string
+                      quizUrl:
+                        type:
+                        - string
+                        - 'null'
+                      fileSize:
+                        type: integer
+                      durationSeconds:
+                        type: integer
+                      slug:
+                        type: string
+        '400':
+          description: Bad Request - Invalid slug parameter
+        '404':
+          description: Podcast not found
+        '500':
+          description: Internal server error
+      operationId: getPublicPodcastsSlugBySlug
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,427 @@
+openapi: 3.2.0
+info:
+  title: Autocontent Billing API
+  version: 1.0.0
+  description: 'Operations tagged Billing across 2 of this provider''s published API definitions: autocontent-api-legacy-content-openapi.json, autocontent-api-platform-v1-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.autocontentapi.com
+- url: https://api.autocontentapi.com/v1
+tags:
+- name: Billing
+  description: Billing and invoices operations
+paths:
+  /billing/invoices:
+    get:
+      summary: Get Stripe invoices for the authenticated client
+      description: Resolves the authenticated token to the client's email and returns matching Stripe invoices.
+      tags:
+      - Billing
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: List of invoices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    invoiceid:
+                      type: string
+                      example: in_1ABCDEFgHIJKLMN
+                    invoice_url:
+                      type:
+                      - string
+                      - 'null'
+                      example: https://pay.stripe.com/invoice/acct_12345/live_abc/pdf?s=ap
+                    receipt_url:
+                      type:
+                      - string
+                      - 'null'
+                      example: https://pay.stripe.com/receipts/invoices/abc
+                    date:
+                      type: string
+                      format: date-time
+                      example: '2026-03-03T10:20:30.000Z'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      operationId: getBillingInvoices
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /billing/usage:
+    get:
+      operationId: getBillingUsage
+      summary: Get prepaid usage and resource counters
+      tags:
+      - Billing
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.billing.read
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters: []
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingUsage'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    servers:
+    - url: https://api.autocontentapi.com/v1
+  /billing/prepayment-session:
+    post:
+      operationId: createPrepaymentSession
+      summary: Create a prepaid Stripe Checkout session
+      tags:
+      - Billing
+      security:
+      - platformOAuth: []
+      x-required-scopes:
+      - platform.billing.write
+      x-principal: oauth
+      x-idempotency-required: true
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: 1–255 visible ASCII bytes; UUID recommended.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[!-~]+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount_usd:
+                  type: string
+                  pattern: ^(0|[1-9][0-9]{0,5})\.[0-9]{2}$
+                return_to:
+                  type: string
+                  minLength: 1
+                  maxLength: 2048
+                  format: uri
+                  x-max-utf8-bytes: 2048
+              required:
+              - amount_usd
+              - return_to
+              additionalProperties: false
+      responses:
+        '201':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrepaymentSession'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    servers:
+    - url: https://api.autocontentapi.com/v1
+components:
+  schemas:
+    PrepaymentSession:
+      type: object
+      additionalProperties: false
+      required:
+      - prepaid_purchase_id
+      - checkout_session_id
+      - checkout_url
+      - expires_at
+      properties:
+        prepaid_purchase_id:
+          type: string
+          minLength: 1
+        checkout_session_id:
+          type: string
+          minLength: 1
+        checkout_url:
+          type: string
+          format: uri
+        expires_at:
+          type: string
+          format: date-time
+    OperationUsageCounter:
+      type: object
+      additionalProperties: false
+      required:
+      - used
+      - limit
+      - reset_at
+      properties:
+        used:
+          type: integer
+          minimum: 0
+        limit:
+          type: integer
+          minimum: 1
+        reset_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+    UsageCounter:
+      type: object
+      additionalProperties: false
+      required:
+      - in_use
+      - limit
+      properties:
+        in_use:
+          type: integer
+          minimum: 0
+        limit:
+          oneOf:
+          - type: integer
+            minimum: 1
+          - type: 'null'
+    BillingUsage:
+      type: object
+      additionalProperties: false
+      required:
+      - plan
+      - funding_status
+      - currency
+      - promotion_status
+      - promotional_remaining_usd
+      - promotion_expires_at
+      - prepaid_available_usd
+      - prepaid_reserved_usd
+      - prepayment_minimum_usd
+      - prepayment_maximum_usd
+      - month_to_date
+      - concurrency
+      - resources
+      - period_starts_at
+      - period_ends_at
+      properties:
+        plan:
+          type: string
+          enum:
+          - sandbox
+          - payg
+        funding_status:
+          type: string
+          enum:
+          - not_required
+          - available
+          - depleted
+          - restricted
+        currency:
+          const: usd
+        promotion_status:
+          type: string
+          enum:
+          - pending
+          - active
+          - expired
+          - not_applicable
+        promotional_remaining_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        promotion_expires_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        prepaid_available_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        prepaid_reserved_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        prepayment_minimum_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        prepayment_maximum_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        month_to_date:
+          type: object
+          additionalProperties: false
+          required:
+          - settled_usd
+          - reserved_usd
+          properties:
+            settled_usd:
+              type: string
+              pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+            reserved_usd:
+              type: string
+              pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        concurrency:
+          type: object
+          additionalProperties: false
+          required:
+          - in_use
+          - limit
+          properties:
+            in_use:
+              type: integer
+              minimum: 0
+            limit:
+              type: integer
+              minimum: 1
+        resources:
+          type: object
+          additionalProperties: false
+          required:
+          - projects
+          - active_content_loops
+          - provider_operations
+          properties:
+            projects:
+              $ref: '#/components/schemas/UsageCounter'
+            active_content_loops:
+              $ref: '#/components/schemas/UsageCounter'
+            provider_operations:
+              type: object
+              additionalProperties: false
+              required:
+              - project_analyses
+              - source_ingestions
+              - custom_voice_creations
+              - custom_avatar_creations
+              properties:
+                project_analyses:
+                  $ref: '#/components/schemas/OperationUsageCounter'
+                source_ingestions:
+                  $ref: '#/components/schemas/OperationUsageCounter'
+                custom_voice_creations:
+                  $ref: '#/components/schemas/OperationUsageCounter'
+                custom_avatar_creations:
+                  $ref: '#/components/schemas/OperationUsageCounter'
+        period_starts_at:
+          type: string
+          format: date-time
+        period_ends_at:
+          type: string
+          format: date-time
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      - correlation_id
+      - doc_url
+      properties:
+        code:
+          type: string
+          enum:
+          - invalid_request
+          - unknown_asset_type
+          - invalid_asset_options
+          - invalid_model_options
+          - model_not_supported
+          - model_retired
+          - project_not_ready
+          - project_limit_exceeded
+          - provider_operation_limit_exceeded
+          - source_not_ready
+          - source_unreachable
+          - source_paywalled
+          - product_visual_required
+          - no_qualified_trend
+          - no_qualified_knowledge
+          - input_resolution_failed
+          - max_cost_exceeded
+          - payment_required
+          - content_loop_budget_exceeded
+          - content_loop_limit_exceeded
+          - idempotency_conflict
+          - idempotency_in_progress
+          - consent_required
+          - voice_not_found
+          - voice_not_ready
+          - voice_not_supported
+          - avatar_not_found
+          - avatar_not_ready
+          - avatar_not_supported
+          - artifact_verification_failed
+          - rate_limited
+          - webhook_limit_exceeded
+          - not_found
+          - unauthorized
+          - forbidden
+          - internal_error
+        message:
+          type: string
+        details:
+          oneOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/ErrorDetail'
+          - type: object
+        correlation_id:
+          type: string
+          pattern: ^corr_[A-Za-z0-9_-]+$
+        doc_url:
+          type: string
+          format: uri
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required:
+      - reason
+      properties:
+        field:
+          type: string
+        reason:
+          type: string
+  responses:
+    AutoContentError:
+      description: Normalized AutoContent error; provider payloads are never returned.
+      headers:
+        Retry-After:
+          description: Whole seconds before retry when the error supplies a bounded retry time.
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              code: max_cost_exceeded
+              message: Current price exceeds max_cost_usd.
+              correlation_id: corr_42
+              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    platformOAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Platform OAuth JWT
+    platformApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: acp_ Platform API key
+x-refined-from:
+- autocontent-api-legacy-content-openapi.json
+- autocontent-api-platform-v1-openapi.json

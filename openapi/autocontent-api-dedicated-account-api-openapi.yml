@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: AutoContent Content Dedicated Account API
+  title: AutoContent Dedicated Account API
   description: 'Best-effort OpenAPI 3.1 description of the AutoContent API for generating
 
     podcasts, videos, slide decks, infographics, transcripts and other content
@@ -9,9 +9,7 @@ info:
 
     https://docs.autocontentapi.com/llms-full.txt and the developer portal at
 
-    https://autocontentapi.com/docs.
-
-    '
+    https://autocontentapi.com/docs.'
   version: '1'
   contact:
     name: AutoContent API Docs

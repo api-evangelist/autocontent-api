@@ -1,0 +1,29 @@
+# Front Door AI Index — autocontent-api — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: autocontent-api
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: autocontentapi.com
+  final_host: autocontentapi.com
+  ownership: own
+  owner: autocontent-api
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 22
+  host_score: 22
+  density: 5.9
+  words: 3727
+  tiers:
+    agentic: 2
+    core: 20
+    model: 0
+  ambiguous: 5
+  top_terms:
+    AI: 19
+    automation: 4
+    prompts: 2
+    artificial intelligence: 1
+    intelligence: 1

@@ -1,147 +1,770 @@
 openapi: 3.2.0
 info:
-  title: AutoContent Content Video API
-  description: 'Best-effort OpenAPI 3.1 description of the AutoContent API for generating
-
-    podcasts, videos, slide decks, infographics, transcripts and other content
-
-    types. Derived from the public documentation index at
-
-    https://docs.autocontentapi.com/llms-full.txt and the developer portal at
-
-    https://autocontentapi.com/docs.
-
-    '
-  version: '1'
-  contact:
-    name: AutoContent API Docs
-    url: https://docs.autocontentapi.com/
+  title: Autocontent Video API
+  version: '1.0'
+  description: 'Operations tagged Video across 2 of this provider''s published API definitions: autocontent-api-legacy-content-openapi.json, autocontent-api-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.autocontentapi.com
-  description: AutoContent API production
-security:
-- bearerAuth: []
 tags:
 - name: Video
+  description: Video generation and avatar operations
 paths:
   /video/GetAvatars:
     get:
+      summary: Get available avatars
+      description: List all available avatars for video generation
       tags:
       - Video
-      summary: List avatars
-      operationId: getAvatars
+      security:
+      - bearerAuth: []
       responses:
         '200':
-          description: Avatars returned
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Avatar'
+        '401':
+          description: Unauthorized
+      operationId: getVideoGetAvatars
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /video/GetShorts:
     get:
+      summary: Get shorts videos
+      description: List all shorts videos for the authenticated user (includes pending, processing, completed, and failed)
       tags:
       - Video
-      summary: List shorts videos
-      operationId: getShorts
+      security:
+      - bearerAuth: []
       responses:
         '200':
-          description: Shorts returned
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Short'
+        '401':
+          description: Unauthorized
+      operationId: getVideoGetShorts
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /video/CreateShorts:
     post:
+      summary: Create shorts
+      description: Create short videos from audio content or feeds
       tags:
       - Video
-      summary: Create shorts from audio or feeds
-      operationId: createShorts
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - avatar1
+              properties:
+                audioUrl:
+                  type: string
+                  description: URL to the audio file to create shorts from (optional if feedIds provided)
+                feedIds:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of feed IDs to generate content from (optional if audioUrl provided)
+                prompt:
+                  type: string
+                  description: Optional instructions for short creation
+                avatar1:
+                  type: string
+                  description: ID of the first avatar to use
+                avatar2:
+                  type: string
+                  description: Optional ID of the second avatar to use
+                subtitles:
+                  type: boolean
+                  description: 'Optional boolean to include subtitles (default: true)'
+                callbackData:
+                  type: string
+                  description: Optional data to include in webhooks
+                scheduledOn:
+                  type: string
+                  format: date-time
+                  description: Optional date/time to schedule the request for processing
       responses:
         '200':
-          description: Job started
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requestId:
+                    type: string
+                    description: Request identifier
+                  status:
+                    type: integer
+                    description: Initial status code (0 = pending)
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+      operationId: postVideoCreateShorts
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /video/CreateShortsFromContent:
     post:
+      summary: Create shorts from text
+      description: Create short videos from text content or feeds
       tags:
       - Video
-      summary: Create shorts from text content
-      operationId: createShortsFromContent
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - avatar1
+              properties:
+                content:
+                  type: string
+                  description: Text content to create shorts from (optional if feedIds provided)
+                feedIds:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of feed IDs to generate content from (optional if content provided)
+                prompt:
+                  type: string
+                  description: Optional instructions for short creation
+                avatar1:
+                  type: string
+                  description: ID of the first avatar to use
+                avatar2:
+                  type: string
+                  description: Optional ID of the second avatar to use
+                subtitles:
+                  type: boolean
+                  description: 'Optional boolean to include subtitles (default: true)'
+                callbackData:
+                  type: string
+                  description: Optional data to include in webhooks
+                scheduledOn:
+                  type: string
+                  format: date-time
+                  description: Optional date/time to schedule the request for processing
       responses:
         '200':
-          description: Job started
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requestId:
+                    type: string
+                    description: Request identifier
+                  status:
+                    type: integer
+                    description: Initial status code (0 = pending)
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+      operationId: postVideoCreateShortsFromContent
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /video/CreateShortsFromScript:
     post:
+      summary: Create shorts from script
+      description: Create short videos from a custom script with avatar dialogue or from feeds
       tags:
       - Video
-      summary: Create shorts from custom script
-      operationId: createShortsFromScript
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                script:
+                  type: array
+                  description: Array of dialogue entries with avatar IDs and text (optional if feedIds provided)
+                  items:
+                    type: object
+                    required:
+                    - avatarId
+                    - text
+                    properties:
+                      avatarId:
+                        type: number
+                        description: ID of the avatar speaking this line
+                      text:
+                        type: string
+                        description: Text for the avatar to speak
+                feedIds:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of feed IDs to generate content from (optional if script provided)
+                subtitles:
+                  type: boolean
+                  description: 'Optional boolean to include subtitles (default: true)'
+                callbackData:
+                  type: string
+                  description: Optional data to include in webhooks
+                scheduledOn:
+                  type: string
+                  format: date-time
+                  description: Optional date/time to schedule the request for processing
       responses:
         '200':
-          description: Job started
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requestId:
+                    type: string
+                    description: Request identifier
+                  status:
+                    type: integer
+                    description: Initial status code (0 = pending)
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+      operationId: postVideoCreateShortsFromScript
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /video/CreateShortsFromDeepResearch:
     post:
+      summary: Create shorts from deep research
+      description: Create short videos from the results of a completed deep research
       tags:
       - Video
-      summary: Create shorts from deep research
-      operationId: createShortsFromDeepResearch
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - deepResearchId
+              - avatar1
+              properties:
+                deepResearchId:
+                  type: string
+                  description: ID of the completed deep research to create shorts from
+                prompt:
+                  type: string
+                  description: Optional instructions for short creation
+                avatar1:
+                  type: string
+                  description: ID of the first avatar to use
+                avatar2:
+                  type: string
+                  description: Optional ID of the second avatar to use
+                subtitles:
+                  type: boolean
+                  description: 'Optional boolean to include subtitles (default: true)'
+                callbackData:
+                  type: string
+                  description: Optional data to include in webhooks
+                scheduledOn:
+                  type: string
+                  format: date-time
+                  description: Optional date/time to schedule the request for processing
       responses:
         '200':
-          description: Job started
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requestId:
+                    type: string
+                    description: Request identifier
+                  status:
+                    type: integer
+                    description: Initial status code (0 = pending)
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+        '404':
+          description: Deep research not found or not accessible
+      operationId: postVideoCreateShortsFromDeepResearch
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /video/CreateAvatar:
     post:
+      summary: Create avatar
+      description: Create a new talking head avatar from text or image
       tags:
       - Video
-      summary: Create custom avatar
-      operationId: createAvatar
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  description: Name for the avatar
+                imageUrl:
+                  type: string
+                  description: Optional URL to an image to use as the base for the avatar
+                prompt:
+                  type: string
+                  description: Optional text prompt describing the avatar (used when imageUrl is not provided)
+                voiceId:
+                  type: integer
+                  description: Optional numeric voice id from /content/GetVoices to use for the avatar
+                callbackData:
+                  type: string
+                  description: Optional data to include in webhooks
+                scheduledOn:
+                  type: string
+                  format: date-time
+                  description: Optional date/time to schedule the request for processing
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  description: Name for the avatar
+                imageFile:
+                  type: string
+                  format: binary
+                  description: Image file to use as the base for the avatar (max 10MB, image files only)
+                prompt:
+                  type: string
+                  description: Optional text prompt describing the avatar (used when imageFile is not provided)
+                voiceId:
+                  type: integer
+                  description: Optional numeric voice id from /content/GetVoices to use for the avatar
+                callbackData:
+                  type: string
+                  description: Optional data to include in webhooks
+                scheduledOn:
+                  type: string
+                  format: date-time
+                  description: Optional date/time to schedule the request for processing
       responses:
         '200':
-          description: Avatar created
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requestId:
+                    type: string
+                    description: Request identifier
+                  status:
+                    type: integer
+                    description: Initial status code (0 = pending)
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized
+      operationId: postVideoCreateAvatar
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /video/UpdateAvatarVoice:
     post:
+      summary: Update avatar voice
+      description: Update the voice assigned to an existing avatar
       tags:
       - Video
-      summary: Update avatar voice
-      operationId: updateAvatarVoice
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - avatarId
+              - voiceId
+              properties:
+                avatarId:
+                  type: integer
+                  description: ID of the avatar to update
+                voiceId:
+                  type: integer
+                  description: Numeric voice id from /content/GetVoices to assign to the avatar
       responses:
         '200':
-          description: Avatar voice updated
+          description: Avatar voice updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Success status
+                  message:
+                    type: string
+                    description: Success message
+        '400':
+          description: Invalid request (missing or invalid parameters)
+        '401':
+          description: Unauthorized
+        '404':
+          description: Avatar not found or not accessible
+        '500':
+          description: Failed to update avatar voice
+      operationId: postVideoUpdateAvatarVoice
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /video/GetExplainerVideos:
     get:
+      summary: Get explainer videos
+      description: List all explainer videos for the authenticated user
       tags:
       - Video
-      summary: List explainer videos
-      operationId: getExplainerVideos
+      security:
+      - bearerAuth: []
       responses:
         '200':
-          description: Explainer videos returned
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Video explainer identifier (matches request ID)
+                    title:
+                      type: string
+                      description: Title of the explainer video
+                    description:
+                      type: string
+                      description: Description of the explainer video
+                    videoUrl:
+                      type: string
+                      description: URL to the explainer video
+                    fileSize:
+                      type: integer
+                      description: Size of the video file in bytes
+                    durationSeconds:
+                      type: integer
+                      description: Duration of the video in seconds
+                    shareUrl:
+                      type: string
+                      description: Shareable public URL for the video
+                    createdOn:
+                      type: string
+                      format: date-time
+                      description: Creation date of the explainer video
+                    requestedOn:
+                      type: string
+                      format: date-time
+                      description: Request creation date
+                    succeededOn:
+                      type: string
+                      format: date-time
+                      description: Completion date
+                    status:
+                      type: integer
+                      description: Status code (100 = completed)
+                    errorOn:
+                      type: string
+                      format: date-time
+                      description: Error occurrence date (if applicable)
+                    errorMessage:
+                      type: string
+                      description: Error message (if applicable)
+                    callbackData:
+                      type: string
+                      description: Custom callback data
+                    scheduledOn:
+                      type: string
+                      format: date-time
+                      description: Scheduled processing time (if applicable)
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+      operationId: getVideoGetExplainerVideos
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /video/Transcribe:
     post:
+      summary: Transcribe an explainer video
+      description: Submit a transcription job for an explainer video by ID
       tags:
       - Video
-      summary: Transcribe video
-      operationId: transcribeVideo
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - videoId
+              properties:
+                videoId:
+                  type: string
+                  description: Explainer video ID (request ID)
       responses:
         '200':
-          description: Transcription job started
+          description: Transcription request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: string
+                  status:
+                    type: integer
+        '400':
+          description: Invalid request (missing videoId)
+        '401':
+          description: Unauthorized
+        '404':
+          description: Explainer video not found or not ready
+      operationId: postVideoTranscribe
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
   /video/Transcript/{videoId}:
+    get:
+      summary: Get an explainer transcript
+      description: Retrieve the transcript for a completed explainer video
+      tags:
+      - Video
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: videoId
+        required: true
+        schema:
+          type: string
+        description: Explainer video ID (request ID)
+      responses:
+        '200':
+          description: Transcript retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExplainerTranscript'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Transcript not found for the specified explainer video
+      operationId: getVideoTranscriptByVideoId
+      x-operation-id-source: derived
     parameters:
     - in: path
       name: videoId
       required: true
       schema:
         type: string
-    get:
-      tags:
-      - Video
-      summary: Get explainer video transcript
-      operationId: getVideoTranscript
-      responses:
-        '200':
-          description: Transcript returned
+    servers:
+    - url: https://api.autocontentapi.com
   /video/GenerateIntroImage:
     get:
+      summary: Generate branded intro image
+      description: Generate the branded intro image used for explainer videos and download the PNG asset.
       tags:
       - Video
-      summary: Generate intro image
-      operationId: generateIntroImage
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: title
+        required: true
+        schema:
+          type: string
+        description: Title text rendered on the intro image.
+      - in: query
+        name: subtitle
+        required: false
+        schema:
+          type: string
+        description: Optional subtitle text displayed beneath the title.
+      - in: query
+        name: logoUrl
+        required: false
+        schema:
+          type: string
+        description: Optional logo URL to render on the intro image.
+      - in: query
+        name: heroImageUrl
+        required: false
+        schema:
+          type: string
+        description: Optional hero/background image URL composited into the intro artwork.
       responses:
         '200':
-          description: Intro image returned
+          description: PNG image download containing the branded intro artwork.
+          headers:
+            X-Intro-Image-Url:
+              description: Public URL of the uploaded intro image variant when available.
+              schema:
+                type: string
+            X-Intro-Image-Size:
+              description: Size of the generated intro image in bytes.
+              schema:
+                type: integer
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Missing or invalid query parameters.
+        '401':
+          description: Unauthorized
+        '500':
+          description: Error generating or uploading the intro image
+      operationId: getVideoGenerateIntroImage
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
 components:
+  schemas:
+    ExplainerTranscript:
+      type: object
+      properties:
+        videoId:
+          type: string
+          description: Explainer video identifier (request ID)
+        createdOn:
+          type: string
+          format: date-time
+          description: Transcript creation timestamp
+        transcript:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranscriptLine'
+    Avatar:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Avatar identifier
+        name:
+          type: string
+          description: Avatar display name
+        gender:
+          type: string
+          enum:
+          - M
+          - F
+          description: Avatar gender (M = Male, F = Female)
+    TranscriptLine:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Transcript line text
+        speaker:
+          type: string
+          description: Speaker label
+        timestamp:
+          type: array
+          description: Start/end time in seconds
+          items:
+            type: number
+    Short:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Short video identifier
+        status:
+          type: integer
+          description: Status code (0 = pending, 10-90 = processing, 100 = completed, -1 = failed)
+        requestedOn:
+          type: string
+          format: date-time
+          description: Request creation date
+        processingOn:
+          type: string
+          format: date-time
+          description: Processing start date
+        succeededOn:
+          type: string
+          format: date-time
+          description: Completion date
+        requestTypeId:
+          type: integer
+          description: Request type ID (4 = Short)
+        callbackData:
+          type: string
+          description: Custom callback data
+        audioUrl:
+          type: string
+          description: URL to the audio used for the short
+        videoUrl:
+          type: string
+          description: URL to the generated short video (when completed)
+        imageUrl:
+          type: string
+          description: URL to the thumbnail image (when completed)
+        audioTitle:
+          type: string
+          description: Title of the short video
+        responseText:
+          type: string
+          description: Text content used in the short
+        errorOn:
+          type: string
+          format: date-time
+          description: Error occurrence date (if applicable)
+        errorMessage:
+          type: string
+          description: Error message (if applicable)
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: AutoContent API key as a Bearer token in the Authorization header.
+x-refined-from:
+- autocontent-api-legacy-content-openapi.json
+- autocontent-api-openapi.yml

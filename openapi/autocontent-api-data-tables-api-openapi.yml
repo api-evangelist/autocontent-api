@@ -1,0 +1,114 @@
+openapi: 3.2.0
+info:
+  title: Content Data Tables API
+  version: 1.0.0
+  description: API documentation for the Content API
+servers:
+- url: https://api.autocontentapi.com
+tags:
+- name: Data Tables
+  description: Data table assets generated per token
+paths:
+  /data-tables/get:
+    get:
+      summary: Get data tables
+      description: Returns paginated data tables created by the authenticated token, including in-progress requests (default 20 per page, max 100).
+      tags:
+      - Data Tables
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+        description: Page number (default 1)
+      - in: query
+        name: pageSize
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+        description: Items per page (default 20, max 100)
+      responses:
+        '200':
+          description: Paginated list of data tables
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DataTable'
+                  totalCount:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalPages:
+                    type: integer
+        '401':
+          description: Unauthorized
+      operationId: getDataTablesGet
+      x-operation-id-source: derived
+  /data-tables/{dataTableId}/download:
+    get:
+      summary: Download data table
+      description: Streams the generated data table file for the authenticated token.
+      tags:
+      - Data Tables
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: dataTableId
+        required: true
+        schema:
+          type: string
+        description: Data table request identifier
+      responses:
+        '200':
+          description: Binary data table file stream
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized
+        '404':
+          description: Data table not found or not ready
+        '502':
+          description: Upstream asset unavailable
+      operationId: getDataTablesByDataTableIdDownload
+      x-operation-id-source: derived
+components:
+  schemas:
+    DataTable:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the data table (matches request id)
+        url:
+          type:
+          - string
+          - 'null'
+          format: uri
+          description: URL of the generated data table file (null while processing)
+        status:
+          type: integer
+          description: Current progress percentage (100 when completed)
+        createdOn:
+          type: string
+          format: date-time
+          description: UTC timestamp when the data table was created (or requested if still in progress)
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,119 @@
+openapi: 3.2.0
+info:
+  title: Content Infographics API
+  version: 1.0.0
+  description: API documentation for the Content API
+servers:
+- url: https://api.autocontentapi.com
+tags:
+- name: Infographics
+  description: Infographic assets generated per token
+paths:
+  /infographics/get:
+    get:
+      summary: Get infographics
+      description: Returns paginated infographics created by the authenticated token, including in-progress requests (default 20 per page, max 100).
+      tags:
+      - Infographics
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+        description: Page number (default 1)
+      - in: query
+        name: pageSize
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+        description: Items per page (default 20, max 100)
+      responses:
+        '200':
+          description: Paginated list of infographics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Infographic'
+                  totalCount:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalPages:
+                    type: integer
+        '401':
+          description: Unauthorized
+      operationId: getInfographicsGet
+      x-operation-id-source: derived
+  /infographics/{infographicId}/download:
+    get:
+      summary: Download infographic
+      description: Streams the generated infographic image for the authenticated token.
+      tags:
+      - Infographics
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: infographicId
+        required: true
+        schema:
+          type: string
+        description: Infographic request identifier
+      responses:
+        '200':
+          description: Binary infographic image stream
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized
+        '404':
+          description: Infographic not found or not ready
+        '502':
+          description: Upstream asset unavailable
+      operationId: getInfographicsByInfographicIdDownload
+      x-operation-id-source: derived
+components:
+  schemas:
+    Infographic:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the infographic (matches request id)
+        imageUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+          description: URL of the generated infographic image (null while processing)
+        title:
+          type:
+          - string
+          - 'null'
+          description: Optional title for the infographic
+        status:
+          type: integer
+          description: Current progress percentage (100 when completed)
+        createdOn:
+          type: string
+          format: date-time
+          description: UTC timestamp when the infographic was created (or requested if still in progress)
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

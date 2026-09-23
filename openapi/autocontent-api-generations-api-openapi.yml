@@ -1,0 +1,2825 @@
+openapi: 3.2.0
+info:
+  title: AutoContent Platform Generations API
+  version: 1.0.0
+  description: First-class content Assets with prepaid USD billing. Generic document and video routes do not exist.
+servers:
+- url: https://api.autocontentapi.com/v1
+tags:
+- name: Generations
+paths:
+  /generations/preview:
+    post:
+      operationId: previewGeneration
+      summary: Validate, normalize, and quote a Generation
+      tags:
+      - Generations
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.generate
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_id:
+                  type: string
+                  pattern: ^prj_[A-Za-z0-9_-]+$
+                input:
+                  oneOf:
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        const: trend
+                      lookback_days:
+                        type: integer
+                        minimum: 1
+                        maximum: 30
+                      instructions:
+                        type: string
+                        minLength: 1
+                        maxLength: 4000
+                        x-max-utf8-bytes: 4000
+                    required:
+                    - type
+                    additionalProperties: false
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        const: topic
+                      topic:
+                        type: string
+                        minLength: 1
+                        maxLength: 2000
+                        x-max-utf8-bytes: 2000
+                      evidence_scope:
+                        type: string
+                        enum:
+                        - project
+                        - project_and_web
+                      lookback_days:
+                        type: integer
+                        minimum: 1
+                        maximum: 30
+                      source_ids:
+                        minItems: 1
+                        maxItems: 100
+                        type: array
+                        items:
+                          type: string
+                          pattern: ^src_[A-Za-z0-9_-]+$
+                        uniqueItems: true
+                      collection_ids:
+                        minItems: 1
+                        maxItems: 100
+                        type: array
+                        items:
+                          type: string
+                          pattern: ^col_[A-Za-z0-9_-]+$
+                        uniqueItems: true
+                      instructions:
+                        type: string
+                        minLength: 1
+                        maxLength: 4000
+                        x-max-utf8-bytes: 4000
+                    required:
+                    - type
+                    - topic
+                    additionalProperties: false
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        const: knowledge
+                      source_ids:
+                        minItems: 1
+                        maxItems: 100
+                        type: array
+                        items:
+                          type: string
+                          pattern: ^src_[A-Za-z0-9_-]+$
+                        uniqueItems: true
+                      collection_ids:
+                        minItems: 1
+                        maxItems: 100
+                        type: array
+                        items:
+                          type: string
+                          pattern: ^col_[A-Za-z0-9_-]+$
+                        uniqueItems: true
+                      instructions:
+                        type: string
+                        minLength: 1
+                        maxLength: 4000
+                        x-max-utf8-bytes: 4000
+                    required:
+                    - type
+                    additionalProperties: false
+                attachment_source_ids:
+                  minItems: 1
+                  maxItems: 20
+                  type: array
+                  items:
+                    type: string
+                    pattern: ^src_[A-Za-z0-9_-]+$
+                  uniqueItems: true
+                instructions:
+                  type: string
+                  minLength: 1
+                  maxLength: 4000
+                  x-max-utf8-bytes: 4000
+                language:
+                  type: string
+                  minLength: 2
+                  maxLength: 255
+                  format: bcp47
+                assets:
+                  minItems: 1
+                  maxItems: 10
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      asset_type:
+                        type: string
+                        enum:
+                        - article
+                        - lead_magnet
+                        - ebook
+                        - slides
+                        - infographic
+                        - quiz
+                        - podcast_episode
+                        - short_video
+                        - explainer_video
+                        - launch_video
+                        - product_demo_video
+                        - ad_video
+                      instructions:
+                        type: string
+                        minLength: 1
+                        maxLength: 4000
+                        x-max-utf8-bytes: 4000
+                      language:
+                        type: string
+                        minLength: 2
+                        maxLength: 255
+                        format: bcp47
+                      options:
+                        type: object
+                        propertyNames:
+                          type: string
+                        additionalProperties: {}
+                      voice_id:
+                        type: string
+                        pattern: ^voice_[A-Za-z0-9_-]+$
+                      avatar_id:
+                        type: string
+                        pattern: ^avatar_[A-Za-z0-9_-]+$
+                      model:
+                        type: string
+                        minLength: 1
+                        maxLength: 200
+                      model_options:
+                        type: object
+                        propertyNames:
+                          type: string
+                        additionalProperties: {}
+                    required:
+                    - asset_type
+                    additionalProperties: false
+                    dependentRequired:
+                      model_options:
+                      - model
+                  x-unique-by: asset_type
+                metadata:
+                  type: object
+                  propertyNames:
+                    type: string
+                  additionalProperties: {}
+                  x-max-json-bytes: 4096
+              required:
+              - project_id
+              - input
+              - assets
+              additionalProperties: false
+            examples:
+              five_first_class_video_outcomes:
+                value:
+                  project_id: prj_7f3
+                  input:
+                    type: trend
+                    lookback_days: 7
+                  language: en-US
+                  assets:
+                  - asset_type: short_video
+                    options:
+                      duration_seconds: 30
+                      aspect_ratio: '9:16'
+                      resolution: 1080p
+                      captions: true
+                      presentation_mode: faceless
+                  - asset_type: explainer_video
+                    voice_id: voice_acme_narrator
+                    options:
+                      duration_seconds: 90
+                      aspect_ratio: '16:9'
+                      resolution: 1080p
+                      captions: true
+                      presentation_mode: faceless
+                  - asset_type: launch_video
+                    voice_id: voice_acme_narrator
+                    avatar_id: avatar_acme_presenter
+                    options:
+                      duration_seconds: 60
+                      aspect_ratio: '16:9'
+                      resolution: 1080p
+                      captions: true
+                      presentation_mode: avatar
+                  - asset_type: product_demo_video
+                    options:
+                      duration_seconds: 120
+                      aspect_ratio: '16:9'
+                      resolution: 1080p
+                      captions: true
+                      presentation_mode: faceless
+                      product_visual_source_ids:
+                      - src_dashboard
+                  - asset_type: ad_video
+                    avatar_id: avatar_acme_presenter
+                    options:
+                      duration_seconds: 30
+                      aspect_ratio: '9:16'
+                      resolution: 1080p
+                      captions: true
+                      presentation_mode: avatar
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerationPreview'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+  /generations:
+    post:
+      operationId: createGeneration
+      summary: Reserve USD and create a Generation
+      tags:
+      - Generations
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.generate
+      x-principal: oauth_or_api_key
+      x-idempotency-required: true
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: 1–255 visible ASCII bytes; UUID recommended.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[!-~]+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_id:
+                  type: string
+                  pattern: ^prj_[A-Za-z0-9_-]+$
+                input:
+                  oneOf:
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        const: trend
+                      lookback_days:
+                        type: integer
+                        minimum: 1
+                        maximum: 30
+                      instructions:
+                        type: string
+                        minLength: 1
+                        maxLength: 4000
+                        x-max-utf8-bytes: 4000
+                    required:
+                    - type
+                    additionalProperties: false
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        const: topic
+                      topic:
+                        type: string
+                        minLength: 1
+                        maxLength: 2000
+                        x-max-utf8-bytes: 2000
+                      evidence_scope:
+                        type: string
+                        enum:
+                        - project
+                        - project_and_web
+                      lookback_days:
+                        type: integer
+                        minimum: 1
+                        maximum: 30
+                      source_ids:
+                        minItems: 1
+                        maxItems: 100
+                        type: array
+                        items:
+                          type: string
+                          pattern: ^src_[A-Za-z0-9_-]+$
+                        uniqueItems: true
+                      collection_ids:
+                        minItems: 1
+                        maxItems: 100
+                        type: array
+                        items:
+                          type: string
+                          pattern: ^col_[A-Za-z0-9_-]+$
+                        uniqueItems: true
+                      instructions:
+                        type: string
+                        minLength: 1
+                        maxLength: 4000
+                        x-max-utf8-bytes: 4000
+                    required:
+                    - type
+                    - topic
+                    additionalProperties: false
+                  - type: object
+                    properties:
+                      type:
+                        type: string
+                        const: knowledge
+                      source_ids:
+                        minItems: 1
+                        maxItems: 100
+                        type: array
+                        items:
+                          type: string
+                          pattern: ^src_[A-Za-z0-9_-]+$
+                        uniqueItems: true
+                      collection_ids:
+                        minItems: 1
+                        maxItems: 100
+                        type: array
+                        items:
+                          type: string
+                          pattern: ^col_[A-Za-z0-9_-]+$
+                        uniqueItems: true
+                      instructions:
+                        type: string
+                        minLength: 1
+                        maxLength: 4000
+                        x-max-utf8-bytes: 4000
+                    required:
+                    - type
+                    additionalProperties: false
+                attachment_source_ids:
+                  minItems: 1
+                  maxItems: 20
+                  type: array
+                  items:
+                    type: string
+                    pattern: ^src_[A-Za-z0-9_-]+$
+                  uniqueItems: true
+                instructions:
+                  type: string
+                  minLength: 1
+                  maxLength: 4000
+                  x-max-utf8-bytes: 4000
+                language:
+                  type: string
+                  minLength: 2
+                  maxLength: 255
+                  format: bcp47
+                assets:
+                  minItems: 1
+                  maxItems: 10
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      asset_type:
+                        type: string
+                        enum:
+                        - article
+                        - lead_magnet
+                        - ebook
+                        - slides
+                        - infographic
+                        - quiz
+                        - podcast_episode
+                        - short_video
+                        - explainer_video
+                        - launch_video
+                        - product_demo_video
+                        - ad_video
+                      instructions:
+                        type: string
+                        minLength: 1
+                        maxLength: 4000
+                        x-max-utf8-bytes: 4000
+                      language:
+                        type: string
+                        minLength: 2
+                        maxLength: 255
+                        format: bcp47
+                      options:
+                        type: object
+                        propertyNames:
+                          type: string
+                        additionalProperties: {}
+                      voice_id:
+                        type: string
+                        pattern: ^voice_[A-Za-z0-9_-]+$
+                      avatar_id:
+                        type: string
+                        pattern: ^avatar_[A-Za-z0-9_-]+$
+                      model:
+                        type: string
+                        minLength: 1
+                        maxLength: 200
+                      model_options:
+                        type: object
+                        propertyNames:
+                          type: string
+                        additionalProperties: {}
+                    required:
+                    - asset_type
+                    additionalProperties: false
+                    dependentRequired:
+                      model_options:
+                      - model
+                  x-unique-by: asset_type
+                metadata:
+                  type: object
+                  propertyNames:
+                    type: string
+                  additionalProperties: {}
+                  x-max-json-bytes: 4096
+                max_cost_usd:
+                  type: string
+                  pattern: ^(0|[1-9][0-9]{0,5})\.[0-9]{2}$
+              required:
+              - project_id
+              - input
+              - assets
+              - max_cost_usd
+              additionalProperties: false
+            examples:
+              first_class_lead_magnet_from_knowledge:
+                value:
+                  project_id: prj_7f3
+                  input:
+                    type: knowledge
+                    source_ids:
+                    - src_clinic_guide
+                  language: es-ES
+                  assets:
+                  - asset_type: lead_magnet
+                    options:
+                      page_count: 10
+                      format: auto
+                    model: gpt-image-2-2026-04-21
+                  max_cost_usd: '55.00'
+              first_class_lead_magnet_from_topic:
+                value:
+                  project_id: prj_7f3
+                  input:
+                    type: topic
+                    topic: How independent clinics can improve patient enquiry follow-up
+                    evidence_scope: project
+                  assets:
+                  - asset_type: lead_magnet
+                    options:
+                      page_count: 4
+                      format: checklist
+                  max_cost_usd: '37.00'
+      responses:
+        '202':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Generation'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    get:
+      operationId: listGenerations
+      summary: List Generations
+      tags:
+      - Generations
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.read
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters:
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 4096
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(?:[1-9]|[1-9][0-9]|100)$
+      - name: project_id
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+      - name: edited_from_generation_id
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^gen_[A-Za-z0-9_-]+$
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - queued
+          - researching
+          - generating
+          - succeeded
+          - partially_succeeded
+          - failed
+          - cancelled
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - data
+                - next_cursor
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Generation'
+                  next_cursor:
+                    oneOf:
+                    - type: string
+                      minLength: 1
+                    - type: 'null'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+  /generations/{id}:
+    get:
+      operationId: getGeneration
+      summary: Get a Generation and its Assets
+      tags:
+      - Generations
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.read
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^gen_[A-Za-z0-9_-]+$
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Generation'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+  /generations/{id}/edit/preview:
+    post:
+      operationId: previewGenerationEdit
+      summary: Validate and quote a full Asset edit from frozen Generation context
+      tags:
+      - Generations
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.generate
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^gen_[A-Za-z0-9_-]+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assets:
+                  minItems: 1
+                  maxItems: 10
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      asset_id:
+                        type: string
+                        pattern: ^ast_[A-Za-z0-9_-]+$
+                      instructions:
+                        type: string
+                        minLength: 1
+                        maxLength: 4000
+                        x-max-utf8-bytes: 4000
+                      language:
+                        type: string
+                        minLength: 2
+                        maxLength: 255
+                        format: bcp47
+                      options:
+                        type: object
+                        propertyNames:
+                          type: string
+                        additionalProperties: {}
+                      voice_id:
+                        type: string
+                        pattern: ^voice_[A-Za-z0-9_-]+$
+                      avatar_id:
+                        type: string
+                        pattern: ^avatar_[A-Za-z0-9_-]+$
+                      model:
+                        type: string
+                        minLength: 1
+                        maxLength: 200
+                      model_options:
+                        type: object
+                        propertyNames:
+                          type: string
+                        additionalProperties: {}
+                    required:
+                    - asset_id
+                    additionalProperties: false
+                  x-unique-by: asset_id
+              required:
+              - assets
+              additionalProperties: false
+            examples:
+              rerender_selected_asset:
+                value:
+                  assets:
+                  - asset_id: ast_01HZX7E2Y4D9K3Q1M8N6P0R5ST
+                    instructions: Shorten the introduction and add a migration checklist.
+                    options:
+                      page_count: 10
+                      format: auto
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerationEditPreview'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+  /generations/{id}/edit:
+    post:
+      operationId: createGenerationEdit
+      summary: Reserve USD and fully rerender selected Assets from frozen Generation context
+      tags:
+      - Generations
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.generate
+      x-principal: oauth_or_api_key
+      x-idempotency-required: true
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^gen_[A-Za-z0-9_-]+$
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: 1–255 visible ASCII bytes; UUID recommended.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[!-~]+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assets:
+                  minItems: 1
+                  maxItems: 10
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      asset_id:
+                        type: string
+                        pattern: ^ast_[A-Za-z0-9_-]+$
+                      instructions:
+                        type: string
+                        minLength: 1
+                        maxLength: 4000
+                        x-max-utf8-bytes: 4000
+                      language:
+                        type: string
+                        minLength: 2
+                        maxLength: 255
+                        format: bcp47
+                      options:
+                        type: object
+                        propertyNames:
+                          type: string
+                        additionalProperties: {}
+                      voice_id:
+                        type: string
+                        pattern: ^voice_[A-Za-z0-9_-]+$
+                      avatar_id:
+                        type: string
+                        pattern: ^avatar_[A-Za-z0-9_-]+$
+                      model:
+                        type: string
+                        minLength: 1
+                        maxLength: 200
+                      model_options:
+                        type: object
+                        propertyNames:
+                          type: string
+                        additionalProperties: {}
+                    required:
+                    - asset_id
+                    additionalProperties: false
+                  x-unique-by: asset_id
+                max_cost_usd:
+                  type: string
+                  pattern: ^(0|[1-9][0-9]{0,5})\.[0-9]{2}$
+              required:
+              - assets
+              - max_cost_usd
+              additionalProperties: false
+            examples:
+              rerender_selected_asset:
+                value:
+                  assets:
+                  - asset_id: ast_01HZX7E2Y4D9K3Q1M8N6P0R5ST
+                    instructions: Shorten the introduction and add a migration checklist.
+                    options:
+                      page_count: 10
+                      format: auto
+                  max_cost_usd: '1.40'
+      responses:
+        '202':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Generation'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+  /generations/{id}/cancel:
+    post:
+      operationId: cancelGeneration
+      summary: Cancel undispatched Generation work
+      tags:
+      - Generations
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.generate
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^gen_[A-Za-z0-9_-]+$
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Generation'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+components:
+  schemas:
+    GenerationEditPreview:
+      type: object
+      additionalProperties: false
+      required:
+      - currency
+      - total_cost_usd
+      - funding_sufficient
+      - price_version
+      - input_contract_version
+      - project_id
+      - input
+      - edited_from_generation_id
+      - assets
+      properties:
+        currency:
+          const: usd
+        total_cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        funding_sufficient:
+          type: boolean
+        price_version:
+          type: string
+          minLength: 1
+        input_contract_version:
+          type: integer
+          minimum: 1
+        project_id:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+        input:
+          oneOf:
+          - type: object
+            properties:
+              type:
+                type: string
+                const: trend
+              lookback_days:
+                type: integer
+                minimum: 1
+                maximum: 30
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 4000
+                x-max-utf8-bytes: 4000
+            required:
+            - type
+            additionalProperties: false
+          - type: object
+            properties:
+              type:
+                type: string
+                const: topic
+              topic:
+                type: string
+                minLength: 1
+                maxLength: 2000
+                x-max-utf8-bytes: 2000
+              evidence_scope:
+                type: string
+                enum:
+                - project
+                - project_and_web
+              lookback_days:
+                type: integer
+                minimum: 1
+                maximum: 30
+              source_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^src_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              collection_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^col_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 4000
+                x-max-utf8-bytes: 4000
+            required:
+            - type
+            - topic
+            additionalProperties: false
+          - type: object
+            properties:
+              type:
+                type: string
+                const: knowledge
+              source_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^src_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              collection_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^col_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 4000
+                x-max-utf8-bytes: 4000
+            required:
+            - type
+            additionalProperties: false
+        edited_from_generation_id:
+          type: string
+          pattern: ^gen_[A-Za-z0-9_-]+$
+        assets:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - asset_type
+            - normalized_options
+            - cost_usd
+            - basis
+            - contract_version
+            - requested_model
+            - model_used
+            - effective_voice_id
+            - effective_avatar_id
+            - logo
+            - product_visual_source_ids
+            - original_asset_id
+            properties:
+              asset_type:
+                $ref: '#/components/schemas/AssetType'
+              normalized_options:
+                description: One normalized first-class Asset options contract. Exact schemas are also discoverable from GET /asset-types.
+                anyOf:
+                - type: object
+                  properties:
+                    target_words:
+                      default: 1200
+                      type: integer
+                      minimum: 500
+                      maximum: 3000
+                  required:
+                  - target_words
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    page_count:
+                      default: 10
+                      type: integer
+                      minimum: 4
+                      maximum: 30
+                    format:
+                      default: auto
+                      type: string
+                      enum:
+                      - auto
+                      - checklist
+                      - cheat_sheet
+                      - workbook
+                      - planner
+                      - tracker
+                      - scorecard
+                      - roadmap
+                      - challenge
+                      - swipe_file
+                      - resource_guide
+                      - comparison_guide
+                      - meal_plan
+                  required:
+                  - page_count
+                  - format
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    chapter_count:
+                      default: 6
+                      type: integer
+                      minimum: 3
+                      maximum: 12
+                    target_pages:
+                      default: 30
+                      type: integer
+                      minimum: 15
+                      maximum: 60
+                  required:
+                  - chapter_count
+                  - target_pages
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    slide_count:
+                      default: 12
+                      type: integer
+                      minimum: 5
+                      maximum: 30
+                    aspect_ratio:
+                      default: '16:9'
+                      type: string
+                      enum:
+                      - '16:9'
+                      - '4:3'
+                  required:
+                  - slide_count
+                  - aspect_ratio
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    aspect_ratio:
+                      default: '4:5'
+                      type: string
+                      enum:
+                      - '1:1'
+                      - '4:5'
+                      - '9:16'
+                      - '16:9'
+                    resolution:
+                      default: standard
+                      type: string
+                      enum:
+                      - standard
+                      - high
+                  required:
+                  - aspect_ratio
+                  - resolution
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    question_count:
+                      default: 10
+                      type: integer
+                      minimum: 5
+                      maximum: 30
+                    difficulty:
+                      default: intermediate
+                      type: string
+                      enum:
+                      - beginner
+                      - intermediate
+                      - advanced
+                  required:
+                  - question_count
+                  - difficulty
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 600
+                      type: integer
+                      minimum: 120
+                      maximum: 14400
+                  required:
+                  - duration_seconds
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 30
+                      type: integer
+                      minimum: 5
+                      maximum: 180
+                    aspect_ratio:
+                      default: '9:16'
+                      type: string
+                      enum:
+                      - '9:16'
+                      - '1:1'
+                      - '16:9'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 90
+                      type: integer
+                      minimum: 30
+                      maximum: 600
+                    aspect_ratio:
+                      default: '16:9'
+                      type: string
+                      enum:
+                      - '16:9'
+                      - '9:16'
+                      - '1:1'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 60
+                      type: integer
+                      minimum: 15
+                      maximum: 180
+                    aspect_ratio:
+                      default: '16:9'
+                      type: string
+                      enum:
+                      - '16:9'
+                      - '9:16'
+                      - '1:1'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 120
+                      type: integer
+                      minimum: 30
+                      maximum: 600
+                    aspect_ratio:
+                      default: '16:9'
+                      type: string
+                      enum:
+                      - '16:9'
+                      - '9:16'
+                      - '1:1'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                    product_visual_source_ids:
+                      minItems: 1
+                      maxItems: 20
+                      type: array
+                      items:
+                        type: string
+                        minLength: 1
+                        maxLength: 200
+                        pattern: ^[A-Za-z0-9_-]+$
+                      uniqueItems: true
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 30
+                      type: integer
+                      minimum: 5
+                      maximum: 120
+                    aspect_ratio:
+                      default: '9:16'
+                      type: string
+                      enum:
+                      - '9:16'
+                      - '1:1'
+                      - '16:9'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+              normalized_model_options:
+                type: object
+                additionalProperties: true
+                description: Present only when the exact model has normalized native options.
+              cost_usd:
+                type: string
+                pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+              basis:
+                type: string
+                minLength: 1
+              contract_version:
+                type: integer
+                minimum: 1
+              requested_model:
+                oneOf:
+                - type: string
+                  minLength: 1
+                - type: 'null'
+              model_used:
+                type: string
+                minLength: 1
+              effective_voice_id:
+                oneOf:
+                - type: string
+                  pattern: ^voice_[A-Za-z0-9_-]+$
+                - type: 'null'
+              effective_avatar_id:
+                oneOf:
+                - type: string
+                  pattern: ^avatar_[A-Za-z0-9_-]+$
+                - type: 'null'
+              logo:
+                oneOf:
+                - type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - revision
+                  properties:
+                    id:
+                      type: string
+                      minLength: 1
+                    revision:
+                      type: integer
+                      minimum: 1
+                - type: 'null'
+              product_visual_source_ids:
+                type: array
+                maxItems: 20
+                uniqueItems: true
+                items:
+                  type: string
+                  pattern: ^src_[A-Za-z0-9_-]+$
+              original_asset_id:
+                type: string
+                pattern: ^ast_[A-Za-z0-9_-]+$
+    AssetFeedback:
+      type: object
+      additionalProperties: false
+      required:
+      - revision
+      - rating
+      - reason
+      - created_at
+      properties:
+        revision:
+          type: integer
+          minimum: 1
+        rating:
+          type: string
+          enum:
+          - useful
+          - not_useful
+        reason:
+          oneOf:
+          - type: string
+            maxLength: 1000
+          - type: 'null'
+        created_at:
+          type: string
+          format: date-time
+    Asset:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - generation_id
+      - project_id
+      - asset_type
+      - status
+      - created_at
+      properties:
+        id:
+          type: string
+          pattern: ^ast_[A-Za-z0-9_-]+$
+        generation_id:
+          type: string
+          pattern: ^gen_[A-Za-z0-9_-]+$
+        project_id:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+        asset_type:
+          $ref: '#/components/schemas/AssetType'
+        title:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        status:
+          type: string
+          enum:
+          - queued
+          - generating
+          - succeeded
+          - failed
+          - cancelled
+        origin:
+          type: string
+          enum:
+          - one_off
+          - content_loop
+        language:
+          type: string
+          minLength: 2
+          maxLength: 255
+          format: bcp47
+        instructions:
+          oneOf:
+          - type: string
+            maxLength: 4000
+          - type: 'null'
+        normalized_options:
+          description: One normalized first-class Asset options contract. Exact schemas are also discoverable from GET /asset-types.
+          anyOf:
+          - type: object
+            properties:
+              target_words:
+                default: 1200
+                type: integer
+                minimum: 500
+                maximum: 3000
+            required:
+            - target_words
+            additionalProperties: false
+          - type: object
+            properties:
+              page_count:
+                default: 10
+                type: integer
+                minimum: 4
+                maximum: 30
+              format:
+                default: auto
+                type: string
+                enum:
+                - auto
+                - checklist
+                - cheat_sheet
+                - workbook
+                - planner
+                - tracker
+                - scorecard
+                - roadmap
+                - challenge
+                - swipe_file
+                - resource_guide
+                - comparison_guide
+                - meal_plan
+            required:
+            - page_count
+            - format
+            additionalProperties: false
+          - type: object
+            properties:
+              chapter_count:
+                default: 6
+                type: integer
+                minimum: 3
+                maximum: 12
+              target_pages:
+                default: 30
+                type: integer
+                minimum: 15
+                maximum: 60
+            required:
+            - chapter_count
+            - target_pages
+            additionalProperties: false
+          - type: object
+            properties:
+              slide_count:
+                default: 12
+                type: integer
+                minimum: 5
+                maximum: 30
+              aspect_ratio:
+                default: '16:9'
+                type: string
+                enum:
+                - '16:9'
+                - '4:3'
+            required:
+            - slide_count
+            - aspect_ratio
+            additionalProperties: false
+          - type: object
+            properties:
+              aspect_ratio:
+                default: '4:5'
+                type: string
+                enum:
+                - '1:1'
+                - '4:5'
+                - '9:16'
+                - '16:9'
+              resolution:
+                default: standard
+                type: string
+                enum:
+                - standard
+                - high
+            required:
+            - aspect_ratio
+            - resolution
+            additionalProperties: false
+          - type: object
+            properties:
+              question_count:
+                default: 10
+                type: integer
+                minimum: 5
+                maximum: 30
+              difficulty:
+                default: intermediate
+                type: string
+                enum:
+                - beginner
+                - intermediate
+                - advanced
+            required:
+            - question_count
+            - difficulty
+            additionalProperties: false
+          - type: object
+            properties:
+              duration_seconds:
+                default: 600
+                type: integer
+                minimum: 120
+                maximum: 14400
+            required:
+            - duration_seconds
+            additionalProperties: false
+          - type: object
+            properties:
+              duration_seconds:
+                default: 30
+                type: integer
+                minimum: 5
+                maximum: 180
+              aspect_ratio:
+                default: '9:16'
+                type: string
+                enum:
+                - '9:16'
+                - '1:1'
+                - '16:9'
+              resolution:
+                default: 1080p
+                type: string
+                enum:
+                - 720p
+                - 1080p
+              captions:
+                default: true
+                type: boolean
+              presentation_mode:
+                default: faceless
+                type: string
+                enum:
+                - faceless
+                - avatar
+            required:
+            - duration_seconds
+            - aspect_ratio
+            - resolution
+            - captions
+            - presentation_mode
+            additionalProperties: false
+          - type: object
+            properties:
+              duration_seconds:
+                default: 90
+                type: integer
+                minimum: 30
+                maximum: 600
+              aspect_ratio:
+                default: '16:9'
+                type: string
+                enum:
+                - '16:9'
+                - '9:16'
+                - '1:1'
+              resolution:
+                default: 1080p
+                type: string
+                enum:
+                - 720p
+                - 1080p
+              captions:
+                default: true
+                type: boolean
+              presentation_mode:
+                default: faceless
+                type: string
+                enum:
+                - faceless
+                - avatar
+            required:
+            - duration_seconds
+            - aspect_ratio
+            - resolution
+            - captions
+            - presentation_mode
+            additionalProperties: false
+          - type: object
+            properties:
+              duration_seconds:
+                default: 60
+                type: integer
+                minimum: 15
+                maximum: 180
+              aspect_ratio:
+                default: '16:9'
+                type: string
+                enum:
+                - '16:9'
+                - '9:16'
+                - '1:1'
+              resolution:
+                default: 1080p
+                type: string
+                enum:
+                - 720p
+                - 1080p
+              captions:
+                default: true
+                type: boolean
+              presentation_mode:
+                default: faceless
+                type: string
+                enum:
+                - faceless
+                - avatar
+            required:
+            - duration_seconds
+            - aspect_ratio
+            - resolution
+            - captions
+            - presentation_mode
+            additionalProperties: false
+          - type: object
+            properties:
+              duration_seconds:
+                default: 120
+                type: integer
+                minimum: 30
+                maximum: 600
+              aspect_ratio:
+                default: '16:9'
+                type: string
+                enum:
+                - '16:9'
+                - '9:16'
+                - '1:1'
+              resolution:
+                default: 1080p
+                type: string
+                enum:
+                - 720p
+                - 1080p
+              captions:
+                default: true
+                type: boolean
+              presentation_mode:
+                default: faceless
+                type: string
+                enum:
+                - faceless
+                - avatar
+              product_visual_source_ids:
+                minItems: 1
+                maxItems: 20
+                type: array
+                items:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                  pattern: ^[A-Za-z0-9_-]+$
+                uniqueItems: true
+            required:
+            - duration_seconds
+            - aspect_ratio
+            - resolution
+            - captions
+            - presentation_mode
+            additionalProperties: false
+          - type: object
+            properties:
+              duration_seconds:
+                default: 30
+                type: integer
+                minimum: 5
+                maximum: 120
+              aspect_ratio:
+                default: '9:16'
+                type: string
+                enum:
+                - '9:16'
+                - '1:1'
+                - '16:9'
+              resolution:
+                default: 1080p
+                type: string
+                enum:
+                - 720p
+                - 1080p
+              captions:
+                default: true
+                type: boolean
+              presentation_mode:
+                default: faceless
+                type: string
+                enum:
+                - faceless
+                - avatar
+            required:
+            - duration_seconds
+            - aspect_ratio
+            - resolution
+            - captions
+            - presentation_mode
+            additionalProperties: false
+        contract_version:
+          type: integer
+          minimum: 1
+        requested_model:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        model_used:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        presentation_mode:
+          oneOf:
+          - type: string
+            enum:
+            - faceless
+            - avatar
+          - type: 'null'
+        effective_voice_id:
+          oneOf:
+          - type: string
+            pattern: ^voice_[A-Za-z0-9_-]+$
+          - type: 'null'
+        effective_avatar_id:
+          oneOf:
+          - type: string
+            pattern: ^avatar_[A-Za-z0-9_-]+$
+          - type: 'null'
+        logo_revision_id:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        product_visual_source_revision_ids:
+          type: array
+          maxItems: 20
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+        resolved_subject:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        currency:
+          const: usd
+        reserved_cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        released_cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        artifacts:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - id
+            - kind
+            - mime_type
+            - is_primary
+            - url
+            - size_bytes
+            - verification
+            properties:
+              id:
+                type: string
+                pattern: ^art_[A-Za-z0-9_-]+$
+              kind:
+                type: string
+                minLength: 1
+              mime_type:
+                type: string
+                minLength: 1
+              is_primary:
+                type: boolean
+              url:
+                type: string
+                format: uri
+              size_bytes:
+                type: integer
+                minimum: 0
+              verification:
+                type: object
+                additionalProperties: false
+                required:
+                - passed
+                - issues
+                properties:
+                  passed:
+                    const: true
+                  issues:
+                    type: array
+                    maxItems: 0
+                    items: false
+        feedback:
+          oneOf:
+          - $ref: '#/components/schemas/AssetFeedback'
+          - type: 'null'
+        error:
+          oneOf:
+          - type: object
+            additionalProperties: true
+          - type: 'null'
+    AssetType:
+      type: string
+      enum:
+      - article
+      - lead_magnet
+      - ebook
+      - slides
+      - infographic
+      - quiz
+      - podcast_episode
+      - short_video
+      - explainer_video
+      - launch_video
+      - product_demo_video
+      - ad_video
+    GenerationAssetSummary:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - asset_type
+      - status
+      properties:
+        id:
+          type: string
+          pattern: ^ast_[A-Za-z0-9_-]+$
+        asset_type:
+          $ref: '#/components/schemas/AssetType'
+        status:
+          type: string
+          enum:
+          - queued
+          - generating
+          - succeeded
+          - failed
+          - cancelled
+        title:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        reserved_cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        requested_model:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        model_used:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        voice_id:
+          oneOf:
+          - type: string
+            pattern: ^voice_[A-Za-z0-9_-]+$
+          - type: 'null'
+        avatar_id:
+          oneOf:
+          - type: string
+            pattern: ^avatar_[A-Za-z0-9_-]+$
+          - type: 'null'
+        logo_revision_id:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      - correlation_id
+      - doc_url
+      properties:
+        code:
+          type: string
+          enum:
+          - invalid_request
+          - unknown_asset_type
+          - invalid_asset_options
+          - invalid_model_options
+          - model_not_supported
+          - model_retired
+          - project_not_ready
+          - project_limit_exceeded
+          - provider_operation_limit_exceeded
+          - source_not_ready
+          - source_unreachable
+          - source_paywalled
+          - product_visual_required
+          - no_qualified_trend
+          - no_qualified_knowledge
+          - input_resolution_failed
+          - max_cost_exceeded
+          - payment_required
+          - content_loop_budget_exceeded
+          - content_loop_limit_exceeded
+          - idempotency_conflict
+          - idempotency_in_progress
+          - consent_required
+          - voice_not_found
+          - voice_not_ready
+          - voice_not_supported
+          - avatar_not_found
+          - avatar_not_ready
+          - avatar_not_supported
+          - artifact_verification_failed
+          - rate_limited
+          - webhook_limit_exceeded
+          - not_found
+          - unauthorized
+          - forbidden
+          - internal_error
+        message:
+          type: string
+        details:
+          oneOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/ErrorDetail'
+          - type: object
+        correlation_id:
+          type: string
+          pattern: ^corr_[A-Za-z0-9_-]+$
+        doc_url:
+          type: string
+          format: uri
+    GenerationPreview:
+      type: object
+      additionalProperties: false
+      required:
+      - currency
+      - total_cost_usd
+      - funding_sufficient
+      - price_version
+      - input_contract_version
+      - project_id
+      - input
+      - assets
+      properties:
+        currency:
+          const: usd
+        total_cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        funding_sufficient:
+          type: boolean
+        price_version:
+          type: string
+          minLength: 1
+        input_contract_version:
+          type: integer
+          minimum: 1
+        project_id:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+        input:
+          oneOf:
+          - type: object
+            properties:
+              type:
+                type: string
+                const: trend
+              lookback_days:
+                type: integer
+                minimum: 1
+                maximum: 30
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 4000
+                x-max-utf8-bytes: 4000
+            required:
+            - type
+            additionalProperties: false
+          - type: object
+            properties:
+              type:
+                type: string
+                const: topic
+              topic:
+                type: string
+                minLength: 1
+                maxLength: 2000
+                x-max-utf8-bytes: 2000
+              evidence_scope:
+                type: string
+                enum:
+                - project
+                - project_and_web
+              lookback_days:
+                type: integer
+                minimum: 1
+                maximum: 30
+              source_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^src_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              collection_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^col_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 4000
+                x-max-utf8-bytes: 4000
+            required:
+            - type
+            - topic
+            additionalProperties: false
+          - type: object
+            properties:
+              type:
+                type: string
+                const: knowledge
+              source_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^src_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              collection_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^col_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 4000
+                x-max-utf8-bytes: 4000
+            required:
+            - type
+            additionalProperties: false
+        assets:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - asset_type
+            - normalized_options
+            - cost_usd
+            - basis
+            - contract_version
+            - requested_model
+            - model_used
+            - effective_voice_id
+            - effective_avatar_id
+            - logo
+            - product_visual_source_ids
+            properties:
+              asset_type:
+                $ref: '#/components/schemas/AssetType'
+              normalized_options:
+                description: One normalized first-class Asset options contract. Exact schemas are also discoverable from GET /asset-types.
+                anyOf:
+                - type: object
+                  properties:
+                    target_words:
+                      default: 1200
+                      type: integer
+                      minimum: 500
+                      maximum: 3000
+                  required:
+                  - target_words
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    page_count:
+                      default: 10
+                      type: integer
+                      minimum: 4
+                      maximum: 30
+                    format:
+                      default: auto
+                      type: string
+                      enum:
+                      - auto
+                      - checklist
+                      - cheat_sheet
+                      - workbook
+                      - planner
+                      - tracker
+                      - scorecard
+                      - roadmap
+                      - challenge
+                      - swipe_file
+                      - resource_guide
+                      - comparison_guide
+                      - meal_plan
+                  required:
+                  - page_count
+                  - format
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    chapter_count:
+                      default: 6
+                      type: integer
+                      minimum: 3
+                      maximum: 12
+                    target_pages:
+                      default: 30
+                      type: integer
+                      minimum: 15
+                      maximum: 60
+                  required:
+                  - chapter_count
+                  - target_pages
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    slide_count:
+                      default: 12
+                      type: integer
+                      minimum: 5
+                      maximum: 30
+                    aspect_ratio:
+                      default: '16:9'
+                      type: string
+                      enum:
+                      - '16:9'
+                      - '4:3'
+                  required:
+                  - slide_count
+                  - aspect_ratio
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    aspect_ratio:
+                      default: '4:5'
+                      type: string
+                      enum:
+                      - '1:1'
+                      - '4:5'
+                      - '9:16'
+                      - '16:9'
+                    resolution:
+                      default: standard
+                      type: string
+                      enum:
+                      - standard
+                      - high
+                  required:
+                  - aspect_ratio
+                  - resolution
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    question_count:
+                      default: 10
+                      type: integer
+                      minimum: 5
+                      maximum: 30
+                    difficulty:
+                      default: intermediate
+                      type: string
+                      enum:
+                      - beginner
+                      - intermediate
+                      - advanced
+                  required:
+                  - question_count
+                  - difficulty
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 600
+                      type: integer
+                      minimum: 120
+                      maximum: 14400
+                  required:
+                  - duration_seconds
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 30
+                      type: integer
+                      minimum: 5
+                      maximum: 180
+                    aspect_ratio:
+                      default: '9:16'
+                      type: string
+                      enum:
+                      - '9:16'
+                      - '1:1'
+                      - '16:9'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 90
+                      type: integer
+                      minimum: 30
+                      maximum: 600
+                    aspect_ratio:
+                      default: '16:9'
+                      type: string
+                      enum:
+                      - '16:9'
+                      - '9:16'
+                      - '1:1'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 60
+                      type: integer
+                      minimum: 15
+                      maximum: 180
+                    aspect_ratio:
+                      default: '16:9'
+                      type: string
+                      enum:
+                      - '16:9'
+                      - '9:16'
+                      - '1:1'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 120
+                      type: integer
+                      minimum: 30
+                      maximum: 600
+                    aspect_ratio:
+                      default: '16:9'
+                      type: string
+                      enum:
+                      - '16:9'
+                      - '9:16'
+                      - '1:1'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                    product_visual_source_ids:
+                      minItems: 1
+                      maxItems: 20
+                      type: array
+                      items:
+                        type: string
+                        minLength: 1
+                        maxLength: 200
+                        pattern: ^[A-Za-z0-9_-]+$
+                      uniqueItems: true
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 30
+                      type: integer
+                      minimum: 5
+                      maximum: 120
+                    aspect_ratio:
+                      default: '9:16'
+                      type: string
+                      enum:
+                      - '9:16'
+                      - '1:1'
+                      - '16:9'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+              normalized_model_options:
+                type: object
+                additionalProperties: true
+                description: Present only when the exact model has normalized native options.
+              cost_usd:
+                type: string
+                pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+              basis:
+                type: string
+                minLength: 1
+              contract_version:
+                type: integer
+                minimum: 1
+              requested_model:
+                oneOf:
+                - type: string
+                  minLength: 1
+                - type: 'null'
+              model_used:
+                type: string
+                minLength: 1
+              effective_voice_id:
+                oneOf:
+                - type: string
+                  pattern: ^voice_[A-Za-z0-9_-]+$
+                - type: 'null'
+              effective_avatar_id:
+                oneOf:
+                - type: string
+                  pattern: ^avatar_[A-Za-z0-9_-]+$
+                - type: 'null'
+              logo:
+                oneOf:
+                - type: object
+                  additionalProperties: false
+                  required:
+                  - id
+                  - revision
+                  properties:
+                    id:
+                      type: string
+                      minLength: 1
+                    revision:
+                      type: integer
+                      minimum: 1
+                - type: 'null'
+              product_visual_source_ids:
+                type: array
+                maxItems: 20
+                uniqueItems: true
+                items:
+                  type: string
+                  pattern: ^src_[A-Za-z0-9_-]+$
+              original_asset_id:
+                type: string
+                pattern: ^ast_[A-Za-z0-9_-]+$
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required:
+      - reason
+      properties:
+        field:
+          type: string
+        reason:
+          type: string
+    Generation:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - project_id
+      - edited_from_generation_id
+      - status
+      - currency
+      - created_at
+      properties:
+        id:
+          type: string
+          pattern: ^gen_[A-Za-z0-9_-]+$
+        project_id:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+        edited_from_generation_id:
+          oneOf:
+          - type: string
+            pattern: ^gen_[A-Za-z0-9_-]+$
+          - type: 'null'
+        content_loop_run_id:
+          oneOf:
+          - type: string
+            pattern: ^run_[A-Za-z0-9_-]+$
+          - type: 'null'
+        status:
+          type: string
+          enum:
+          - queued
+          - researching
+          - generating
+          - succeeded
+          - partially_succeeded
+          - failed
+          - cancelled
+        input:
+          oneOf:
+          - type: object
+            properties:
+              type:
+                type: string
+                const: trend
+              lookback_days:
+                type: integer
+                minimum: 1
+                maximum: 30
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 4000
+                x-max-utf8-bytes: 4000
+            required:
+            - type
+            additionalProperties: false
+          - type: object
+            properties:
+              type:
+                type: string
+                const: topic
+              topic:
+                type: string
+                minLength: 1
+                maxLength: 2000
+                x-max-utf8-bytes: 2000
+              evidence_scope:
+                type: string
+                enum:
+                - project
+                - project_and_web
+              lookback_days:
+                type: integer
+                minimum: 1
+                maximum: 30
+              source_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^src_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              collection_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^col_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 4000
+                x-max-utf8-bytes: 4000
+            required:
+            - type
+            - topic
+            additionalProperties: false
+          - type: object
+            properties:
+              type:
+                type: string
+                const: knowledge
+              source_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^src_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              collection_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^col_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 4000
+                x-max-utf8-bytes: 4000
+            required:
+            - type
+            additionalProperties: false
+        input_contract_version:
+          type: integer
+          minimum: 1
+        resolved_context:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            required:
+            - topic
+            - angle
+            - qualification_reason
+            - key_facts
+            - input_type
+            - evidence
+            - retrieved_chunk_ids
+            properties:
+              topic:
+                type: string
+                minLength: 1
+                maxLength: 160
+              angle:
+                type: string
+                minLength: 1
+                maxLength: 320
+              qualification_reason:
+                type: string
+                minLength: 1
+                maxLength: 240
+              key_facts:
+                type: array
+                minItems: 1
+                maxItems: 12
+                items:
+                  type: string
+                  minLength: 1
+                  maxLength: 500
+              input_type:
+                type: string
+                enum:
+                - trend
+                - topic
+                - knowledge
+              evidence:
+                type: array
+                maxItems: 12
+                items:
+                  type: object
+                  additionalProperties: false
+                  required:
+                  - evidence_id
+                  - title
+                  - url
+                  - published_at
+                  - excerpt
+                  - retrieved_at
+                  properties:
+                    evidence_id:
+                      type: string
+                      pattern: ^web_[a-f0-9]{32}$
+                    title:
+                      type: string
+                      minLength: 1
+                      maxLength: 500
+                    url:
+                      type: string
+                      format: uri
+                    published_at:
+                      type: string
+                      format: date-time
+                    excerpt:
+                      type: string
+                      minLength: 1
+                      maxLength: 4000
+                    retrieved_at:
+                      type: string
+                      format: date-time
+              retrieved_chunk_ids:
+                type: array
+                maxItems: 10000
+                uniqueItems: true
+                items:
+                  type: string
+                  minLength: 1
+          - type: 'null'
+        currency:
+          const: usd
+        reserved_cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        settled_cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        released_cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        max_cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        error:
+          oneOf:
+          - type: object
+            additionalProperties: true
+          - type: 'null'
+        poll_after_seconds:
+          type: integer
+          minimum: 1
+          maximum: 15
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        assets:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/GenerationAssetSummary'
+            - $ref: '#/components/schemas/Asset'
+  responses:
+    AutoContentError:
+      description: Normalized AutoContent error; provider payloads are never returned.
+      headers:
+        Retry-After:
+          description: Whole seconds before retry when the error supplies a bounded retry time.
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              code: max_cost_exceeded
+              message: Current price exceeds max_cost_usd.
+              correlation_id: corr_42
+              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
+  securitySchemes:
+    platformOAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Platform OAuth JWT
+    platformApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: acp_ Platform API key

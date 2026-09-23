@@ -1,0 +1,82 @@
+openapi: 3.2.0
+info:
+  title: Content Files API
+  version: 1.0.0
+  description: API documentation for the Content API
+servers:
+- url: https://api.autocontentapi.com
+tags:
+- name: Files
+  description: Upload and manage private files for resources
+paths:
+  /files:
+    post:
+      summary: Upload a private file for later use as a content resource
+      tags:
+      - Files
+      security:
+      - bearerAuth: []
+      consumes:
+      - multipart/form-data
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File to upload (max 200MB)
+      responses:
+        '200':
+          description: File uploaded
+        '400':
+          description: Validation error
+        '401':
+          description: Unauthorized
+      operationId: postFiles
+      x-operation-id-source: derived
+    get:
+      summary: List uploaded files for the authenticated token
+      tags:
+      - Files
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: List of files
+        '401':
+          description: Unauthorized
+      operationId: getFiles
+      x-operation-id-source: derived
+  /files/{id}:
+    delete:
+      summary: Delete an uploaded file by id
+      tags:
+      - Files
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: File id returned by the upload endpoint
+      responses:
+        '200':
+          description: File deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: File not found
+      operationId: deleteFilesById
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,1878 @@
+openapi: 3.2.0
+info:
+  title: Autocontent Projects API
+  version: 1.0.0
+  description: 'Operations tagged Projects across 2 of this provider''s published API definitions: autocontent-api-legacy-content-openapi.json, autocontent-api-platform-v1-openapi.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.autocontentapi.com
+- url: https://api.autocontentapi.com/v1
+tags:
+- name: Projects
+  description: Project context management for content generation
+paths:
+  /projects:
+    get:
+      summary: Get all projects for the authenticated user
+      description: 'Retrieves all active projects owned by the authenticated user.
+
+        Projects are returned in descending order by last update time.'
+      tags:
+      - Projects
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: List of user's projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        '401':
+          description: Unauthorized - valid API token required
+        '500':
+          description: Internal server error
+      operationId: getProjects
+      x-operation-id-source: derived
+    post:
+      summary: Create a new project
+      description: 'Creates a new project for the authenticated user.
+
+        Projects can be referenced when generating tweets/threads to provide context.
+
+
+        If a URL is provided without a description, the API will:
+
+        1. Fetch the website content
+
+        2. Use AI to generate a comprehensive project description in markdown format
+
+
+        Either description or url must be provided.'
+      tags:
+      - Projects
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectRequest'
+      responses:
+        '201':
+          description: Project created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  project:
+                    $ref: '#/components/schemas/Project'
+        '400':
+          description: Bad request - Missing required fields or validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    examples:
+                      missing_name:
+                        value: 'Missing required field: name'
+                      missing_description_or_url:
+                        value: Either description or url must be provided
+                      name_too_long:
+                        value: Project name must be 200 characters or less
+                      transparent_project_image:
+                        value: 'Invalid project image: Project images must be fully opaque. Transparent or partially transparent pixels are not allowed.'
+        '401':
+          description: Unauthorized - valid API token required
+        '500':
+          description: Internal server error
+      operationId: postProjects
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /projects/{id}:
+    get:
+      summary: Get a specific project by ID
+      description: 'Retrieves a specific project by its ID.
+
+        Only the project owner can access their projects.'
+      tags:
+      - Projects
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: Project ID (GUID)
+        example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: Bad request - Missing project ID
+        '401':
+          description: Unauthorized - valid API token required
+        '404':
+          description: Project not found
+        '500':
+          description: Internal server error
+      operationId: getProjectsById
+      x-operation-id-source: derived
+    patch:
+      operationId: updateProject
+      summary: Edit and confirm a Project profile
+      tags:
+      - Projects
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.write
+      x-principal: oauth_or_api_key
+      x-idempotency-required: true
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: 1–255 visible ASCII bytes; UUID recommended.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[!-~]+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                  x-max-utf8-bytes: 200
+                description:
+                  type: string
+                  minLength: 0
+                  maxLength: 4000
+                  x-max-utf8-bytes: 4000
+                category:
+                  type: string
+                  minLength: 0
+                  maxLength: 500
+                  x-max-utf8-bytes: 500
+                audience:
+                  type: string
+                  minLength: 0
+                  maxLength: 2000
+                  x-max-utf8-bytes: 2000
+                relevant_keywords:
+                  maxItems: 50
+                  type: array
+                  items:
+                    type: string
+                    minLength: 1
+                    maxLength: 200
+                    x-max-utf8-bytes: 200
+                competitor_keywords:
+                  maxItems: 50
+                  type: array
+                  items:
+                    type: string
+                    minLength: 1
+                    maxLength: 200
+                    x-max-utf8-bytes: 200
+                excluded_keywords:
+                  maxItems: 50
+                  type: array
+                  items:
+                    type: string
+                    minLength: 1
+                    maxLength: 200
+                    x-max-utf8-bytes: 200
+                allow_competitor_mentions:
+                  type: boolean
+                research_locale:
+                  type: string
+                  minLength: 2
+                  maxLength: 255
+                  format: bcp47
+                crawl_scope:
+                  type: object
+                  properties:
+                    root_url:
+                      type: string
+                      minLength: 1
+                      maxLength: 2048
+                      format: uri
+                      x-max-utf8-bytes: 2048
+                  required:
+                  - root_url
+                  additionalProperties: false
+                brand:
+                  type: object
+                  properties:
+                    colors:
+                      maxItems: 8
+                      type: array
+                      items:
+                        type: string
+                        pattern: ^#[0-9A-F]{6}$
+                    instructions:
+                      type: string
+                      minLength: 0
+                      maxLength: 2000
+                      x-max-utf8-bytes: 2000
+                    default_voice_id:
+                      anyOf:
+                      - type: string
+                        pattern: ^voice_[A-Za-z0-9_-]+$
+                      - type: 'null'
+                    default_avatar_id:
+                      anyOf:
+                      - type: string
+                        pattern: ^avatar_[A-Za-z0-9_-]+$
+                      - type: 'null'
+                  additionalProperties: false
+                confirmed:
+                  type: boolean
+                  const: true
+              additionalProperties: false
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project_2'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    delete:
+      operationId: archiveProject
+      summary: Archive a Project and its Loops
+      tags:
+      - Projects
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.write
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project_2'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    servers:
+    - url: https://api.autocontentapi.com
+  /projects/{id}/update:
+    post:
+      summary: Update a project
+      description: 'Updates an existing project''s name and description.
+
+        Only the project owner can update their projects.
+
+
+        If a URL is provided without a description, the API will:
+
+        1. Fetch the website content
+
+        2. Use AI to generate a comprehensive project description in markdown format
+
+
+        Either description or url must be provided.'
+      tags:
+      - Projects
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: Project ID (GUID)
+        example: 123e4567-e89b-12d3-a456-426614174000
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProjectRequest'
+      responses:
+        '200':
+          description: Project updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  project:
+                    $ref: '#/components/schemas/Project'
+        '400':
+          description: Bad request - Missing required fields or validation error
+        '401':
+          description: Unauthorized - valid API token required
+        '404':
+          description: Project not found or unauthorized
+        '500':
+          description: Internal server error
+      operationId: postProjectsByIdUpdate
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /projects/{id}/delete:
+    post:
+      summary: Delete a project
+      description: 'Soft deletes a project (marks it as inactive).
+
+        Only the project owner can delete their projects.'
+      tags:
+      - Projects
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: Project ID (GUID)
+        example: 123e4567-e89b-12d3-a456-426614174000
+      responses:
+        '200':
+          description: Project deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Project deleted successfully
+        '400':
+          description: Bad request - Missing project ID
+        '401':
+          description: Unauthorized - valid API token required
+        '404':
+          description: Project not found or unauthorized
+        '500':
+          description: Internal server error
+      operationId: postProjectsByIdDelete
+      x-operation-id-source: derived
+    servers:
+    - url: https://api.autocontentapi.com
+  /projects/{id}/logo:
+    put:
+      operationId: replaceProjectLogo
+      summary: Replace the primary Project logo revision
+      tags:
+      - Projects
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.write
+      x-principal: oauth_or_api_key
+      x-idempotency-required: true
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: 1–255 visible ASCII bytes; UUID recommended.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[!-~]+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source_url:
+                  type: string
+                  minLength: 1
+                  maxLength: 2048
+                  format: uri
+                  x-max-utf8-bytes: 2048
+              required:
+              - source_url
+              additionalProperties: false
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project_2'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    delete:
+      operationId: removeProjectLogo
+      summary: Clear the primary Project logo for future work
+      tags:
+      - Projects
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.write
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project_2'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    servers:
+    - url: https://api.autocontentapi.com/v1
+  /projects/{id}/refresh:
+    post:
+      operationId: refreshProject
+      summary: Refresh Project website analysis
+      tags:
+      - Projects
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.write
+      x-principal: oauth_or_api_key
+      x-idempotency-required: true
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: 1–255 visible ASCII bytes; UUID recommended.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[!-~]+$
+      responses:
+        '202':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project_2'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    servers:
+    - url: https://api.autocontentapi.com/v1
+  /projects/{id}/collections:
+    post:
+      operationId: createCollection
+      summary: Create a Source collection
+      tags:
+      - Projects
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.write
+      x-principal: oauth_or_api_key
+      x-idempotency-required: true
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: 1–255 visible ASCII bytes; UUID recommended.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[!-~]+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                  x-max-utf8-bytes: 200
+              required:
+              - name
+              additionalProperties: false
+      responses:
+        '201':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    get:
+      operationId: listCollections
+      summary: List Source collections
+      tags:
+      - Projects
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.read
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 4096
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(?:[1-9]|[1-9][0-9]|100)$
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - data
+                - next_cursor
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Collection'
+                  next_cursor:
+                    oneOf:
+                    - type: string
+                      minLength: 1
+                    - type: 'null'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    servers:
+    - url: https://api.autocontentapi.com/v1
+  /projects/{id}/sources:
+    post:
+      operationId: createSource
+      summary: Add a Project Source
+      tags:
+      - Projects
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.write
+      x-principal: oauth_or_api_key
+      x-idempotency-required: true
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: 1–255 visible ASCII bytes; UUID recommended.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[!-~]+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    const: url
+                  url:
+                    type: string
+                    minLength: 1
+                    maxLength: 2048
+                    format: uri
+                    x-max-utf8-bytes: 2048
+                  title: {}
+                  collection_id:
+                    type: string
+                    pattern: ^col_[A-Za-z0-9_-]+$
+                required:
+                - type
+                - url
+                additionalProperties: false
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    const: youtube
+                  url:
+                    type: string
+                    minLength: 1
+                    maxLength: 2048
+                    format: uri
+                    x-max-utf8-bytes: 2048
+                  title: {}
+                  collection_id:
+                    type: string
+                    pattern: ^col_[A-Za-z0-9_-]+$
+                required:
+                - type
+                - url
+                additionalProperties: false
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    const: text
+                  text: {}
+                  title: {}
+                  collection_id:
+                    type: string
+                    pattern: ^col_[A-Za-z0-9_-]+$
+                required:
+                - type
+                - text
+                - title
+                additionalProperties: false
+              - type: object
+                properties:
+                  type:
+                    type: string
+                    const: product_visual
+                  url:
+                    type: string
+                    minLength: 1
+                    maxLength: 2048
+                    format: uri
+                    x-max-utf8-bytes: 2048
+                  title: {}
+                  collection_id:
+                    type: string
+                    pattern: ^col_[A-Za-z0-9_-]+$
+                required:
+                - type
+                - url
+                additionalProperties: false
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                collection_id:
+                  type: string
+                  pattern: ^col_[A-Za-z0-9_-]+$
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 500
+                  x-max-utf8-bytes: 500
+                keep_as_project_asset:
+                  type: boolean
+                  default: true
+                  description: Set false to keep the upload request-only; it expires after 24 hours unless claimed by a Generation.
+      responses:
+        '202':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Source'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    get:
+      operationId: listSources
+      summary: List Project Sources
+      tags:
+      - Projects
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.read
+      x-principal: oauth_or_api_key
+      x-idempotency-required: false
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 4096
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(?:[1-9]|[1-9][0-9]|100)$
+      - name: collection_id
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^col_[A-Za-z0-9_-]+$
+      - name: query
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+          x-max-utf8-bytes: 200
+      responses:
+        '200':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - data
+                - next_cursor
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Source'
+                  next_cursor:
+                    oneOf:
+                    - type: string
+                      minLength: 1
+                    - type: 'null'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    servers:
+    - url: https://api.autocontentapi.com/v1
+  /projects/{id}/voices:
+    post:
+      operationId: createVoice
+      summary: Create a consented custom Project Voice
+      tags:
+      - Projects
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.generate
+      x-principal: oauth_or_api_key
+      x-idempotency-required: true
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: 1–255 visible ASCII bytes; UUID recommended.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[!-~]+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source_url:
+                  type: string
+                  minLength: 1
+                  maxLength: 2048
+                  format: uri
+                  x-max-utf8-bytes: 2048
+                display_name:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                  x-max-utf8-bytes: 80
+                consent_attested:
+                  type: boolean
+                  const: true
+                ownership_attested:
+                  type: boolean
+                  const: true
+              required:
+              - source_url
+              - display_name
+              - consent_attested
+              - ownership_attested
+              additionalProperties: false
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - file
+              - display_name
+              - consent_attested
+              - ownership_attested
+              properties:
+                file:
+                  type: string
+                  format: binary
+                display_name:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                  x-max-utf8-bytes: 80
+                consent_attested:
+                  type: boolean
+                  const: true
+                ownership_attested:
+                  type: boolean
+                  const: true
+      responses:
+        '202':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voice'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    servers:
+    - url: https://api.autocontentapi.com/v1
+  /projects/{id}/avatars:
+    post:
+      operationId: createAvatar
+      summary: Create a consented custom Project Avatar
+      tags:
+      - Projects
+      security:
+      - platformOAuth: []
+      - platformApiKey: []
+      x-required-scopes:
+      - platform.generate
+      x-principal: oauth_or_api_key
+      x-idempotency-required: true
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: 1–255 visible ASCII bytes; UUID recommended.
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: ^[!-~]+$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source_url:
+                  type: string
+                  minLength: 1
+                  maxLength: 2048
+                  format: uri
+                  x-max-utf8-bytes: 2048
+                display_name:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                  x-max-utf8-bytes: 80
+                consent_attested:
+                  type: boolean
+                  const: true
+                ownership_attested:
+                  type: boolean
+                  const: true
+              required:
+              - source_url
+              - display_name
+              - consent_attested
+              - ownership_attested
+              additionalProperties: false
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - file
+              - display_name
+              - consent_attested
+              - ownership_attested
+              properties:
+                file:
+                  type: string
+                  format: binary
+                display_name:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                  x-max-utf8-bytes: 80
+                consent_attested:
+                  type: boolean
+                  const: true
+                ownership_attested:
+                  type: boolean
+                  const: true
+      responses:
+        '202':
+          description: Successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Avatar'
+        default:
+          $ref: '#/components/responses/AutoContentError'
+    servers:
+    - url: https://api.autocontentapi.com/v1
+components:
+  schemas:
+    UpdateProjectRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Updated name of the project (max 200 characters)
+          example: AI SaaS Platform
+        description:
+          type: string
+          description: Updated description of the project. Either description or url must be provided.
+          example: Revolutionary AI-powered content creation platform with advanced automation features.
+        url:
+          type: string
+          description: Optional URL to fetch website content for auto-generating description. If provided without a description, AI will generate one.
+          example: https://example.com
+        imageData:
+          type:
+          - string
+          - 'null'
+          description: Optional base64 encoded PNG/JPG. Provide `null` to remove the current brand image. The source image must be fully opaque; images containing any fully or partially transparent pixels are rejected. Any size is accepted and will be resized to 200x50 on upload.
+        imageUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+          description: Optional HTTP/HTTPS URL pointing to a PNG or JPG brand image. Provide `null` to remove the stored image. The source image must be fully opaque; images containing any fully or partially transparent pixels are rejected. The API stores a 200x50 version. Cannot be combined with `imageData`.
+        textColor:
+          type:
+          - string
+          - 'null'
+          description: Optional hex color (format
+          example: '#111827'
+          pattern: ^#[0-9A-Fa-f]{6}$
+        backgroundColor:
+          type:
+          - string
+          - 'null'
+          description: Optional hex color (format
+          example: '#F9FAFB'
+          pattern: ^#[0-9A-Fa-f]{6}$
+        brandColor:
+          type:
+          - string
+          - 'null'
+          description: Optional primary accent hex color (format
+          example: '#4338CA'
+          pattern: ^#[0-9A-Fa-f]{6}$
+        accentColor:
+          type:
+          - string
+          - 'null'
+          description: Optional secondary accent hex color (format
+          example: '#7C72EF'
+          pattern: ^#[0-9A-Fa-f]{6}$
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the project (GUID)
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          description: Name of the project
+          example: AI Startup Launch
+        description:
+          type: string
+          description: Detailed description of the project
+          example: Building an AI-powered SaaS tool for content creators. Focus on automation, efficiency, and user experience.
+        url:
+          type: string
+          description: Optional URL associated with the project
+          example: https://example.com
+        token:
+          type: string
+          description: Client token (owner of the project)
+          example: abc123-def456-ghi789
+        createdOn:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: '2024-01-01T12:00:00Z'
+        updatedOn:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: '2024-01-02T14:30:00Z'
+        active:
+          type: boolean
+          description: Whether the project is active
+          example: true
+        imageUrl:
+          type: string
+          format: uri
+          description: Optional URL of the 200x50 brand image associated with the project
+        textColor:
+          type:
+          - string
+          - 'null'
+          description: Hex color (e.g.
+          example: '#111827'
+        backgroundColor:
+          type:
+          - string
+          - 'null'
+          description: Hex color (e.g.
+          example: '#F9FAFB'
+        brandColor:
+          type:
+          - string
+          - 'null'
+          description: Primary branding accent color applied to overlay shapes when branding is configured
+          example: '#4338CA'
+        accentColor:
+          type:
+          - string
+          - 'null'
+          description: Secondary accent color applied to overlay highlights and subtitles when branding is configured
+          example: '#7C72EF'
+    CreateProjectRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Name of the project (max 200 characters)
+          example: AI Startup Launch
+        description:
+          type: string
+          description: Detailed description of the project. Either description or url must be provided.
+          example: Building an AI-powered SaaS tool for content creators. Focus on automation, efficiency, and user experience.
+        url:
+          type: string
+          description: Optional URL to fetch website content for auto-generating description. If provided without a description, AI will generate one.
+          example: https://example.com
+        imageData:
+          type: string
+          description: Optional base64 encoded PNG/JPG representing the project's brand image. The source image must be fully opaque; images containing any fully or partially transparent pixels are rejected. Any dimensions are accepted and the API resizes the image to 200x50 before storing the hosted copy as `imageUrl`.
+        imageUrl:
+          type: string
+          format: uri
+          description: Optional HTTP/HTTPS URL to an existing PNG or JPG brand image. The source image must be fully opaque; images containing any fully or partially transparent pixels are rejected. The API downloads the source, resizes it to 200x50, and hosts the optimized copy. Cannot be combined with `imageData`.
+        textColor:
+          type: string
+          description: Optional hex color (format
+          example: '#111827'
+          pattern: ^#[0-9A-Fa-f]{6}$
+        backgroundColor:
+          type: string
+          description: Optional hex color (format
+          example: '#F9FAFB'
+          pattern: ^#[0-9A-Fa-f]{6}$
+        brandColor:
+          type: string
+          description: Optional primary accent hex color (format
+          example: '#4338CA'
+          pattern: ^#[0-9A-Fa-f]{6}$
+        accentColor:
+          type: string
+          description: Optional secondary accent hex color (format
+          example: '#7C72EF'
+          pattern: ^#[0-9A-Fa-f]{6}$
+    Collection:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - project_id
+      - name
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: string
+          pattern: ^col_[A-Za-z0-9_-]+$
+        project_id:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ResourceError:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          minLength: 1
+        message:
+          type: string
+          minLength: 1
+    Project_2:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - status
+      - website_url
+      - name
+      - description
+      - category
+      - audience
+      - relevant_keywords
+      - competitor_keywords
+      - excluded_keywords
+      - allow_competitor_mentions
+      - research_locale
+      - crawl_scope
+      - brand
+      - profile_revision
+      - refresh_error
+      - poll_after_seconds
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+        status:
+          type: string
+          enum:
+          - analyzing
+          - needs_review
+          - ready
+          - failed
+          - archived
+        website_url:
+          type: string
+          format: uri
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 4000
+        category:
+          type: string
+          maxLength: 500
+        audience:
+          type: string
+          maxLength: 2000
+        relevant_keywords:
+          type: array
+          maxItems: 50
+          uniqueItems: true
+          items:
+            type: string
+            maxLength: 200
+        competitor_keywords:
+          type: array
+          maxItems: 50
+          uniqueItems: true
+          items:
+            type: string
+            maxLength: 200
+        excluded_keywords:
+          type: array
+          maxItems: 50
+          uniqueItems: true
+          items:
+            type: string
+            maxLength: 200
+        allow_competitor_mentions:
+          type: boolean
+        research_locale:
+          type: string
+          minLength: 2
+          maxLength: 255
+          format: bcp47
+        crawl_scope:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            required:
+            - root_url
+            - included_page_count
+            properties:
+              root_url:
+                type: string
+                format: uri
+              included_page_count:
+                type: integer
+                minimum: 0
+                maximum: 25
+          - type: 'null'
+        brand:
+          type: object
+          additionalProperties: false
+          required:
+          - colors
+          - instructions
+          - logo
+          - default_voice_id
+          - default_avatar_id
+          properties:
+            colors:
+              type: array
+              maxItems: 8
+              uniqueItems: true
+              items:
+                type: string
+                pattern: ^#[0-9A-F]{6}$
+            instructions:
+              type: string
+              maxLength: 2000
+            logo:
+              oneOf:
+              - type: object
+                additionalProperties: false
+                required:
+                - id
+                - revision
+                - mime_type
+                - width
+                - height
+                - url
+                properties:
+                  id:
+                    type: string
+                    minLength: 1
+                  revision:
+                    type: integer
+                    minimum: 1
+                  mime_type:
+                    type: string
+                    enum:
+                    - image/png
+                    - image/jpeg
+                    - image/webp
+                  width:
+                    type: integer
+                    minimum: 1
+                  height:
+                    type: integer
+                    minimum: 1
+                  url:
+                    type: string
+                    format: uri
+              - type: 'null'
+            default_voice_id:
+              oneOf:
+              - type: string
+                pattern: ^voice_[A-Za-z0-9_-]+$
+              - type: 'null'
+            default_avatar_id:
+              oneOf:
+              - type: string
+                pattern: ^avatar_[A-Za-z0-9_-]+$
+              - type: 'null'
+        profile_revision:
+          type: integer
+          minimum: 0
+        refresh_error:
+          oneOf:
+          - type: object
+            additionalProperties: true
+          - type: 'null'
+        poll_after_seconds:
+          oneOf:
+          - type: integer
+            minimum: 1
+            maximum: 15
+          - type: 'null'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Source:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - project_id
+      - collection_id
+      - kind
+      - title
+      - external_url
+      - status
+      - refreshing
+      - refresh_operation_id
+      - refresh_error
+      - error
+      - visual_count
+      - current_revision
+      - retention_scope
+      - expires_at
+      - claimed_generation_id
+      - removed_at
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: string
+          pattern: ^src_[A-Za-z0-9_-]+$
+        project_id:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+        collection_id:
+          oneOf:
+          - type: string
+            pattern: ^col_[A-Za-z0-9_-]+$
+          - type: 'null'
+        kind:
+          type: string
+          enum:
+          - website_page
+          - url
+          - youtube
+          - pdf
+          - document
+          - text
+          - product_visual
+        title:
+          type: string
+          minLength: 1
+          maxLength: 500
+        external_url:
+          oneOf:
+          - type: string
+            format: uri
+          - type: 'null'
+        status:
+          type: string
+          enum:
+          - processing
+          - ready
+          - failed
+          - removed
+        refreshing:
+          type: boolean
+        refresh_operation_id:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        refresh_error:
+          oneOf:
+          - type: object
+            additionalProperties: true
+          - type: 'null'
+        error:
+          oneOf:
+          - type: object
+            additionalProperties: true
+          - type: 'null'
+        visual_count:
+          type: integer
+          minimum: 0
+          maximum: 16
+        current_revision:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            required:
+            - id
+            - revision
+            - mime_type
+            - byte_size
+            - normalized_text_bytes
+            - width
+            - height
+            - created_at
+            properties:
+              id:
+                type: string
+                minLength: 1
+              revision:
+                type: integer
+                minimum: 1
+              mime_type:
+                type: string
+                minLength: 1
+              byte_size:
+                oneOf:
+                - type: integer
+                  minimum: 0
+                - type: 'null'
+              normalized_text_bytes:
+                oneOf:
+                - type: integer
+                  minimum: 0
+                - type: 'null'
+              width:
+                oneOf:
+                - type: integer
+                  minimum: 1
+                - type: 'null'
+              height:
+                oneOf:
+                - type: integer
+                  minimum: 1
+                - type: 'null'
+              created_at:
+                oneOf:
+                - type: string
+                  format: date-time
+                - type: 'null'
+          - type: 'null'
+        retention_scope:
+          type: string
+          enum:
+          - project
+          - request
+        expires_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        claimed_generation_id:
+          oneOf:
+          - type: string
+            pattern: ^gen_[A-Za-z0-9_-]+$
+          - type: 'null'
+        removed_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Voice:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - project_id
+      - display_name
+      - kind
+      - status
+      - compatibility
+      - created_at
+      - error
+      properties:
+        id:
+          type: string
+          pattern: ^voice_[A-Za-z0-9_-]+$
+        project_id:
+          oneOf:
+          - type: string
+            pattern: ^prj_[A-Za-z0-9_-]+$
+          - type: 'null'
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        kind:
+          type: string
+          enum:
+          - stock
+          - custom
+        status:
+          type: string
+          enum:
+          - processing
+          - ready
+          - failed
+          - revoked
+        compatibility:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - asset_type
+            - model_id
+            - language
+            properties:
+              asset_type:
+                $ref: '#/components/schemas/AssetType'
+              model_id:
+                type: string
+                minLength: 1
+              language:
+                type: string
+                minLength: 2
+                maxLength: 255
+                format: bcp47
+        created_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        error:
+          oneOf:
+          - $ref: '#/components/schemas/ResourceError'
+          - type: 'null'
+    AssetType:
+      type: string
+      enum:
+      - article
+      - lead_magnet
+      - ebook
+      - slides
+      - infographic
+      - quiz
+      - podcast_episode
+      - short_video
+      - explainer_video
+      - launch_video
+      - product_demo_video
+      - ad_video
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      - correlation_id
+      - doc_url
+      properties:
+        code:
+          type: string
+          enum:
+          - invalid_request
+          - unknown_asset_type
+          - invalid_asset_options
+          - invalid_model_options
+          - model_not_supported
+          - model_retired
+          - project_not_ready
+          - project_limit_exceeded
+          - provider_operation_limit_exceeded
+          - source_not_ready
+          - source_unreachable
+          - source_paywalled
+          - product_visual_required
+          - no_qualified_trend
+          - no_qualified_knowledge
+          - input_resolution_failed
+          - max_cost_exceeded
+          - payment_required
+          - content_loop_budget_exceeded
+          - content_loop_limit_exceeded
+          - idempotency_conflict
+          - idempotency_in_progress
+          - consent_required
+          - voice_not_found
+          - voice_not_ready
+          - voice_not_supported
+          - avatar_not_found
+          - avatar_not_ready
+          - avatar_not_supported
+          - artifact_verification_failed
+          - rate_limited
+          - webhook_limit_exceeded
+          - not_found
+          - unauthorized
+          - forbidden
+          - internal_error
+        message:
+          type: string
+        details:
+          oneOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/ErrorDetail'
+          - type: object
+        correlation_id:
+          type: string
+          pattern: ^corr_[A-Za-z0-9_-]+$
+        doc_url:
+          type: string
+          format: uri
+    Avatar:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - project_id
+      - display_name
+      - kind
+      - status
+      - compatibility
+      - created_at
+      - error
+      properties:
+        id:
+          type: string
+          pattern: ^avatar_[A-Za-z0-9_-]+$
+        project_id:
+          oneOf:
+          - type: string
+            pattern: ^prj_[A-Za-z0-9_-]+$
+          - type: 'null'
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        kind:
+          type: string
+          enum:
+          - stock
+          - custom
+        status:
+          type: string
+          enum:
+          - processing
+          - ready
+          - failed
+          - revoked
+        compatibility:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - asset_type
+            - model_id
+            - language
+            properties:
+              asset_type:
+                $ref: '#/components/schemas/AssetType'
+              model_id:
+                type: string
+                minLength: 1
+              language:
+                type: string
+                minLength: 2
+                maxLength: 255
+                format: bcp47
+        created_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        error:
+          oneOf:
+          - $ref: '#/components/schemas/ResourceError'
+          - type: 'null'
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required:
+      - reason
+      properties:
+        field:
+          type: string
+        reason:
+          type: string
+    ProjectCreateAccepted:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - status
+      - website_url
+      - poll_after_seconds
+      - created_at
+      properties:
+        id:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+        status:
+          const: analyzing
+        website_url:
+          type: string
+          format: uri
+        poll_after_seconds:
+          type: integer
+          minimum: 1
+          maximum: 15
+        created_at:
+          type: string
+          format: date-time
+  responses:
+    AutoContentError:
+      description: Normalized AutoContent error; provider payloads are never returned.
+      headers:
+        Retry-After:
+          description: Whole seconds before retry when the error supplies a bounded retry time.
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              code: max_cost_exceeded
+              message: Current price exceeds max_cost_usd.
+              correlation_id: corr_42
+              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    platformOAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Platform OAuth JWT
+    platformApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: acp_ Platform API key
+x-refined-from:
+- autocontent-api-legacy-content-openapi.json
+- autocontent-api-platform-v1-openapi.json
