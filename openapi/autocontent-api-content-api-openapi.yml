@@ -1588,6 +1588,227 @@ paths:
     - url: https://api.autocontentapi.com
 components:
   schemas:
+    QueueStats:
+      type: object
+      properties:
+        success:
+          type: boolean
+        queued:
+          type: integer
+          description: Requests waiting to be picked up for processing
+        processing:
+          type: integer
+          description: Requests currently in progress
+        active:
+          type: integer
+          description: queued + processing
+    PublishTarget:
+      type: object
+      properties:
+        channel:
+          type: string
+          description: Target channel for publishing (e.g., youtube)
+        youtubeAccountId:
+          type:
+          - string
+          - 'null'
+          description: Connected YouTube account ID to publish to
+        youtubePlaylistId:
+          type:
+          - string
+          - 'null'
+          description: Optional playlist ID to publish into
+    QueueRequestsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        state:
+          type: string
+          enum:
+          - queued
+          - processing
+          - active
+        ids:
+          type: array
+          items:
+            type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueueRequestSummary'
+        count:
+          type: integer
+          description: Number of items in this page
+        total_count:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_pages:
+          type: integer
+    RepurposeRequest:
+      type: object
+      required:
+      - requestId
+      - outputType
+      properties:
+        requestId:
+          type: string
+          description: Identifier of the completed request to repurpose
+        outputType:
+          type: string
+          enum:
+          - audio
+          - video
+          - infographic
+          - slide_deck
+          - datatable
+          - quiz
+          description: Output type for the new request
+        language:
+          type: string
+          description: Optional language override for the new request (defaults to the original request language)
+        text:
+          type: string
+          maxLength: 5000
+          description: Optional text instructions that replace the original TEXT parameter. For video, this is the NotebookLM steering prompt and is limited to 5,000 characters.
+        callbackData:
+          type: string
+          description: Optional callback data to associate with the new request
+        duration:
+          type: string
+          enum:
+          - short
+          - default
+          - long
+          description: Duration preference for audio and slide deck repurpose requests. Ignored for video requests.
+        infographicOrientation:
+          type: string
+          enum:
+          - landscape
+          - portrait
+          - square
+          description: Orientation when repurposing to an infographic
+        infographicDetail:
+          type: string
+          enum:
+          - concise
+          - standard
+          - detailed
+          description: Detail level when repurposing to an infographic
+        slideDeckFormat:
+          type: string
+          enum:
+          - detailed
+          - presenter
+          description: Format when repurposing to a slide deck
+        quizDifficulty:
+          type: string
+          enum:
+          - easy
+          - medium
+          - hard
+          description: Difficulty level when repurposing to a quiz
+        title:
+          type: string
+          description: Override video title when repurposing to video
+        titlePrompt:
+          type: string
+          description: Prompt to guide the generated title when repurposing to video
+        descriptionPrompt:
+          type: string
+          description: Prompt to guide the generated description when repurposing to video
+        format:
+          type: string
+          enum:
+          - explainer
+          - short
+          - cinematic
+          description: Video format (defaults to explainer). Only applies when outputType is video. `cinematic` costs 100 credits.
+        style:
+          type: string
+          maxLength: 5000
+          description: NotebookLM preset name or custom style text for video outputs, limited to 5,000 characters
+        thumbnailImagePrompt:
+          type: string
+          description: Prompt to control the generated thumbnail image for video outputs
+        introImagePrompt:
+          type: string
+          description: Prompt to control the generated intro image for video outputs
+        avatarId:
+          type: integer
+          description: Optional avatar identifier for explainer video generation. If omitted, inherits from the source request when available.
+        audioLanguage:
+          type: string
+          description: Optional audio language override for explainer video generation metadata. If omitted, inherits from the source request when available.
+        textLanguage:
+          type: string
+          description: Optional text language override for explainer video generation metadata. If omitted, inherits from the source request when available.
+        backgroundImageUrl:
+          type: string
+          description: Optional background image URL for explainer video generation metadata. If omitted, inherits from the source request when available.
+        voiceId:
+          type: integer
+          description: Optional voice id from /content/GetVoices for explainer video metadata. Use the numeric id value, not the voice name. If omitted, inherits from the source request when available.
+    QueueRequestSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: integer
+        request_type_id:
+          type: integer
+        output_type:
+          type:
+          - string
+          - 'null'
+        requested_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        processing_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        scheduled_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    FeedSelection:
+      type: object
+      required:
+      - feedId
+      - feedItemIds
+      properties:
+        feedId:
+          type: integer
+          description: Identifier of the feed containing the cached items
+        feedItemIds:
+          type: array
+          items:
+            type: string
+          description: Identifiers of cached posts or videos to include from that feed
+    Citation:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Citation text
+        source:
+          type: string
+          description: Source of the citation
+        page:
+          type: integer
+          description: Page number for PDF sources
+        timeMs:
+          type: integer
+          description: Timestamp in milliseconds for audio/video sources
     ContentRequest:
       type: object
       required:
@@ -1792,107 +2013,6 @@ components:
           type: string
           format: date-time
           description: Optional end date for recurring schedules (requires isScheduled true)
-    QueueRequestSummary:
-      type: object
-      properties:
-        id:
-          type: string
-        status:
-          type: integer
-        request_type_id:
-          type: integer
-        output_type:
-          type:
-          - string
-          - 'null'
-        requested_on:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        processing_on:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        scheduled_on:
-          type:
-          - string
-          - 'null'
-          format: date-time
-    FeedSelection:
-      type: object
-      required:
-      - feedId
-      - feedItemIds
-      properties:
-        feedId:
-          type: integer
-          description: Identifier of the feed containing the cached items
-        feedItemIds:
-          type: array
-          items:
-            type: string
-          description: Identifiers of cached posts or videos to include from that feed
-    Citation:
-      type: object
-      properties:
-        text:
-          type: string
-          description: Citation text
-        source:
-          type: string
-          description: Source of the citation
-        page:
-          type: integer
-          description: Page number for PDF sources
-        timeMs:
-          type: integer
-          description: Timestamp in milliseconds for audio/video sources
-    QueueStats:
-      type: object
-      properties:
-        success:
-          type: boolean
-        queued:
-          type: integer
-          description: Requests waiting to be picked up for processing
-        processing:
-          type: integer
-          description: Requests currently in progress
-        active:
-          type: integer
-          description: queued + processing
-    QueueRequestsResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        state:
-          type: string
-          enum:
-          - queued
-          - processing
-          - active
-        ids:
-          type: array
-          items:
-            type: string
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/QueueRequestSummary'
-        count:
-          type: integer
-          description: Number of items in this page
-        total_count:
-          type: integer
-        page:
-          type: integer
-        page_size:
-          type: integer
-        total_pages:
-          type: integer
     Usage:
       type: object
       properties:
@@ -1998,126 +2118,6 @@ components:
         shareUrl:
           type: string
           description: Public sharing URL for the podcast
-    RepurposeRequest:
-      type: object
-      required:
-      - requestId
-      - outputType
-      properties:
-        requestId:
-          type: string
-          description: Identifier of the completed request to repurpose
-        outputType:
-          type: string
-          enum:
-          - audio
-          - video
-          - infographic
-          - slide_deck
-          - datatable
-          - quiz
-          description: Output type for the new request
-        language:
-          type: string
-          description: Optional language override for the new request (defaults to the original request language)
-        text:
-          type: string
-          maxLength: 5000
-          description: Optional text instructions that replace the original TEXT parameter. For video, this is the NotebookLM steering prompt and is limited to 5,000 characters.
-        callbackData:
-          type: string
-          description: Optional callback data to associate with the new request
-        duration:
-          type: string
-          enum:
-          - short
-          - default
-          - long
-          description: Duration preference for audio and slide deck repurpose requests. Ignored for video requests.
-        infographicOrientation:
-          type: string
-          enum:
-          - landscape
-          - portrait
-          - square
-          description: Orientation when repurposing to an infographic
-        infographicDetail:
-          type: string
-          enum:
-          - concise
-          - standard
-          - detailed
-          description: Detail level when repurposing to an infographic
-        slideDeckFormat:
-          type: string
-          enum:
-          - detailed
-          - presenter
-          description: Format when repurposing to a slide deck
-        quizDifficulty:
-          type: string
-          enum:
-          - easy
-          - medium
-          - hard
-          description: Difficulty level when repurposing to a quiz
-        title:
-          type: string
-          description: Override video title when repurposing to video
-        titlePrompt:
-          type: string
-          description: Prompt to guide the generated title when repurposing to video
-        descriptionPrompt:
-          type: string
-          description: Prompt to guide the generated description when repurposing to video
-        format:
-          type: string
-          enum:
-          - explainer
-          - short
-          - cinematic
-          description: Video format (defaults to explainer). Only applies when outputType is video. `cinematic` costs 100 credits.
-        style:
-          type: string
-          maxLength: 5000
-          description: NotebookLM preset name or custom style text for video outputs, limited to 5,000 characters
-        thumbnailImagePrompt:
-          type: string
-          description: Prompt to control the generated thumbnail image for video outputs
-        introImagePrompt:
-          type: string
-          description: Prompt to control the generated intro image for video outputs
-        avatarId:
-          type: integer
-          description: Optional avatar identifier for explainer video generation. If omitted, inherits from the source request when available.
-        audioLanguage:
-          type: string
-          description: Optional audio language override for explainer video generation metadata. If omitted, inherits from the source request when available.
-        textLanguage:
-          type: string
-          description: Optional text language override for explainer video generation metadata. If omitted, inherits from the source request when available.
-        backgroundImageUrl:
-          type: string
-          description: Optional background image URL for explainer video generation metadata. If omitted, inherits from the source request when available.
-        voiceId:
-          type: integer
-          description: Optional voice id from /content/GetVoices for explainer video metadata. Use the numeric id value, not the voice name. If omitted, inherits from the source request when available.
-    PublishTarget:
-      type: object
-      properties:
-        channel:
-          type: string
-          description: Target channel for publishing (e.g., youtube)
-        youtubeAccountId:
-          type:
-          - string
-          - 'null'
-          description: Connected YouTube account ID to publish to
-        youtubePlaylistId:
-          type:
-          - string
-          - 'null'
-          description: Optional playlist ID to publish into
   securitySchemes:
     bearerAuth:
       type: http

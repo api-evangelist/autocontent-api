@@ -144,19 +144,6 @@ paths:
           $ref: '#/components/responses/AutoContentError'
 components:
   schemas:
-    ApiKeyRevocation:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - revoked_at
-      properties:
-        id:
-          type: string
-          pattern: ^key_[A-Za-z0-9_-]+$
-        revoked_at:
-          type: string
-          format: date-time
     ErrorEnvelope:
       type: object
       additionalProperties: false
@@ -272,6 +259,19 @@ components:
           - type: string
             minLength: 1
           - type: 'null'
+    ApiKeyRevocation:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - revoked_at
+      properties:
+        id:
+          type: string
+          pattern: ^key_[A-Za-z0-9_-]+$
+        revoked_at:
+          type: string
+          format: date-time
     ErrorDetail:
       type: object
       additionalProperties: false

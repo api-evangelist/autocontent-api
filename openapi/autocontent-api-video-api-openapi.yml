@@ -682,6 +682,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TranscriptLine'
+    TranscriptLine:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Transcript line text
+        speaker:
+          type: string
+          description: Speaker label
+        timestamp:
+          type: array
+          description: Start/end time in seconds
+          items:
+            type: number
     Avatar:
       type: object
       properties:
@@ -697,20 +711,6 @@ components:
           - M
           - F
           description: Avatar gender (M = Male, F = Female)
-    TranscriptLine:
-      type: object
-      properties:
-        text:
-          type: string
-          description: Transcript line text
-        speaker:
-          type: string
-          description: Speaker label
-        timestamp:
-          type: array
-          description: Start/end time in seconds
-          items:
-            type: number
     Short:
       type: object
       properties:

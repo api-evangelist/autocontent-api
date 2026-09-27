@@ -167,34 +167,6 @@ paths:
           $ref: '#/components/responses/AutoContentError'
 components:
   schemas:
-    ResourceError:
-      type: object
-      additionalProperties: false
-      required:
-      - code
-      - message
-      properties:
-        code:
-          type: string
-          minLength: 1
-        message:
-          type: string
-          minLength: 1
-    AssetType:
-      type: string
-      enum:
-      - article
-      - lead_magnet
-      - ebook
-      - slides
-      - infographic
-      - quiz
-      - podcast_episode
-      - short_video
-      - explainer_video
-      - launch_video
-      - product_demo_video
-      - ad_video
     ErrorEnvelope:
       type: object
       additionalProperties: false
@@ -265,6 +237,21 @@ components:
         doc_url:
           type: string
           format: uri
+    AssetType:
+      type: string
+      enum:
+      - article
+      - lead_magnet
+      - ebook
+      - slides
+      - infographic
+      - quiz
+      - podcast_episode
+      - short_video
+      - explainer_video
+      - launch_video
+      - product_demo_video
+      - ad_video
     Avatar:
       type: object
       additionalProperties: false
@@ -341,6 +328,19 @@ components:
           type: string
         reason:
           type: string
+    ResourceError:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          minLength: 1
+        message:
+          type: string
+          minLength: 1
   responses:
     AutoContentError:
       description: Normalized AutoContent error; provider payloads are never returned.

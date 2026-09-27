@@ -135,25 +135,6 @@ paths:
         default:
           $ref: '#/components/responses/AutoContentError'
 components:
-  responses:
-    AutoContentError:
-      description: Normalized AutoContent error; provider payloads are never returned.
-      headers:
-        Retry-After:
-          description: Whole seconds before retry when the error supplies a bounded retry time.
-          schema:
-            type: integer
-            minimum: 1
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-          example:
-            error:
-              code: max_cost_exceeded
-              message: Current price exceeds max_cost_usd.
-              correlation_id: corr_42
-              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
   schemas:
     Webhook:
       type: object
@@ -270,6 +251,25 @@ components:
           type: string
         reason:
           type: string
+  responses:
+    AutoContentError:
+      description: Normalized AutoContent error; provider payloads are never returned.
+      headers:
+        Retry-After:
+          description: Whole seconds before retry when the error supplies a bounded retry time.
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              code: max_cost_exceeded
+              message: Current price exceeds max_cost_usd.
+              correlation_id: corr_42
+              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
   securitySchemes:
     platformOAuth:
       type: http

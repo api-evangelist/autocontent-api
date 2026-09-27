@@ -133,6 +133,91 @@ paths:
     - url: https://api.autocontentapi.com/v1
 components:
   schemas:
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      - correlation_id
+      - doc_url
+      properties:
+        code:
+          type: string
+          enum:
+          - invalid_request
+          - unknown_asset_type
+          - invalid_asset_options
+          - invalid_model_options
+          - model_not_supported
+          - model_retired
+          - project_not_ready
+          - project_limit_exceeded
+          - provider_operation_limit_exceeded
+          - source_not_ready
+          - source_unreachable
+          - source_paywalled
+          - product_visual_required
+          - no_qualified_trend
+          - no_qualified_knowledge
+          - input_resolution_failed
+          - max_cost_exceeded
+          - payment_required
+          - content_loop_budget_exceeded
+          - content_loop_limit_exceeded
+          - idempotency_conflict
+          - idempotency_in_progress
+          - consent_required
+          - voice_not_found
+          - voice_not_ready
+          - voice_not_supported
+          - avatar_not_found
+          - avatar_not_ready
+          - avatar_not_supported
+          - artifact_verification_failed
+          - rate_limited
+          - webhook_limit_exceeded
+          - not_found
+          - unauthorized
+          - forbidden
+          - internal_error
+        message:
+          type: string
+        details:
+          oneOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/ErrorDetail'
+          - type: object
+        correlation_id:
+          type: string
+          pattern: ^corr_[A-Za-z0-9_-]+$
+        doc_url:
+          type: string
+          format: uri
+    UsageCounter:
+      type: object
+      additionalProperties: false
+      required:
+      - in_use
+      - limit
+      properties:
+        in_use:
+          type: integer
+          minimum: 0
+        limit:
+          oneOf:
+          - type: integer
+            minimum: 1
+          - type: 'null'
     PrepaymentSession:
       type: object
       additionalProperties: false
@@ -173,21 +258,16 @@ components:
           - type: string
             format: date-time
           - type: 'null'
-    UsageCounter:
+    ErrorDetail:
       type: object
       additionalProperties: false
       required:
-      - in_use
-      - limit
+      - reason
       properties:
-        in_use:
-          type: integer
-          minimum: 0
-        limit:
-          oneOf:
-          - type: integer
-            minimum: 1
-          - type: 'null'
+        field:
+          type: string
+        reason:
+          type: string
     BillingUsage:
       type: object
       additionalProperties: false
@@ -310,86 +390,6 @@ components:
         period_ends_at:
           type: string
           format: date-time
-    ErrorEnvelope:
-      type: object
-      additionalProperties: false
-      required:
-      - error
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorBody'
-    ErrorBody:
-      type: object
-      additionalProperties: false
-      required:
-      - code
-      - message
-      - correlation_id
-      - doc_url
-      properties:
-        code:
-          type: string
-          enum:
-          - invalid_request
-          - unknown_asset_type
-          - invalid_asset_options
-          - invalid_model_options
-          - model_not_supported
-          - model_retired
-          - project_not_ready
-          - project_limit_exceeded
-          - provider_operation_limit_exceeded
-          - source_not_ready
-          - source_unreachable
-          - source_paywalled
-          - product_visual_required
-          - no_qualified_trend
-          - no_qualified_knowledge
-          - input_resolution_failed
-          - max_cost_exceeded
-          - payment_required
-          - content_loop_budget_exceeded
-          - content_loop_limit_exceeded
-          - idempotency_conflict
-          - idempotency_in_progress
-          - consent_required
-          - voice_not_found
-          - voice_not_ready
-          - voice_not_supported
-          - avatar_not_found
-          - avatar_not_ready
-          - avatar_not_supported
-          - artifact_verification_failed
-          - rate_limited
-          - webhook_limit_exceeded
-          - not_found
-          - unauthorized
-          - forbidden
-          - internal_error
-        message:
-          type: string
-        details:
-          oneOf:
-          - type: array
-            items:
-              $ref: '#/components/schemas/ErrorDetail'
-          - type: object
-        correlation_id:
-          type: string
-          pattern: ^corr_[A-Za-z0-9_-]+$
-        doc_url:
-          type: string
-          format: uri
-    ErrorDetail:
-      type: object
-      additionalProperties: false
-      required:
-      - reason
-      properties:
-        field:
-          type: string
-        reason:
-          type: string
   responses:
     AutoContentError:
       description: Normalized AutoContent error; provider payloads are never returned.
