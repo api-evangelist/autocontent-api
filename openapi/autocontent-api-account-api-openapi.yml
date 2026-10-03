@@ -32,15 +32,61 @@ paths:
         default:
           $ref: '#/components/responses/AutoContentError'
 components:
+  responses:
+    AutoContentError:
+      description: Normalized AutoContent error; provider payloads are never returned.
+      headers:
+        Retry-After:
+          description: Whole seconds before retry when the error supplies a bounded retry time.
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              code: max_cost_exceeded
+              message: Current price exceeds max_cost_usd.
+              correlation_id: corr_42
+              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
   schemas:
-    ErrorEnvelope:
+    Account:
       type: object
       additionalProperties: false
       required:
-      - error
+      - id
+      - email
+      - display_name
+      - plan
+      - platform_oauth_audience
+      - scopes
       properties:
-        error:
-          $ref: '#/components/schemas/ErrorBody'
+        id:
+          type: string
+          pattern: ^acct_[A-Za-z0-9_-]+$
+        email:
+          type: string
+          format: email
+        display_name:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        plan:
+          type: string
+          enum:
+          - sandbox
+          - payg
+        platform_oauth_audience:
+          type: string
+          minLength: 1
+        scopes:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
     ErrorBody:
       type: object
       additionalProperties: false
@@ -103,41 +149,6 @@ components:
         doc_url:
           type: string
           format: uri
-    Account:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - email
-      - display_name
-      - plan
-      - platform_oauth_audience
-      - scopes
-      properties:
-        id:
-          type: string
-          pattern: ^acct_[A-Za-z0-9_-]+$
-        email:
-          type: string
-          format: email
-        display_name:
-          oneOf:
-          - type: string
-            minLength: 1
-          - type: 'null'
-        plan:
-          type: string
-          enum:
-          - sandbox
-          - payg
-        platform_oauth_audience:
-          type: string
-          minLength: 1
-        scopes:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
     ErrorDetail:
       type: object
       additionalProperties: false
@@ -148,25 +159,14 @@ components:
           type: string
         reason:
           type: string
-  responses:
-    AutoContentError:
-      description: Normalized AutoContent error; provider payloads are never returned.
-      headers:
-        Retry-After:
-          description: Whole seconds before retry when the error supplies a bounded retry time.
-          schema:
-            type: integer
-            minimum: 1
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-          example:
-            error:
-              code: max_cost_exceeded
-              message: Current price exceeds max_cost_usd.
-              correlation_id: corr_42
-              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
   securitySchemes:
     platformOAuth:
       type: http

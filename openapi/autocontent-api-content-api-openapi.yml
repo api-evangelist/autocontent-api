@@ -1588,20 +1588,21 @@ paths:
     - url: https://api.autocontentapi.com
 components:
   schemas:
-    QueueStats:
+    Usage:
       type: object
       properties:
-        success:
-          type: boolean
-        queued:
+        allowed:
           type: integer
-          description: Requests waiting to be picked up for processing
-        processing:
+          description: Total credits allowed
+        used:
           type: integer
-          description: Requests currently in progress
-        active:
+          description: Total credits used
+        allowedDailyPodcasts:
           type: integer
-          description: queued + processing
+          description: Daily podcast limit
+        usedDailyPodcasts:
+          type: integer
+          description: Podcasts created today
     PublishTarget:
       type: object
       properties:
@@ -1648,6 +1649,125 @@ components:
           type: integer
         total_pages:
           type: integer
+    Transcript:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Transcript ID
+        audioTitle:
+          type: string
+          description: Title of the original audio
+        audioUrl:
+          type: string
+          description: URL to the original audio file
+        responseText:
+          type: string
+          description: The transcript text content
+        requestedOn:
+          type: string
+          format: date-time
+          description: When the transcript was requested
+        succeededOn:
+          type: string
+          format: date-time
+          description: When the transcript was completed
+        errorOn:
+          type: string
+          format: date-time
+          description: When the transcript failed (if applicable)
+        processingOn:
+          type: string
+          format: date-time
+          description: When the transcript started processing (if applicable)
+        errorMessage:
+          type: string
+          description: Error message if the transcript failed
+        status:
+          type: integer
+          description: Current status of the transcript
+        language:
+          type: string
+          description: Language of the transcript
+        callbackData:
+          type: string
+          description: Optional callback data provided during request
+        scheduledOn:
+          type: string
+          format: date-time
+          description: When the transcript was scheduled
+    Citation:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Citation text
+        source:
+          type: string
+          description: Source of the citation
+        page:
+          type: integer
+          description: Page number for PDF sources
+        timeMs:
+          type: integer
+          description: Timestamp in milliseconds for audio/video sources
+    FeedSelection:
+      type: object
+      required:
+      - feedId
+      - feedItemIds
+      properties:
+        feedId:
+          type: integer
+          description: Identifier of the feed containing the cached items
+        feedItemIds:
+          type: array
+          items:
+            type: string
+          description: Identifiers of cached posts or videos to include from that feed
+    Podcast:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Podcast ID
+        requestTypeId:
+          type: integer
+          description: Type of podcast request
+        audioTitle:
+          type: string
+          description: Title of the podcast
+        audioUrl:
+          type: string
+          description: URL to the audio file
+        responseText:
+          type: string
+          description: Podcast transcript/text
+        requestedOn:
+          type: string
+          format: date-time
+          description: When the podcast was requested
+        succeededOn:
+          type: string
+          format: date-time
+          description: When the podcast was completed
+        errorOn:
+          type: string
+          format: date-time
+          description: When the podcast failed (if applicable)
+        processingOn:
+          type: string
+          format: date-time
+          description: When the podcast started processing (if applicable)
+        errorMessage:
+          type: string
+          description: Error message if the podcast failed
+        status:
+          type: integer
+          description: Current status of the podcast
+        shareUrl:
+          type: string
+          description: Public sharing URL for the podcast
     RepurposeRequest:
       type: object
       required:
@@ -1752,63 +1872,6 @@ components:
         voiceId:
           type: integer
           description: Optional voice id from /content/GetVoices for explainer video metadata. Use the numeric id value, not the voice name. If omitted, inherits from the source request when available.
-    QueueRequestSummary:
-      type: object
-      properties:
-        id:
-          type: string
-        status:
-          type: integer
-        request_type_id:
-          type: integer
-        output_type:
-          type:
-          - string
-          - 'null'
-        requested_on:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        processing_on:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        scheduled_on:
-          type:
-          - string
-          - 'null'
-          format: date-time
-    FeedSelection:
-      type: object
-      required:
-      - feedId
-      - feedItemIds
-      properties:
-        feedId:
-          type: integer
-          description: Identifier of the feed containing the cached items
-        feedItemIds:
-          type: array
-          items:
-            type: string
-          description: Identifiers of cached posts or videos to include from that feed
-    Citation:
-      type: object
-      properties:
-        text:
-          type: string
-          description: Citation text
-        source:
-          type: string
-          description: Source of the citation
-        page:
-          type: integer
-          description: Page number for PDF sources
-        timeMs:
-          type: integer
-          description: Timestamp in milliseconds for audio/video sources
     ContentRequest:
       type: object
       required:
@@ -2013,111 +2076,48 @@ components:
           type: string
           format: date-time
           description: Optional end date for recurring schedules (requires isScheduled true)
-    Usage:
+    QueueStats:
       type: object
       properties:
-        allowed:
+        success:
+          type: boolean
+        queued:
           type: integer
-          description: Total credits allowed
-        used:
+          description: Requests waiting to be picked up for processing
+        processing:
           type: integer
-          description: Total credits used
-        allowedDailyPodcasts:
+          description: Requests currently in progress
+        active:
           type: integer
-          description: Daily podcast limit
-        usedDailyPodcasts:
-          type: integer
-          description: Podcasts created today
-    Transcript:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Transcript ID
-        audioTitle:
-          type: string
-          description: Title of the original audio
-        audioUrl:
-          type: string
-          description: URL to the original audio file
-        responseText:
-          type: string
-          description: The transcript text content
-        requestedOn:
-          type: string
-          format: date-time
-          description: When the transcript was requested
-        succeededOn:
-          type: string
-          format: date-time
-          description: When the transcript was completed
-        errorOn:
-          type: string
-          format: date-time
-          description: When the transcript failed (if applicable)
-        processingOn:
-          type: string
-          format: date-time
-          description: When the transcript started processing (if applicable)
-        errorMessage:
-          type: string
-          description: Error message if the transcript failed
-        status:
-          type: integer
-          description: Current status of the transcript
-        language:
-          type: string
-          description: Language of the transcript
-        callbackData:
-          type: string
-          description: Optional callback data provided during request
-        scheduledOn:
-          type: string
-          format: date-time
-          description: When the transcript was scheduled
-    Podcast:
+          description: queued + processing
+    QueueRequestSummary:
       type: object
       properties:
         id:
           type: string
-          description: Podcast ID
-        requestTypeId:
-          type: integer
-          description: Type of podcast request
-        audioTitle:
-          type: string
-          description: Title of the podcast
-        audioUrl:
-          type: string
-          description: URL to the audio file
-        responseText:
-          type: string
-          description: Podcast transcript/text
-        requestedOn:
-          type: string
-          format: date-time
-          description: When the podcast was requested
-        succeededOn:
-          type: string
-          format: date-time
-          description: When the podcast was completed
-        errorOn:
-          type: string
-          format: date-time
-          description: When the podcast failed (if applicable)
-        processingOn:
-          type: string
-          format: date-time
-          description: When the podcast started processing (if applicable)
-        errorMessage:
-          type: string
-          description: Error message if the podcast failed
         status:
           type: integer
-          description: Current status of the podcast
-        shareUrl:
-          type: string
-          description: Public sharing URL for the podcast
+        request_type_id:
+          type: integer
+        output_type:
+          type:
+          - string
+          - 'null'
+        requested_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        processing_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        scheduled_on:
+          type:
+          - string
+          - 'null'
+          format: date-time
   securitySchemes:
     bearerAuth:
       type: http

@@ -1049,106 +1049,6 @@ paths:
     - url: https://api.autocontentapi.com/v1
 components:
   schemas:
-    UpdateProjectRequest:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          description: Updated name of the project (max 200 characters)
-          example: AI SaaS Platform
-        description:
-          type: string
-          description: Updated description of the project. Either description or url must be provided.
-          example: Revolutionary AI-powered content creation platform with advanced automation features.
-        url:
-          type: string
-          description: Optional URL to fetch website content for auto-generating description. If provided without a description, AI will generate one.
-          example: https://example.com
-        imageData:
-          type:
-          - string
-          - 'null'
-          description: Optional base64 encoded PNG/JPG. Provide `null` to remove the current brand image. The source image must be fully opaque; images containing any fully or partially transparent pixels are rejected. Any size is accepted and will be resized to 200x50 on upload.
-        imageUrl:
-          type:
-          - string
-          - 'null'
-          format: uri
-          description: Optional HTTP/HTTPS URL pointing to a PNG or JPG brand image. Provide `null` to remove the stored image. The source image must be fully opaque; images containing any fully or partially transparent pixels are rejected. The API stores a 200x50 version. Cannot be combined with `imageData`.
-        textColor:
-          type:
-          - string
-          - 'null'
-          description: Optional hex color (format
-          example: '#111827'
-          pattern: ^#[0-9A-Fa-f]{6}$
-        backgroundColor:
-          type:
-          - string
-          - 'null'
-          description: Optional hex color (format
-          example: '#F9FAFB'
-          pattern: ^#[0-9A-Fa-f]{6}$
-        brandColor:
-          type:
-          - string
-          - 'null'
-          description: Optional primary accent hex color (format
-          example: '#4338CA'
-          pattern: ^#[0-9A-Fa-f]{6}$
-        accentColor:
-          type:
-          - string
-          - 'null'
-          description: Optional secondary accent hex color (format
-          example: '#7C72EF'
-          pattern: ^#[0-9A-Fa-f]{6}$
-    CreateProjectRequest:
-      type: object
-      required:
-      - name
-      properties:
-        name:
-          type: string
-          description: Name of the project (max 200 characters)
-          example: AI Startup Launch
-        description:
-          type: string
-          description: Detailed description of the project. Either description or url must be provided.
-          example: Building an AI-powered SaaS tool for content creators. Focus on automation, efficiency, and user experience.
-        url:
-          type: string
-          description: Optional URL to fetch website content for auto-generating description. If provided without a description, AI will generate one.
-          example: https://example.com
-        imageData:
-          type: string
-          description: Optional base64 encoded PNG/JPG representing the project's brand image. The source image must be fully opaque; images containing any fully or partially transparent pixels are rejected. Any dimensions are accepted and the API resizes the image to 200x50 before storing the hosted copy as `imageUrl`.
-        imageUrl:
-          type: string
-          format: uri
-          description: Optional HTTP/HTTPS URL to an existing PNG or JPG brand image. The source image must be fully opaque; images containing any fully or partially transparent pixels are rejected. The API downloads the source, resizes it to 200x50, and hosts the optimized copy. Cannot be combined with `imageData`.
-        textColor:
-          type: string
-          description: Optional hex color (format
-          example: '#111827'
-          pattern: ^#[0-9A-Fa-f]{6}$
-        backgroundColor:
-          type: string
-          description: Optional hex color (format
-          example: '#F9FAFB'
-          pattern: ^#[0-9A-Fa-f]{6}$
-        brandColor:
-          type: string
-          description: Optional primary accent hex color (format
-          example: '#4338CA'
-          pattern: ^#[0-9A-Fa-f]{6}$
-        accentColor:
-          type: string
-          description: Optional secondary accent hex color (format
-          example: '#7C72EF'
-          pattern: ^#[0-9A-Fa-f]{6}$
     Project:
       type: object
       properties:
@@ -1214,163 +1114,106 @@ components:
           - 'null'
           description: Secondary accent color applied to overlay highlights and subtitles when branding is configured
           example: '#7C72EF'
-    Source:
+    CreateProjectRequest:
       type: object
-      additionalProperties: false
       required:
-      - id
-      - project_id
-      - collection_id
-      - kind
-      - title
-      - external_url
-      - status
-      - refreshing
-      - refresh_operation_id
-      - refresh_error
-      - error
-      - visual_count
-      - current_revision
-      - retention_scope
-      - expires_at
-      - claimed_generation_id
-      - removed_at
-      - created_at
-      - updated_at
+      - name
       properties:
-        id:
+        name:
           type: string
-          pattern: ^src_[A-Za-z0-9_-]+$
-        project_id:
+          description: Name of the project (max 200 characters)
+          example: AI Startup Launch
+        description:
           type: string
-          pattern: ^prj_[A-Za-z0-9_-]+$
-        collection_id:
-          oneOf:
-          - type: string
-            pattern: ^col_[A-Za-z0-9_-]+$
-          - type: 'null'
-        kind:
+          description: Detailed description of the project. Either description or url must be provided.
+          example: Building an AI-powered SaaS tool for content creators. Focus on automation, efficiency, and user experience.
+        url:
           type: string
-          enum:
-          - website_page
-          - url
-          - youtube
-          - pdf
-          - document
-          - text
-          - product_visual
-        title:
+          description: Optional URL to fetch website content for auto-generating description. If provided without a description, AI will generate one.
+          example: https://example.com
+        imageData:
           type: string
-          minLength: 1
-          maxLength: 500
-        external_url:
-          oneOf:
-          - type: string
-            format: uri
-          - type: 'null'
-        status:
+          description: Optional base64 encoded PNG/JPG representing the project's brand image. The source image must be fully opaque; images containing any fully or partially transparent pixels are rejected. Any dimensions are accepted and the API resizes the image to 200x50 before storing the hosted copy as `imageUrl`.
+        imageUrl:
           type: string
-          enum:
-          - processing
-          - ready
-          - failed
-          - removed
-        refreshing:
-          type: boolean
-        refresh_operation_id:
-          oneOf:
-          - type: string
-            minLength: 1
-          - type: 'null'
-        refresh_error:
-          oneOf:
-          - type: object
-            additionalProperties: true
-          - type: 'null'
-        error:
-          oneOf:
-          - type: object
-            additionalProperties: true
-          - type: 'null'
-        visual_count:
-          type: integer
-          minimum: 0
-          maximum: 16
-        current_revision:
-          oneOf:
-          - type: object
-            additionalProperties: false
-            required:
-            - id
-            - revision
-            - mime_type
-            - byte_size
-            - normalized_text_bytes
-            - width
-            - height
-            - created_at
-            properties:
-              id:
-                type: string
-                minLength: 1
-              revision:
-                type: integer
-                minimum: 1
-              mime_type:
-                type: string
-                minLength: 1
-              byte_size:
-                oneOf:
-                - type: integer
-                  minimum: 0
-                - type: 'null'
-              normalized_text_bytes:
-                oneOf:
-                - type: integer
-                  minimum: 0
-                - type: 'null'
-              width:
-                oneOf:
-                - type: integer
-                  minimum: 1
-                - type: 'null'
-              height:
-                oneOf:
-                - type: integer
-                  minimum: 1
-                - type: 'null'
-              created_at:
-                oneOf:
-                - type: string
-                  format: date-time
-                - type: 'null'
-          - type: 'null'
-        retention_scope:
+          format: uri
+          description: Optional HTTP/HTTPS URL to an existing PNG or JPG brand image. The source image must be fully opaque; images containing any fully or partially transparent pixels are rejected. The API downloads the source, resizes it to 200x50, and hosts the optimized copy. Cannot be combined with `imageData`.
+        textColor:
           type: string
-          enum:
-          - project
-          - request
-        expires_at:
-          oneOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-        claimed_generation_id:
-          oneOf:
-          - type: string
-            pattern: ^gen_[A-Za-z0-9_-]+$
-          - type: 'null'
-        removed_at:
-          oneOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-        created_at:
+          description: Optional hex color (format
+          example: '#111827'
+          pattern: ^#[0-9A-Fa-f]{6}$
+        backgroundColor:
           type: string
-          format: date-time
-        updated_at:
+          description: Optional hex color (format
+          example: '#F9FAFB'
+          pattern: ^#[0-9A-Fa-f]{6}$
+        brandColor:
           type: string
-          format: date-time
+          description: Optional primary accent hex color (format
+          example: '#4338CA'
+          pattern: ^#[0-9A-Fa-f]{6}$
+        accentColor:
+          type: string
+          description: Optional secondary accent hex color (format
+          example: '#7C72EF'
+          pattern: ^#[0-9A-Fa-f]{6}$
+    UpdateProjectRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          description: Updated name of the project (max 200 characters)
+          example: AI SaaS Platform
+        description:
+          type: string
+          description: Updated description of the project. Either description or url must be provided.
+          example: Revolutionary AI-powered content creation platform with advanced automation features.
+        url:
+          type: string
+          description: Optional URL to fetch website content for auto-generating description. If provided without a description, AI will generate one.
+          example: https://example.com
+        imageData:
+          type:
+          - string
+          - 'null'
+          description: Optional base64 encoded PNG/JPG. Provide `null` to remove the current brand image. The source image must be fully opaque; images containing any fully or partially transparent pixels are rejected. Any size is accepted and will be resized to 200x50 on upload.
+        imageUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+          description: Optional HTTP/HTTPS URL pointing to a PNG or JPG brand image. Provide `null` to remove the stored image. The source image must be fully opaque; images containing any fully or partially transparent pixels are rejected. The API stores a 200x50 version. Cannot be combined with `imageData`.
+        textColor:
+          type:
+          - string
+          - 'null'
+          description: Optional hex color (format
+          example: '#111827'
+          pattern: ^#[0-9A-Fa-f]{6}$
+        backgroundColor:
+          type:
+          - string
+          - 'null'
+          description: Optional hex color (format
+          example: '#F9FAFB'
+          pattern: ^#[0-9A-Fa-f]{6}$
+        brandColor:
+          type:
+          - string
+          - 'null'
+          description: Optional primary accent hex color (format
+          example: '#4338CA'
+          pattern: ^#[0-9A-Fa-f]{6}$
+        accentColor:
+          type:
+          - string
+          - 'null'
+          description: Optional secondary accent hex color (format
+          example: '#7C72EF'
+          pattern: ^#[0-9A-Fa-f]{6}$
     Collection:
       type: object
       additionalProperties: false
@@ -1397,101 +1240,72 @@ components:
         updated_at:
           type: string
           format: date-time
-    ErrorEnvelope:
+    Avatar:
       type: object
       additionalProperties: false
       required:
+      - id
+      - project_id
+      - display_name
+      - kind
+      - status
+      - compatibility
+      - created_at
       - error
       properties:
-        error:
-          $ref: '#/components/schemas/ErrorBody'
-    ErrorBody:
-      type: object
-      additionalProperties: false
-      required:
-      - code
-      - message
-      - correlation_id
-      - doc_url
-      properties:
-        code:
+        id:
+          type: string
+          pattern: ^avatar_[A-Za-z0-9_-]+$
+        project_id:
+          oneOf:
+          - type: string
+            pattern: ^prj_[A-Za-z0-9_-]+$
+          - type: 'null'
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        kind:
           type: string
           enum:
-          - invalid_request
-          - unknown_asset_type
-          - invalid_asset_options
-          - invalid_model_options
-          - model_not_supported
-          - model_retired
-          - project_not_ready
-          - project_limit_exceeded
-          - provider_operation_limit_exceeded
-          - source_not_ready
-          - source_unreachable
-          - source_paywalled
-          - product_visual_required
-          - no_qualified_trend
-          - no_qualified_knowledge
-          - input_resolution_failed
-          - max_cost_exceeded
-          - payment_required
-          - content_loop_budget_exceeded
-          - content_loop_limit_exceeded
-          - idempotency_conflict
-          - idempotency_in_progress
-          - consent_required
-          - voice_not_found
-          - voice_not_ready
-          - voice_not_supported
-          - avatar_not_found
-          - avatar_not_ready
-          - avatar_not_supported
-          - artifact_verification_failed
-          - rate_limited
-          - webhook_limit_exceeded
-          - not_found
-          - unauthorized
-          - forbidden
-          - internal_error
-        message:
+          - stock
+          - custom
+        status:
           type: string
-        details:
+          enum:
+          - processing
+          - ready
+          - failed
+          - revoked
+        compatibility:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - asset_type
+            - model_id
+            - language
+            properties:
+              asset_type:
+                $ref: '#/components/schemas/AssetType'
+              model_id:
+                type: string
+                minLength: 1
+              language:
+                type: string
+                minLength: 2
+                maxLength: 255
+                format: bcp47
+        created_at:
           oneOf:
-          - type: array
-            items:
-              $ref: '#/components/schemas/ErrorDetail'
-          - type: object
-        correlation_id:
-          type: string
-          pattern: ^corr_[A-Za-z0-9_-]+$
-        doc_url:
-          type: string
-          format: uri
-    ErrorDetail:
-      type: object
-      additionalProperties: false
-      required:
-      - reason
-      properties:
-        field:
-          type: string
-        reason:
-          type: string
-    AssetType:
-      type: string
-      enum:
-      - article
-      - lead_magnet
-      - ebook
-      - slides
-      - infographic
-      - quiz
-      - podcast_episode
-      - short_video
-      - explainer_video
-      - launch_video
-      - product_demo_video
-      - ad_video
+          - type: string
+            format: date-time
+          - type: 'null'
+        error:
+          oneOf:
+          - $ref: '#/components/schemas/ResourceError'
+          - type: 'null'
     Project_2:
       type: object
       additionalProperties: false
@@ -1671,6 +1485,81 @@ components:
         updated_at:
           type: string
           format: date-time
+    ResourceError:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          minLength: 1
+        message:
+          type: string
+          minLength: 1
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      - correlation_id
+      - doc_url
+      properties:
+        code:
+          type: string
+          enum:
+          - invalid_request
+          - unknown_asset_type
+          - invalid_asset_options
+          - invalid_model_options
+          - model_not_supported
+          - model_retired
+          - project_not_ready
+          - project_limit_exceeded
+          - provider_operation_limit_exceeded
+          - source_not_ready
+          - source_unreachable
+          - source_paywalled
+          - product_visual_required
+          - no_qualified_trend
+          - no_qualified_knowledge
+          - input_resolution_failed
+          - max_cost_exceeded
+          - payment_required
+          - content_loop_budget_exceeded
+          - content_loop_limit_exceeded
+          - idempotency_conflict
+          - idempotency_in_progress
+          - consent_required
+          - voice_not_found
+          - voice_not_ready
+          - voice_not_supported
+          - avatar_not_found
+          - avatar_not_ready
+          - avatar_not_supported
+          - artifact_verification_failed
+          - rate_limited
+          - webhook_limit_exceeded
+          - not_found
+          - unauthorized
+          - forbidden
+          - internal_error
+        message:
+          type: string
+        details:
+          oneOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/ErrorDetail'
+          - type: object
+        correlation_id:
+          type: string
+          pattern: ^corr_[A-Za-z0-9_-]+$
+        doc_url:
+          type: string
+          format: uri
     ProjectCreateAccepted:
       type: object
       additionalProperties: false
@@ -1696,72 +1585,188 @@ components:
         created_at:
           type: string
           format: date-time
-    Avatar:
+    Source:
       type: object
       additionalProperties: false
       required:
       - id
       - project_id
-      - display_name
+      - collection_id
       - kind
+      - title
+      - external_url
       - status
-      - compatibility
-      - created_at
+      - refreshing
+      - refresh_operation_id
+      - refresh_error
       - error
+      - visual_count
+      - current_revision
+      - retention_scope
+      - expires_at
+      - claimed_generation_id
+      - removed_at
+      - created_at
+      - updated_at
       properties:
         id:
           type: string
-          pattern: ^avatar_[A-Za-z0-9_-]+$
+          pattern: ^src_[A-Za-z0-9_-]+$
         project_id:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+        collection_id:
           oneOf:
           - type: string
-            pattern: ^prj_[A-Za-z0-9_-]+$
+            pattern: ^col_[A-Za-z0-9_-]+$
           - type: 'null'
-        display_name:
-          type: string
-          minLength: 1
-          maxLength: 80
         kind:
           type: string
           enum:
-          - stock
-          - custom
+          - website_page
+          - url
+          - youtube
+          - pdf
+          - document
+          - text
+          - product_visual
+        title:
+          type: string
+          minLength: 1
+          maxLength: 500
+        external_url:
+          oneOf:
+          - type: string
+            format: uri
+          - type: 'null'
         status:
           type: string
           enum:
           - processing
           - ready
           - failed
-          - revoked
-        compatibility:
-          type: array
-          items:
-            type: object
+          - removed
+        refreshing:
+          type: boolean
+        refresh_operation_id:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        refresh_error:
+          oneOf:
+          - type: object
+            additionalProperties: true
+          - type: 'null'
+        error:
+          oneOf:
+          - type: object
+            additionalProperties: true
+          - type: 'null'
+        visual_count:
+          type: integer
+          minimum: 0
+          maximum: 16
+        current_revision:
+          oneOf:
+          - type: object
             additionalProperties: false
             required:
-            - asset_type
-            - model_id
-            - language
+            - id
+            - revision
+            - mime_type
+            - byte_size
+            - normalized_text_bytes
+            - width
+            - height
+            - created_at
             properties:
-              asset_type:
-                $ref: '#/components/schemas/AssetType'
-              model_id:
+              id:
                 type: string
                 minLength: 1
-              language:
+              revision:
+                type: integer
+                minimum: 1
+              mime_type:
                 type: string
-                minLength: 2
-                maxLength: 255
-                format: bcp47
-        created_at:
+                minLength: 1
+              byte_size:
+                oneOf:
+                - type: integer
+                  minimum: 0
+                - type: 'null'
+              normalized_text_bytes:
+                oneOf:
+                - type: integer
+                  minimum: 0
+                - type: 'null'
+              width:
+                oneOf:
+                - type: integer
+                  minimum: 1
+                - type: 'null'
+              height:
+                oneOf:
+                - type: integer
+                  minimum: 1
+                - type: 'null'
+              created_at:
+                oneOf:
+                - type: string
+                  format: date-time
+                - type: 'null'
+          - type: 'null'
+        retention_scope:
+          type: string
+          enum:
+          - project
+          - request
+        expires_at:
           oneOf:
           - type: string
             format: date-time
           - type: 'null'
-        error:
+        claimed_generation_id:
           oneOf:
-          - $ref: '#/components/schemas/ResourceError'
+          - type: string
+            pattern: ^gen_[A-Za-z0-9_-]+$
           - type: 'null'
+        removed_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    AssetType:
+      type: string
+      enum:
+      - article
+      - lead_magnet
+      - ebook
+      - slides
+      - infographic
+      - quiz
+      - podcast_episode
+      - short_video
+      - explainer_video
+      - launch_video
+      - product_demo_video
+      - ad_video
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required:
+      - reason
+      properties:
+        field:
+          type: string
+        reason:
+          type: string
     Voice:
       type: object
       additionalProperties: false
@@ -1828,19 +1833,14 @@ components:
           oneOf:
           - $ref: '#/components/schemas/ResourceError'
           - type: 'null'
-    ResourceError:
+    ErrorEnvelope:
       type: object
       additionalProperties: false
       required:
-      - code
-      - message
+      - error
       properties:
-        code:
-          type: string
-          minLength: 1
-        message:
-          type: string
-          minLength: 1
+        error:
+          $ref: '#/components/schemas/ErrorBody'
   responses:
     AutoContentError:
       description: Normalized AutoContent error; provider payloads are never returned.

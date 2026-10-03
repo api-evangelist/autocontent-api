@@ -143,15 +143,71 @@ paths:
         default:
           $ref: '#/components/responses/AutoContentError'
 components:
+  responses:
+    AutoContentError:
+      description: Normalized AutoContent error; provider payloads are never returned.
+      headers:
+        Retry-After:
+          description: Whole seconds before retry when the error supplies a bounded retry time.
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              code: max_cost_exceeded
+              message: Current price exceeds max_cost_usd.
+              correlation_id: corr_42
+              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
   schemas:
-    ErrorEnvelope:
+    ApiKey:
       type: object
       additionalProperties: false
       required:
-      - error
+      - id
+      - prefix
+      - name
+      - scopes
+      - created_at
       properties:
-        error:
-          $ref: '#/components/schemas/ErrorBody'
+        id:
+          type: string
+          pattern: ^key_[A-Za-z0-9_-]+$
+        prefix:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        scopes:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        last_used_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        secret:
+          oneOf:
+          - type: string
+            pattern: ^acp_
+          - type: 'null'
+        secret_unavailable:
+          type: boolean
+        rotate_guidance:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
     ErrorBody:
       type: object
       additionalProperties: false
@@ -214,51 +270,6 @@ components:
         doc_url:
           type: string
           format: uri
-    ApiKey:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - prefix
-      - name
-      - scopes
-      - created_at
-      properties:
-        id:
-          type: string
-          pattern: ^key_[A-Za-z0-9_-]+$
-        prefix:
-          type: string
-          minLength: 1
-        name:
-          type: string
-          minLength: 1
-          maxLength: 80
-        scopes:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-        created_at:
-          type: string
-          format: date-time
-        last_used_at:
-          oneOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-        secret:
-          oneOf:
-          - type: string
-            pattern: ^acp_
-          - type: 'null'
-        secret_unavailable:
-          type: boolean
-        rotate_guidance:
-          oneOf:
-          - type: string
-            minLength: 1
-          - type: 'null'
     ApiKeyRevocation:
       type: object
       additionalProperties: false
@@ -282,25 +293,14 @@ components:
           type: string
         reason:
           type: string
-  responses:
-    AutoContentError:
-      description: Normalized AutoContent error; provider payloads are never returned.
-      headers:
-        Retry-After:
-          description: Whole seconds before retry when the error supplies a bounded retry time.
-          schema:
-            type: integer
-            minimum: 1
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-          example:
-            error:
-              code: max_cost_exceeded
-              message: Current price exceeds max_cost_usd.
-              correlation_id: corr_42
-              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
   securitySchemes:
     platformOAuth:
       type: http

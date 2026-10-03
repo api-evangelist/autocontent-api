@@ -827,15 +827,26 @@ paths:
         default:
           $ref: '#/components/responses/AutoContentError'
 components:
+  responses:
+    AutoContentError:
+      description: Normalized AutoContent error; provider payloads are never returned.
+      headers:
+        Retry-After:
+          description: Whole seconds before retry when the error supplies a bounded retry time.
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              code: max_cost_exceeded
+              message: Current price exceeds max_cost_usd.
+              correlation_id: corr_42
+              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
   schemas:
-    ErrorEnvelope:
-      type: object
-      additionalProperties: false
-      required:
-      - error
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorBody'
     ErrorBody:
       type: object
       additionalProperties: false
@@ -898,625 +909,6 @@ components:
         doc_url:
           type: string
           format: uri
-    ContentLoop:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - project_id
-      - name
-      - status
-      - revision
-      - created_at
-      - updated_at
-      properties:
-        id:
-          type: string
-          pattern: ^loop_[A-Za-z0-9_-]+$
-        project_id:
-          type: string
-          pattern: ^prj_[A-Za-z0-9_-]+$
-        name:
-          type: string
-          minLength: 1
-        status:
-          type: string
-          enum:
-          - active
-          - paused
-          - archived
-        revision:
-          type: integer
-          minimum: 1
-        input:
-          oneOf:
-          - type: object
-            properties:
-              type:
-                type: string
-                const: trend
-              lookback_days:
-                type: integer
-                minimum: 1
-                maximum: 30
-              instructions:
-                type: string
-                minLength: 1
-                maxLength: 4000
-                x-max-utf8-bytes: 4000
-            required:
-            - type
-            additionalProperties: false
-          - type: object
-            properties:
-              type:
-                type: string
-                const: topic
-              topic:
-                type: string
-                minLength: 1
-                maxLength: 2000
-                x-max-utf8-bytes: 2000
-              evidence_scope:
-                type: string
-                enum:
-                - project
-                - project_and_web
-              lookback_days:
-                type: integer
-                minimum: 1
-                maximum: 30
-              source_ids:
-                minItems: 1
-                maxItems: 100
-                type: array
-                items:
-                  type: string
-                  pattern: ^src_[A-Za-z0-9_-]+$
-                uniqueItems: true
-              collection_ids:
-                minItems: 1
-                maxItems: 100
-                type: array
-                items:
-                  type: string
-                  pattern: ^col_[A-Za-z0-9_-]+$
-                uniqueItems: true
-              instructions:
-                type: string
-                minLength: 1
-                maxLength: 4000
-                x-max-utf8-bytes: 4000
-            required:
-            - type
-            - topic
-            additionalProperties: false
-          - type: object
-            properties:
-              type:
-                type: string
-                const: knowledge
-              source_ids:
-                minItems: 1
-                maxItems: 100
-                type: array
-                items:
-                  type: string
-                  pattern: ^src_[A-Za-z0-9_-]+$
-                uniqueItems: true
-              collection_ids:
-                minItems: 1
-                maxItems: 100
-                type: array
-                items:
-                  type: string
-                  pattern: ^col_[A-Za-z0-9_-]+$
-                uniqueItems: true
-              instructions:
-                type: string
-                minLength: 1
-                maxLength: 4000
-                x-max-utf8-bytes: 4000
-            required:
-            - type
-            additionalProperties: false
-        instructions:
-          oneOf:
-          - type: string
-            maxLength: 4000
-          - type: 'null'
-        schedule:
-          oneOf:
-          - type: object
-            properties:
-              frequency:
-                type: string
-                const: daily
-              local_time:
-                type: string
-                pattern: ^(?:[01][0-9]|2[0-3]):[0-5][0-9]$
-              timezone:
-                type: string
-                minLength: 1
-                maxLength: 100
-                format: iana-time-zone
-            required:
-            - frequency
-            - local_time
-            - timezone
-            additionalProperties: false
-          - type: object
-            properties:
-              frequency:
-                type: string
-                const: weekly
-              day_of_week:
-                type: string
-                enum:
-                - monday
-                - tuesday
-                - wednesday
-                - thursday
-                - friday
-                - saturday
-                - sunday
-              local_time:
-                type: string
-                pattern: ^(?:[01][0-9]|2[0-3]):[0-5][0-9]$
-              timezone:
-                type: string
-                minLength: 1
-                maxLength: 100
-                format: iana-time-zone
-            required:
-            - frequency
-            - day_of_week
-            - local_time
-            - timezone
-            additionalProperties: false
-          - type: object
-            properties:
-              frequency:
-                type: string
-                const: monthly
-              day_of_month:
-                type: integer
-                minimum: 1
-                maximum: 31
-              local_time:
-                type: string
-                pattern: ^(?:[01][0-9]|2[0-3]):[0-5][0-9]$
-              timezone:
-                type: string
-                minLength: 1
-                maxLength: 100
-                format: iana-time-zone
-            required:
-            - frequency
-            - day_of_month
-            - local_time
-            - timezone
-            additionalProperties: false
-        assets:
-          type: array
-          minItems: 1
-          maxItems: 10
-          items:
-            type: object
-            properties:
-              asset_type:
-                type: string
-                enum:
-                - article
-                - lead_magnet
-                - ebook
-                - slides
-                - infographic
-                - quiz
-                - podcast_episode
-                - short_video
-                - explainer_video
-                - launch_video
-                - product_demo_video
-                - ad_video
-              instructions:
-                type: string
-                minLength: 1
-                maxLength: 4000
-                x-max-utf8-bytes: 4000
-              language:
-                type: string
-                minLength: 2
-                maxLength: 255
-                format: bcp47
-              options:
-                description: One normalized first-class Asset options contract. Exact schemas are also discoverable from GET /asset-types.
-                anyOf:
-                - type: object
-                  properties:
-                    target_words:
-                      default: 1200
-                      type: integer
-                      minimum: 500
-                      maximum: 3000
-                  required:
-                  - target_words
-                  additionalProperties: false
-                - type: object
-                  properties:
-                    page_count:
-                      default: 10
-                      type: integer
-                      minimum: 4
-                      maximum: 30
-                    format:
-                      default: auto
-                      type: string
-                      enum:
-                      - auto
-                      - checklist
-                      - cheat_sheet
-                      - workbook
-                      - planner
-                      - tracker
-                      - scorecard
-                      - roadmap
-                      - challenge
-                      - swipe_file
-                      - resource_guide
-                      - comparison_guide
-                      - meal_plan
-                  required:
-                  - page_count
-                  - format
-                  additionalProperties: false
-                - type: object
-                  properties:
-                    chapter_count:
-                      default: 6
-                      type: integer
-                      minimum: 3
-                      maximum: 12
-                    target_pages:
-                      default: 30
-                      type: integer
-                      minimum: 15
-                      maximum: 60
-                  required:
-                  - chapter_count
-                  - target_pages
-                  additionalProperties: false
-                - type: object
-                  properties:
-                    slide_count:
-                      default: 12
-                      type: integer
-                      minimum: 5
-                      maximum: 30
-                    aspect_ratio:
-                      default: '16:9'
-                      type: string
-                      enum:
-                      - '16:9'
-                      - '4:3'
-                  required:
-                  - slide_count
-                  - aspect_ratio
-                  additionalProperties: false
-                - type: object
-                  properties:
-                    aspect_ratio:
-                      default: '4:5'
-                      type: string
-                      enum:
-                      - '1:1'
-                      - '4:5'
-                      - '9:16'
-                      - '16:9'
-                    resolution:
-                      default: standard
-                      type: string
-                      enum:
-                      - standard
-                      - high
-                  required:
-                  - aspect_ratio
-                  - resolution
-                  additionalProperties: false
-                - type: object
-                  properties:
-                    question_count:
-                      default: 10
-                      type: integer
-                      minimum: 5
-                      maximum: 30
-                    difficulty:
-                      default: intermediate
-                      type: string
-                      enum:
-                      - beginner
-                      - intermediate
-                      - advanced
-                  required:
-                  - question_count
-                  - difficulty
-                  additionalProperties: false
-                - type: object
-                  properties:
-                    duration_seconds:
-                      default: 600
-                      type: integer
-                      minimum: 120
-                      maximum: 14400
-                  required:
-                  - duration_seconds
-                  additionalProperties: false
-                - type: object
-                  properties:
-                    duration_seconds:
-                      default: 30
-                      type: integer
-                      minimum: 5
-                      maximum: 180
-                    aspect_ratio:
-                      default: '9:16'
-                      type: string
-                      enum:
-                      - '9:16'
-                      - '1:1'
-                      - '16:9'
-                    resolution:
-                      default: 1080p
-                      type: string
-                      enum:
-                      - 720p
-                      - 1080p
-                    captions:
-                      default: true
-                      type: boolean
-                    presentation_mode:
-                      default: faceless
-                      type: string
-                      enum:
-                      - faceless
-                      - avatar
-                  required:
-                  - duration_seconds
-                  - aspect_ratio
-                  - resolution
-                  - captions
-                  - presentation_mode
-                  additionalProperties: false
-                - type: object
-                  properties:
-                    duration_seconds:
-                      default: 90
-                      type: integer
-                      minimum: 30
-                      maximum: 600
-                    aspect_ratio:
-                      default: '16:9'
-                      type: string
-                      enum:
-                      - '16:9'
-                      - '9:16'
-                      - '1:1'
-                    resolution:
-                      default: 1080p
-                      type: string
-                      enum:
-                      - 720p
-                      - 1080p
-                    captions:
-                      default: true
-                      type: boolean
-                    presentation_mode:
-                      default: faceless
-                      type: string
-                      enum:
-                      - faceless
-                      - avatar
-                  required:
-                  - duration_seconds
-                  - aspect_ratio
-                  - resolution
-                  - captions
-                  - presentation_mode
-                  additionalProperties: false
-                - type: object
-                  properties:
-                    duration_seconds:
-                      default: 60
-                      type: integer
-                      minimum: 15
-                      maximum: 180
-                    aspect_ratio:
-                      default: '16:9'
-                      type: string
-                      enum:
-                      - '16:9'
-                      - '9:16'
-                      - '1:1'
-                    resolution:
-                      default: 1080p
-                      type: string
-                      enum:
-                      - 720p
-                      - 1080p
-                    captions:
-                      default: true
-                      type: boolean
-                    presentation_mode:
-                      default: faceless
-                      type: string
-                      enum:
-                      - faceless
-                      - avatar
-                  required:
-                  - duration_seconds
-                  - aspect_ratio
-                  - resolution
-                  - captions
-                  - presentation_mode
-                  additionalProperties: false
-                - type: object
-                  properties:
-                    duration_seconds:
-                      default: 120
-                      type: integer
-                      minimum: 30
-                      maximum: 600
-                    aspect_ratio:
-                      default: '16:9'
-                      type: string
-                      enum:
-                      - '16:9'
-                      - '9:16'
-                      - '1:1'
-                    resolution:
-                      default: 1080p
-                      type: string
-                      enum:
-                      - 720p
-                      - 1080p
-                    captions:
-                      default: true
-                      type: boolean
-                    presentation_mode:
-                      default: faceless
-                      type: string
-                      enum:
-                      - faceless
-                      - avatar
-                    product_visual_source_ids:
-                      minItems: 1
-                      maxItems: 20
-                      type: array
-                      items:
-                        type: string
-                        minLength: 1
-                        maxLength: 200
-                        pattern: ^[A-Za-z0-9_-]+$
-                      uniqueItems: true
-                  required:
-                  - duration_seconds
-                  - aspect_ratio
-                  - resolution
-                  - captions
-                  - presentation_mode
-                  additionalProperties: false
-                - type: object
-                  properties:
-                    duration_seconds:
-                      default: 30
-                      type: integer
-                      minimum: 5
-                      maximum: 120
-                    aspect_ratio:
-                      default: '9:16'
-                      type: string
-                      enum:
-                      - '9:16'
-                      - '1:1'
-                      - '16:9'
-                    resolution:
-                      default: 1080p
-                      type: string
-                      enum:
-                      - 720p
-                      - 1080p
-                    captions:
-                      default: true
-                      type: boolean
-                    presentation_mode:
-                      default: faceless
-                      type: string
-                      enum:
-                      - faceless
-                      - avatar
-                  required:
-                  - duration_seconds
-                  - aspect_ratio
-                  - resolution
-                  - captions
-                  - presentation_mode
-                  additionalProperties: false
-              voice_id:
-                type: string
-                pattern: ^voice_[A-Za-z0-9_-]+$
-              avatar_id:
-                type: string
-                pattern: ^avatar_[A-Za-z0-9_-]+$
-              model:
-                type: string
-                minLength: 1
-                maxLength: 200
-              model_options:
-                type: object
-                description: Validated by the exact versioned schema returned from GET /models for the pinned model.
-                additionalProperties: true
-                x-schema-source: GET /models.model_options_schema
-            required:
-            - asset_type
-            additionalProperties: false
-            dependentRequired:
-              model_options:
-              - model
-        language:
-          oneOf:
-          - type: string
-            minLength: 2
-            maxLength: 255
-            format: bcp47
-          - type: 'null'
-        max_cost_per_run_usd:
-          type: string
-          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
-        max_cost_per_month_usd:
-          type: string
-          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
-        next_run_at:
-          oneOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-        pause_reason:
-          oneOf:
-          - type: string
-            minLength: 1
-          - type: 'null'
-        consecutive_no_qualified_runs:
-          type: integer
-          minimum: 0
-        current_month_usage:
-          type: object
-          additionalProperties: false
-          required:
-          - billing_period_id
-          - settled_usd
-          - reserved_usd
-          properties:
-            billing_period_id:
-              oneOf:
-              - type: string
-                minLength: 1
-              - type: 'null'
-            settled_usd:
-              type: string
-              pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
-            reserved_usd:
-              type: string
-              pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
-        last_run:
-          oneOf:
-          - $ref: '#/components/schemas/ContentLoopRun'
-          - type: 'null'
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
     ContentLoopRun:
       type: object
       additionalProperties: false
@@ -2872,6 +2264,625 @@ components:
           - type: string
             format: date-time
           - type: 'null'
+    ContentLoop:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - project_id
+      - name
+      - status
+      - revision
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: string
+          pattern: ^loop_[A-Za-z0-9_-]+$
+        project_id:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+        name:
+          type: string
+          minLength: 1
+        status:
+          type: string
+          enum:
+          - active
+          - paused
+          - archived
+        revision:
+          type: integer
+          minimum: 1
+        input:
+          oneOf:
+          - type: object
+            properties:
+              type:
+                type: string
+                const: trend
+              lookback_days:
+                type: integer
+                minimum: 1
+                maximum: 30
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 4000
+                x-max-utf8-bytes: 4000
+            required:
+            - type
+            additionalProperties: false
+          - type: object
+            properties:
+              type:
+                type: string
+                const: topic
+              topic:
+                type: string
+                minLength: 1
+                maxLength: 2000
+                x-max-utf8-bytes: 2000
+              evidence_scope:
+                type: string
+                enum:
+                - project
+                - project_and_web
+              lookback_days:
+                type: integer
+                minimum: 1
+                maximum: 30
+              source_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^src_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              collection_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^col_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 4000
+                x-max-utf8-bytes: 4000
+            required:
+            - type
+            - topic
+            additionalProperties: false
+          - type: object
+            properties:
+              type:
+                type: string
+                const: knowledge
+              source_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^src_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              collection_ids:
+                minItems: 1
+                maxItems: 100
+                type: array
+                items:
+                  type: string
+                  pattern: ^col_[A-Za-z0-9_-]+$
+                uniqueItems: true
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 4000
+                x-max-utf8-bytes: 4000
+            required:
+            - type
+            additionalProperties: false
+        instructions:
+          oneOf:
+          - type: string
+            maxLength: 4000
+          - type: 'null'
+        schedule:
+          oneOf:
+          - type: object
+            properties:
+              frequency:
+                type: string
+                const: daily
+              local_time:
+                type: string
+                pattern: ^(?:[01][0-9]|2[0-3]):[0-5][0-9]$
+              timezone:
+                type: string
+                minLength: 1
+                maxLength: 100
+                format: iana-time-zone
+            required:
+            - frequency
+            - local_time
+            - timezone
+            additionalProperties: false
+          - type: object
+            properties:
+              frequency:
+                type: string
+                const: weekly
+              day_of_week:
+                type: string
+                enum:
+                - monday
+                - tuesday
+                - wednesday
+                - thursday
+                - friday
+                - saturday
+                - sunday
+              local_time:
+                type: string
+                pattern: ^(?:[01][0-9]|2[0-3]):[0-5][0-9]$
+              timezone:
+                type: string
+                minLength: 1
+                maxLength: 100
+                format: iana-time-zone
+            required:
+            - frequency
+            - day_of_week
+            - local_time
+            - timezone
+            additionalProperties: false
+          - type: object
+            properties:
+              frequency:
+                type: string
+                const: monthly
+              day_of_month:
+                type: integer
+                minimum: 1
+                maximum: 31
+              local_time:
+                type: string
+                pattern: ^(?:[01][0-9]|2[0-3]):[0-5][0-9]$
+              timezone:
+                type: string
+                minLength: 1
+                maxLength: 100
+                format: iana-time-zone
+            required:
+            - frequency
+            - day_of_month
+            - local_time
+            - timezone
+            additionalProperties: false
+        assets:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            type: object
+            properties:
+              asset_type:
+                type: string
+                enum:
+                - article
+                - lead_magnet
+                - ebook
+                - slides
+                - infographic
+                - quiz
+                - podcast_episode
+                - short_video
+                - explainer_video
+                - launch_video
+                - product_demo_video
+                - ad_video
+              instructions:
+                type: string
+                minLength: 1
+                maxLength: 4000
+                x-max-utf8-bytes: 4000
+              language:
+                type: string
+                minLength: 2
+                maxLength: 255
+                format: bcp47
+              options:
+                description: One normalized first-class Asset options contract. Exact schemas are also discoverable from GET /asset-types.
+                anyOf:
+                - type: object
+                  properties:
+                    target_words:
+                      default: 1200
+                      type: integer
+                      minimum: 500
+                      maximum: 3000
+                  required:
+                  - target_words
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    page_count:
+                      default: 10
+                      type: integer
+                      minimum: 4
+                      maximum: 30
+                    format:
+                      default: auto
+                      type: string
+                      enum:
+                      - auto
+                      - checklist
+                      - cheat_sheet
+                      - workbook
+                      - planner
+                      - tracker
+                      - scorecard
+                      - roadmap
+                      - challenge
+                      - swipe_file
+                      - resource_guide
+                      - comparison_guide
+                      - meal_plan
+                  required:
+                  - page_count
+                  - format
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    chapter_count:
+                      default: 6
+                      type: integer
+                      minimum: 3
+                      maximum: 12
+                    target_pages:
+                      default: 30
+                      type: integer
+                      minimum: 15
+                      maximum: 60
+                  required:
+                  - chapter_count
+                  - target_pages
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    slide_count:
+                      default: 12
+                      type: integer
+                      minimum: 5
+                      maximum: 30
+                    aspect_ratio:
+                      default: '16:9'
+                      type: string
+                      enum:
+                      - '16:9'
+                      - '4:3'
+                  required:
+                  - slide_count
+                  - aspect_ratio
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    aspect_ratio:
+                      default: '4:5'
+                      type: string
+                      enum:
+                      - '1:1'
+                      - '4:5'
+                      - '9:16'
+                      - '16:9'
+                    resolution:
+                      default: standard
+                      type: string
+                      enum:
+                      - standard
+                      - high
+                  required:
+                  - aspect_ratio
+                  - resolution
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    question_count:
+                      default: 10
+                      type: integer
+                      minimum: 5
+                      maximum: 30
+                    difficulty:
+                      default: intermediate
+                      type: string
+                      enum:
+                      - beginner
+                      - intermediate
+                      - advanced
+                  required:
+                  - question_count
+                  - difficulty
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 600
+                      type: integer
+                      minimum: 120
+                      maximum: 14400
+                  required:
+                  - duration_seconds
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 30
+                      type: integer
+                      minimum: 5
+                      maximum: 180
+                    aspect_ratio:
+                      default: '9:16'
+                      type: string
+                      enum:
+                      - '9:16'
+                      - '1:1'
+                      - '16:9'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 90
+                      type: integer
+                      minimum: 30
+                      maximum: 600
+                    aspect_ratio:
+                      default: '16:9'
+                      type: string
+                      enum:
+                      - '16:9'
+                      - '9:16'
+                      - '1:1'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 60
+                      type: integer
+                      minimum: 15
+                      maximum: 180
+                    aspect_ratio:
+                      default: '16:9'
+                      type: string
+                      enum:
+                      - '16:9'
+                      - '9:16'
+                      - '1:1'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 120
+                      type: integer
+                      minimum: 30
+                      maximum: 600
+                    aspect_ratio:
+                      default: '16:9'
+                      type: string
+                      enum:
+                      - '16:9'
+                      - '9:16'
+                      - '1:1'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                    product_visual_source_ids:
+                      minItems: 1
+                      maxItems: 20
+                      type: array
+                      items:
+                        type: string
+                        minLength: 1
+                        maxLength: 200
+                        pattern: ^[A-Za-z0-9_-]+$
+                      uniqueItems: true
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    duration_seconds:
+                      default: 30
+                      type: integer
+                      minimum: 5
+                      maximum: 120
+                    aspect_ratio:
+                      default: '9:16'
+                      type: string
+                      enum:
+                      - '9:16'
+                      - '1:1'
+                      - '16:9'
+                    resolution:
+                      default: 1080p
+                      type: string
+                      enum:
+                      - 720p
+                      - 1080p
+                    captions:
+                      default: true
+                      type: boolean
+                    presentation_mode:
+                      default: faceless
+                      type: string
+                      enum:
+                      - faceless
+                      - avatar
+                  required:
+                  - duration_seconds
+                  - aspect_ratio
+                  - resolution
+                  - captions
+                  - presentation_mode
+                  additionalProperties: false
+              voice_id:
+                type: string
+                pattern: ^voice_[A-Za-z0-9_-]+$
+              avatar_id:
+                type: string
+                pattern: ^avatar_[A-Za-z0-9_-]+$
+              model:
+                type: string
+                minLength: 1
+                maxLength: 200
+              model_options:
+                type: object
+                description: Validated by the exact versioned schema returned from GET /models for the pinned model.
+                additionalProperties: true
+                x-schema-source: GET /models.model_options_schema
+            required:
+            - asset_type
+            additionalProperties: false
+            dependentRequired:
+              model_options:
+              - model
+        language:
+          oneOf:
+          - type: string
+            minLength: 2
+            maxLength: 255
+            format: bcp47
+          - type: 'null'
+        max_cost_per_run_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        max_cost_per_month_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        next_run_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        pause_reason:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        consecutive_no_qualified_runs:
+          type: integer
+          minimum: 0
+        current_month_usage:
+          type: object
+          additionalProperties: false
+          required:
+          - billing_period_id
+          - settled_usd
+          - reserved_usd
+          properties:
+            billing_period_id:
+              oneOf:
+              - type: string
+                minLength: 1
+              - type: 'null'
+            settled_usd:
+              type: string
+              pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+            reserved_usd:
+              type: string
+              pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        last_run:
+          oneOf:
+          - $ref: '#/components/schemas/ContentLoopRun'
+          - type: 'null'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     ErrorDetail:
       type: object
       additionalProperties: false
@@ -2882,25 +2893,14 @@ components:
           type: string
         reason:
           type: string
-  responses:
-    AutoContentError:
-      description: Normalized AutoContent error; provider payloads are never returned.
-      headers:
-        Retry-After:
-          description: Whole seconds before retry when the error supplies a bounded retry time.
-          schema:
-            type: integer
-            minimum: 1
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-          example:
-            error:
-              code: max_cost_exceeded
-              message: Current price exceeds max_cost_usd.
-              correlation_id: corr_42
-              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
   securitySchemes:
     platformOAuth:
       type: http

@@ -668,20 +668,6 @@ paths:
     - url: https://api.autocontentapi.com
 components:
   schemas:
-    ExplainerTranscript:
-      type: object
-      properties:
-        videoId:
-          type: string
-          description: Explainer video identifier (request ID)
-        createdOn:
-          type: string
-          format: date-time
-          description: Transcript creation timestamp
-        transcript:
-          type: array
-          items:
-            $ref: '#/components/schemas/TranscriptLine'
     TranscriptLine:
       type: object
       properties:
@@ -696,21 +682,20 @@ components:
           description: Start/end time in seconds
           items:
             type: number
-    Avatar:
+    ExplainerTranscript:
       type: object
       properties:
-        id:
+        videoId:
           type: string
-          description: Avatar identifier
-        name:
+          description: Explainer video identifier (request ID)
+        createdOn:
           type: string
-          description: Avatar display name
-        gender:
-          type: string
-          enum:
-          - M
-          - F
-          description: Avatar gender (M = Male, F = Female)
+          format: date-time
+          description: Transcript creation timestamp
+        transcript:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranscriptLine'
     Short:
       type: object
       properties:
@@ -760,6 +745,21 @@ components:
         errorMessage:
           type: string
           description: Error message (if applicable)
+    Avatar:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Avatar identifier
+        name:
+          type: string
+          description: Avatar display name
+        gender:
+          type: string
+          enum:
+          - M
+          - F
+          description: Avatar gender (M = Male, F = Female)
   securitySchemes:
     bearerAuth:
       type: http
