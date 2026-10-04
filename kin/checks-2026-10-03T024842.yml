@@ -1,20 +1,22 @@
 ---
 kin_checks:
   slug: autocontent-api
-  schema_version: 0.22.0
-  scored_at: '2026-09-21'
-  run_ts: 2026-09-21T233935
+  schema_version: 0.23.0
+  scored_at: '2026-10-03'
+  run_ts: 2026-10-03T024842
   note: Actionable checks (missed + partial) in `checks`, plus the ids that did not
-    apply in `na`. Everything else in rubric/scoring-0.22.0.yml was earned; counts
+    apply in `na`. Everything else in rubric/scoring-0.23.0.yml was earned; counts
     below let you verify that.
   counts:
-    total: 136
-    earned: 43
+    total: 153
+    earned: 45
     partial: 27
-    missed: 41
-    na: 25
+    missed: 57
+    na: 24
   checks:
-  - id: maintainer_present
+  - id: newsroom_present
+    status: missed
+  - id: leadership_present
     status: missed
   - id: well_known_published
     status: missed
@@ -22,10 +24,12 @@ kin_checks:
     status: missed
   - id: openapi_3_2
     status: missed
-    detail: 0 of 30 openapi documents pass
+    detail: 0 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: webhooks_or_callbacks
     status: missed
-    detail: 0 of 30 openapi documents pass
+    detail: 0 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: inbound_contract_published
     status: missed
   - id: json_schema_present
@@ -80,6 +84,36 @@ kin_checks:
     status: missed
   - id: reg_compliance_published
     status: missed
+  - id: reg_named_standard_conformance
+    status: missed
+  - id: reg_sbom
+    status: missed
+  - id: reg_support_lifetime
+    status: missed
+  - id: reg_accessibility_conformance
+    status: missed
+  - id: reg_training_data_summary
+    status: missed
+  - id: reg_ai_transparency
+    status: missed
+  - id: reg_global_privacy_control
+    status: missed
+  - id: reg_data_subject_request
+    status: missed
+  - id: reg_subprocessors
+    status: missed
+  - id: reg_data_residency
+    status: missed
+  - id: reg_incident_notification
+    status: missed
+  - id: reg_age_assurance
+    status: missed
+  - id: reg_notice_and_action
+    status: missed
+  - id: reg_transparency_report
+    status: missed
+  - id: reg_exit_assistance
+    status: missed
   - id: upsert_outcome_discriminator
     status: missed
   - id: upsert_alternate_key
@@ -100,77 +134,93 @@ kin_checks:
     status: missed
   - id: contract_present
     status: partial
-    earned: 19.33
+    earned: 17.4
   - id: openapi_3_1
     status: partial
-    earned: 4.83
-    detail: 30 of 30 openapi documents pass
+    earned: 4.35
+    detail: 30 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: openapi_3_0
     status: partial
-    earned: 2.9
-    detail: 30 of 30 openapi documents pass
+    earned: 2.61
+    detail: 30 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: info_complete
     status: partial
-    earned: 0.13
-    detail: 1 of 30 openapi documents pass
+    earned: 0.12
+    detail: 1 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: servers_defined
     status: partial
-    earned: 2.9
-    detail: 30 of 30 openapi documents pass
+    earned: 2.61
+    detail: 30 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: servers_resolvable
     status: partial
-    earned: 4.83
+    earned: 4.35
   - id: operations_summary_coverage
     status: partial
-    earned: 5.8
-    detail: 30 of 30 openapi documents pass
+    earned: 5.22
+    detail: 30 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: operations_description_coverage
     status: partial
-    earned: 2.51
-    detail: 13 of 30 openapi documents pass
+    earned: 2.26
+    detail: 13 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: operations_tagged
     status: partial
-    earned: 3.87
-    detail: 30 of 30 openapi documents pass
+    earned: 3.48
+    detail: 30 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: operations_operation_ids
     status: partial
-    earned: 3.87
-    detail: 30 of 30 openapi documents pass
+    earned: 3.48
+    detail: 30 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: response_coverage
     status: partial
-    earned: 4.83
-    detail: 30 of 30 openapi documents pass
+    earned: 4.35
+    detail: 30 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: error_responses_documented
     status: partial
-    earned: 1.81
-    detail: 14 of 30 openapi documents pass
+    earned: 1.62
+    detail: 14 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: examples_present
     status: partial
-    earned: 0.61
+    earned: 0.55
   - id: components_reuse
     status: partial
-    earned: 1.16
-    detail: 12 of 30 openapi documents pass
+    earned: 1.04
+    detail: 12 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: security_schemes_defined
     status: partial
-    earned: 3.87
-    detail: 30 of 30 openapi documents pass
+    earned: 3.48
+    detail: 30 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: security_applied
     status: partial
-    earned: 2.71
-    detail: 28 of 30 openapi documents pass
+    earned: 2.44
+    detail: 28 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: oauth_flows_current
     status: partial
-    earned: 3.87
-    detail: 30 of 30 openapi documents pass
+    earned: 3.48
+    detail: 30 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: credentials_not_in_query
     status: partial
-    earned: 2.9
-    detail: 30 of 30 openapi documents pass
+    earned: 2.61
+    detail: 30 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: oauth_scopes_enumerated
     status: partial
-    earned: 3.87
-    detail: 30 of 30 openapi documents pass
+    earned: 3.48
+    detail: 30 of 30 openapi documents pass; credited at 87% because part of the corpus
+      was modelled or derived by API Evangelist
   - id: lifecycle_documented
     status: partial
     earned: 1.03
@@ -221,7 +271,6 @@ kin_checks:
   - reg_entitlement_terms
   - reg_fapi_profile
   - reg_mandate_verified
-  - reg_named_standard_conformance
   - reg_pci_sca
   - reg_smart_configuration
   - reg_write_surface
