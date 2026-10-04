@@ -825,6 +825,9 @@ apis:
   - type: Documentation
     url: https://docs.autocontentapi.com/
 common:
+  - type: CapabilityMap
+    url: capabilities/autocontent-api-capability-edges.yml
+    name: AutoContent API Business Capability Map
   - type: Overlay
     url: overlays/autocontent-api-platform-v1-overlay.yaml
   - type: Overlay

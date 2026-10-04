@@ -1,0 +1,48 @@
+slug: autocontent-api
+provider: AutoContent API
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 3
+edges:
+- tag: Billing
+  spec_file: autocontent-api-billing-api-openapi.yml
+  capability_id: BC-4250
+  capability_id_l1: BC-4250
+  capability_name: Subscription Billing & Revenue Management
+  confidence: 0.8
+  evidence: GET /billing/invoices 'Get Stripe invoices for the authenticated client'; GET /billing/usage
+    'Get prepaid usage and resource counters'; POST /billing/prepayment-session 'Create a prepaid Stripe
+    Checkout session'
+  reason: Operations expose invoices, prepaid usage counters and payment checkout for the SaaS offering
+    — clearly subscription/usage billing and revenue collection; L2 left blank because the surface spans
+    metering, invoicing and payment collection.
+- tag: API Keys
+  spec_file: autocontent-api-api-keys-api-openapi.yml
+  capability_id: BC-4270.40
+  capability_id_l1: BC-4270
+  capability_name: Developer Identity & Credential Management
+  confidence: 0.78
+  evidence: POST /api-keys 'Create a scoped Platform API key'; DELETE /api-keys/{id} 'Revoke a Platform
+    API key'
+  reason: Issuance, listing and revocation of scoped platform API keys is developer credential stewardship
+    for the vendor's public API, matching Developer Identity & Credential Management.
+- tag: Webhooks
+  spec_file: autocontent-api-webhooks-api-openapi.yml
+  capability_id: BC-4270.80
+  capability_id_l1: BC-4270
+  capability_name: Webhook & Event Subscription Management
+  confidence: 0.7
+  evidence: POST /webhooks  Register a signed HTTPS webhook destination; GET /webhooks  List active webhook
+    destinations; DELETE /webhooks/{id}  Revoke a webhook destination
+  reason: Lifecycle of outbound webhook destinations exposed to API consumers, which is exactly Webhook
+    & Event Subscription Management within the developer-platform capability; confidence moderated because
+    webhook CRUD is also generic plumbing.
