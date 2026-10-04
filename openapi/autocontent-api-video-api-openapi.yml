@@ -696,6 +696,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TranscriptLine'
+    Avatar:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Avatar identifier
+        name:
+          type: string
+          description: Avatar display name
+        gender:
+          type: string
+          enum:
+          - M
+          - F
+          description: Avatar gender (M = Male, F = Female)
     Short:
       type: object
       properties:
@@ -745,21 +760,6 @@ components:
         errorMessage:
           type: string
           description: Error message (if applicable)
-    Avatar:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Avatar identifier
-        name:
-          type: string
-          description: Avatar display name
-        gender:
-          type: string
-          enum:
-          - M
-          - F
-          description: Avatar gender (M = Male, F = Female)
   securitySchemes:
     bearerAuth:
       type: http

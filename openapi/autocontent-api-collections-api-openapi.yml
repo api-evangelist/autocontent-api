@@ -77,26 +77,17 @@ paths:
         default:
           $ref: '#/components/responses/AutoContentError'
 components:
-  responses:
-    AutoContentError:
-      description: Normalized AutoContent error; provider payloads are never returned.
-      headers:
-        Retry-After:
-          description: Whole seconds before retry when the error supplies a bounded retry time.
-          schema:
-            type: integer
-            minimum: 1
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorEnvelope'
-          example:
-            error:
-              code: max_cost_exceeded
-              message: Current price exceeds max_cost_usd.
-              correlation_id: corr_42
-              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
   schemas:
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required:
+      - reason
+      properties:
+        field:
+          type: string
+        reason:
+          type: string
     Collection:
       type: object
       additionalProperties: false
@@ -185,16 +176,6 @@ components:
         doc_url:
           type: string
           format: uri
-    ErrorDetail:
-      type: object
-      additionalProperties: false
-      required:
-      - reason
-      properties:
-        field:
-          type: string
-        reason:
-          type: string
     ErrorEnvelope:
       type: object
       additionalProperties: false
@@ -203,6 +184,25 @@ components:
       properties:
         error:
           $ref: '#/components/schemas/ErrorBody'
+  responses:
+    AutoContentError:
+      description: Normalized AutoContent error; provider payloads are never returned.
+      headers:
+        Retry-After:
+          description: Whole seconds before retry when the error supplies a bounded retry time.
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              code: max_cost_exceeded
+              message: Current price exceeds max_cost_usd.
+              correlation_id: corr_42
+              doc_url: https://docs.autocontentapi.com/errors/max-cost-exceeded
   securitySchemes:
     platformOAuth:
       type: http

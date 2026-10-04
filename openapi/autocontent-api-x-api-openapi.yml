@@ -1205,37 +1205,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    XPostSource:
-      type: object
-      properties:
-        type:
-          type: string
-          description: Classification of the source (e.g. feed, resource, deep-research)
-          example: feed-item
-        sourceId:
-          type:
-          - string
-          - 'null'
-          description: Optional identifier for the source record
-          example: c0a8015c-82ff-455b-b3d5-8bfab98809c2
-        reference:
-          type:
-          - string
-          - 'null'
-          description: User-friendly reference like a URL or handle
-          example: https://twitter.com/autocontentapi/status/123
-        description:
-          type:
-          - string
-          - 'null'
-          description: Short summary of the source content
-          example: 'Reddit: Launch post announcing v2'
-        metadata:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-          description: Arbitrary metadata captured for the source
     XPost:
       type: object
       properties:
@@ -1288,6 +1257,37 @@ components:
           type: string
           description: Share URL for the post (only in getPodcasts response)
           example: https://autocontentapi.com/share/podcast/550e8400-e29b-41d4-a716-446655440000/20240115
+    XPostSource:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Classification of the source (e.g. feed, resource, deep-research)
+          example: feed-item
+        sourceId:
+          type:
+          - string
+          - 'null'
+          description: Optional identifier for the source record
+          example: c0a8015c-82ff-455b-b3d5-8bfab98809c2
+        reference:
+          type:
+          - string
+          - 'null'
+          description: User-friendly reference like a URL or handle
+          example: https://twitter.com/autocontentapi/status/123
+        description:
+          type:
+          - string
+          - 'null'
+          description: Short summary of the source content
+          example: 'Reddit: Launch post announcing v2'
+        metadata:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+          description: Arbitrary metadata captured for the source
   securitySchemes:
     bearerAuth:
       type: http

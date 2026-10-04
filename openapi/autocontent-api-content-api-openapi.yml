@@ -1588,6 +1588,20 @@ paths:
     - url: https://api.autocontentapi.com
 components:
   schemas:
+    QueueStats:
+      type: object
+      properties:
+        success:
+          type: boolean
+        queued:
+          type: integer
+          description: Requests waiting to be picked up for processing
+        processing:
+          type: integer
+          description: Requests currently in progress
+        active:
+          type: integer
+          description: queued + processing
     Usage:
       type: object
       properties:
@@ -1603,52 +1617,6 @@ components:
         usedDailyPodcasts:
           type: integer
           description: Podcasts created today
-    PublishTarget:
-      type: object
-      properties:
-        channel:
-          type: string
-          description: Target channel for publishing (e.g., youtube)
-        youtubeAccountId:
-          type:
-          - string
-          - 'null'
-          description: Connected YouTube account ID to publish to
-        youtubePlaylistId:
-          type:
-          - string
-          - 'null'
-          description: Optional playlist ID to publish into
-    QueueRequestsResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        state:
-          type: string
-          enum:
-          - queued
-          - processing
-          - active
-        ids:
-          type: array
-          items:
-            type: string
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/QueueRequestSummary'
-        count:
-          type: integer
-          description: Number of items in this page
-        total_count:
-          type: integer
-        page:
-          type: integer
-        page_size:
-          type: integer
-        total_pages:
-          type: integer
     Transcript:
       type: object
       properties:
@@ -1696,78 +1664,36 @@ components:
           type: string
           format: date-time
           description: When the transcript was scheduled
-    Citation:
+    QueueRequestsResponse:
       type: object
       properties:
-        text:
+        success:
+          type: boolean
+        state:
           type: string
-          description: Citation text
-        source:
-          type: string
-          description: Source of the citation
-        page:
-          type: integer
-          description: Page number for PDF sources
-        timeMs:
-          type: integer
-          description: Timestamp in milliseconds for audio/video sources
-    FeedSelection:
-      type: object
-      required:
-      - feedId
-      - feedItemIds
-      properties:
-        feedId:
-          type: integer
-          description: Identifier of the feed containing the cached items
-        feedItemIds:
+          enum:
+          - queued
+          - processing
+          - active
+        ids:
           type: array
           items:
             type: string
-          description: Identifiers of cached posts or videos to include from that feed
-    Podcast:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Podcast ID
-        requestTypeId:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueueRequestSummary'
+        count:
           type: integer
-          description: Type of podcast request
-        audioTitle:
-          type: string
-          description: Title of the podcast
-        audioUrl:
-          type: string
-          description: URL to the audio file
-        responseText:
-          type: string
-          description: Podcast transcript/text
-        requestedOn:
-          type: string
-          format: date-time
-          description: When the podcast was requested
-        succeededOn:
-          type: string
-          format: date-time
-          description: When the podcast was completed
-        errorOn:
-          type: string
-          format: date-time
-          description: When the podcast failed (if applicable)
-        processingOn:
-          type: string
-          format: date-time
-          description: When the podcast started processing (if applicable)
-        errorMessage:
-          type: string
-          description: Error message if the podcast failed
-        status:
+          description: Number of items in this page
+        total_count:
           type: integer
-          description: Current status of the podcast
-        shareUrl:
-          type: string
-          description: Public sharing URL for the podcast
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_pages:
+          type: integer
     RepurposeRequest:
       type: object
       required:
@@ -2076,20 +2002,6 @@ components:
           type: string
           format: date-time
           description: Optional end date for recurring schedules (requires isScheduled true)
-    QueueStats:
-      type: object
-      properties:
-        success:
-          type: boolean
-        queued:
-          type: integer
-          description: Requests waiting to be picked up for processing
-        processing:
-          type: integer
-          description: Requests currently in progress
-        active:
-          type: integer
-          description: queued + processing
     QueueRequestSummary:
       type: object
       properties:
@@ -2118,6 +2030,94 @@ components:
           - string
           - 'null'
           format: date-time
+    PublishTarget:
+      type: object
+      properties:
+        channel:
+          type: string
+          description: Target channel for publishing (e.g., youtube)
+        youtubeAccountId:
+          type:
+          - string
+          - 'null'
+          description: Connected YouTube account ID to publish to
+        youtubePlaylistId:
+          type:
+          - string
+          - 'null'
+          description: Optional playlist ID to publish into
+    Citation:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Citation text
+        source:
+          type: string
+          description: Source of the citation
+        page:
+          type: integer
+          description: Page number for PDF sources
+        timeMs:
+          type: integer
+          description: Timestamp in milliseconds for audio/video sources
+    FeedSelection:
+      type: object
+      required:
+      - feedId
+      - feedItemIds
+      properties:
+        feedId:
+          type: integer
+          description: Identifier of the feed containing the cached items
+        feedItemIds:
+          type: array
+          items:
+            type: string
+          description: Identifiers of cached posts or videos to include from that feed
+    Podcast:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Podcast ID
+        requestTypeId:
+          type: integer
+          description: Type of podcast request
+        audioTitle:
+          type: string
+          description: Title of the podcast
+        audioUrl:
+          type: string
+          description: URL to the audio file
+        responseText:
+          type: string
+          description: Podcast transcript/text
+        requestedOn:
+          type: string
+          format: date-time
+          description: When the podcast was requested
+        succeededOn:
+          type: string
+          format: date-time
+          description: When the podcast was completed
+        errorOn:
+          type: string
+          format: date-time
+          description: When the podcast failed (if applicable)
+        processingOn:
+          type: string
+          format: date-time
+          description: When the podcast started processing (if applicable)
+        errorMessage:
+          type: string
+          description: Error message if the podcast failed
+        status:
+          type: integer
+          description: Current status of the podcast
+        shareUrl:
+          type: string
+          description: Public sharing URL for the podcast
   securitySchemes:
     bearerAuth:
       type: http
