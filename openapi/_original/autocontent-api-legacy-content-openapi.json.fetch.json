@@ -1,0 +1,12 @@
+{
+ "url": "https://api.autocontentapi.com/api-docs.json",
+ "requested_url": "https://api.autocontentapi.com/api-docs.json",
+ "status": 200,
+ "content_type": "application/json; charset=utf-8",
+ "bytes": 199435,
+ "sha256": "c1a0c45c44e47eb415007b1e18cf08d535eb715845c90b24059fc850c90a0f9f",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "equivalent",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the provider's current document describes the same operations (Jaccard 0.991), but the bytes differ, so the archive is an earlier or reformatted copy."
+}

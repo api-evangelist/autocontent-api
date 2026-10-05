@@ -1,0 +1,12 @@
+{
+ "url": "https://autocontentapi.com/openapi/autocontent-platform-v1.json",
+ "requested_url": "https://autocontentapi.com/openapi/autocontent-platform-v1.json",
+ "status": 200,
+ "content_type": "application/json; charset=UTF-8",
+ "bytes": 532054,
+ "sha256": "57b8271184bebcfffab850e69c3193455430da45cc7f231a5109a59fdd7f8bd5",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
