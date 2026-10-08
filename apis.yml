@@ -825,6 +825,8 @@ apis:
   - type: Documentation
     url: https://docs.autocontentapi.com/
 common:
+  - type: FinOps
+    url: finops/autocontent-api-finops.yml
   - type: CapabilityMap
     url: capabilities/autocontent-api-capability-edges.yml
     name: AutoContent API Business Capability Map
