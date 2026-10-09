@@ -1,4 +1,4 @@
-generated: '2026-09-16'
+generated: '2026-09-23'
 method: generated
 source: openapi/autocontent-api-account-api-openapi.yml, openapi/autocontent-api-api-keys-api-openapi.yml,
   openapi/autocontent-api-asset-types-api-openapi.yml, openapi/autocontent-api-assets-api-openapi.yml,
@@ -21,11 +21,11 @@ description: Recommended x-agentic-access execution contracts, classified heuris
 summary:
   operations: 165
   by_action_class:
-    connected: 86
-    acting: 79
+    connected: 87
+    acting: 78
   by_consequence:
-    read: 86
-    write: 73
+    read: 87
+    write: 72
     safety-critical: 5
     physical: 1
   human_in_the_loop_required: 5
@@ -450,18 +450,12 @@ operations:
   method: post
   operationId: postContentGetTranscript
   x-agentic-access:
-    action-class: acting
-    consequence: write
-    subject: required
-    audience: null
+    action-class: connected
+    consequence: read
+    subject: optional
     token:
-      max-ttl: 900
-    escalation:
-      human-in-the-loop: conditional
-      triggers:
-      - abnormal
-      - high-value
-    audit: required
+      max-ttl: 3600
+    audit: none
 - path: /content/GetTranscript/{episodeId}
   method: get
   operationId: getContentGetTranscriptByEpisodeId

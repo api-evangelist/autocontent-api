@@ -188,3 +188,34 @@ discrepancies:
     with 20,000 credits and 90 assets/day. That tier is not on the pricing page as of 2026-09-04;
     the third tier is now named Enterprise at EUR 108/month annual. The stale figures survive in
     the apis.yml common[] RateLimits data block and are corrected in this round.
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - subscription
+  units: []
+  plans:
+  - name: Amateur
+    access: other
+    model: subscription
+    model_how: stated
+    units: []
+    periods: []
+  - name: Professional
+    access: other
+    model: subscription
+    model_how: stated
+    units: []
+    periods: []
+  - name: Enterprise
+    access: other
+    model: subscription
+    model_how: stated
+    units: []
+    periods: []
+  - name: Private Notebooks
+    access: other
+    model: subscription
+    model_how: stated
+    units: []
+    periods: []

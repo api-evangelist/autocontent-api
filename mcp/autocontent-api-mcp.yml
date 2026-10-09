@@ -93,3 +93,22 @@ constraints:
   idempotency: Mutating tools require caller-supplied idempotency keys wherever the REST API does.
   token_handling: The service validates issuer, exact Platform audience, account binding and scopes, then
     forwards the caller's bearer unchanged to the Platform API.
+rfc9728:
+  endpoint: https://mcp.autocontentapi.com/v1
+  metadata_url: https://mcp.autocontentapi.com/.well-known/oauth-protected-resource/v1
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://api.autocontentapi.com/platform
+    authorization_servers:
+    - https://auth.autocontentapi.com
+    scopes_supported:
+    - platform.read
+    - platform.write
+    - platform.generate
+    - platform.billing.read
+    bearer_methods_supported:
+    - header
+    resource_documentation: https://autocontentapi.com/developers
