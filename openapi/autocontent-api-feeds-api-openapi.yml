@@ -366,15 +366,31 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    DeleteFeedRequest:
+    CreateFeedRequest:
       type: object
       required:
-      - id
+      - name
       properties:
-        id:
+        name:
+          type: string
+          description: Name of the feed
+          example: Tech News Twitter Feed
+        feedTypeId:
           type: integer
-          description: ID of the feed to delete
+          description: Type of feed (1 for X/Twitter, 2 for Reddit, 3 for YouTube channel, 4 for RSS, 5 for X News topic)
           example: 1
+        internalId:
+          type: string
+          description: Internal identifier - Twitter username for X, subreddit name for Reddit (without r/ prefix), topic/search query for X News (feedTypeId=5), feed URL for RSS. For YouTube channels this is populated automatically.
+          example: elonmusk
+        channel:
+          type: string
+          description: (YouTube only) Channel handle, URL, or ID. Either `channel` or `url` may be provided.
+          example: https://youtube.com/@AutoContentAPI
+        url:
+          type: string
+          description: (YouTube only) Channel URL alternative field.
+          example: https://youtube.com/@AutoContentAPI
     FeedSubscription:
       type: object
       properties:
@@ -419,31 +435,15 @@ components:
           - object
           - 'null'
           description: Snapshot of the underlying template request
-    CreateFeedRequest:
+    DeleteFeedRequest:
       type: object
       required:
-      - name
+      - id
       properties:
-        name:
-          type: string
-          description: Name of the feed
-          example: Tech News Twitter Feed
-        feedTypeId:
+        id:
           type: integer
-          description: Type of feed (1 for X/Twitter, 2 for Reddit, 3 for YouTube channel, 4 for RSS, 5 for X News topic)
+          description: ID of the feed to delete
           example: 1
-        internalId:
-          type: string
-          description: Internal identifier - Twitter username for X, subreddit name for Reddit (without r/ prefix), topic/search query for X News (feedTypeId=5), feed URL for RSS. For YouTube channels this is populated automatically.
-          example: elonmusk
-        channel:
-          type: string
-          description: (YouTube only) Channel handle, URL, or ID. Either `channel` or `url` may be provided.
-          example: https://youtube.com/@AutoContentAPI
-        url:
-          type: string
-          description: (YouTube only) Channel URL alternative field.
-          example: https://youtube.com/@AutoContentAPI
     Feed:
       type: object
       properties:

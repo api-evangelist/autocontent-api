@@ -78,6 +78,14 @@ paths:
           $ref: '#/components/responses/AutoContentError'
 components:
   schemas:
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
     ErrorDetail:
       type: object
       additionalProperties: false
@@ -88,32 +96,6 @@ components:
           type: string
         reason:
           type: string
-    Collection:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - project_id
-      - name
-      - created_at
-      - updated_at
-      properties:
-        id:
-          type: string
-          pattern: ^col_[A-Za-z0-9_-]+$
-        project_id:
-          type: string
-          pattern: ^prj_[A-Za-z0-9_-]+$
-        name:
-          type: string
-          minLength: 1
-          maxLength: 200
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
     ErrorBody:
       type: object
       additionalProperties: false
@@ -176,14 +158,32 @@ components:
         doc_url:
           type: string
           format: uri
-    ErrorEnvelope:
+    Collection:
       type: object
       additionalProperties: false
       required:
-      - error
+      - id
+      - project_id
+      - name
+      - created_at
+      - updated_at
       properties:
-        error:
-          $ref: '#/components/schemas/ErrorBody'
+        id:
+          type: string
+          pattern: ^col_[A-Za-z0-9_-]+$
+        project_id:
+          type: string
+          pattern: ^prj_[A-Za-z0-9_-]+$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
   responses:
     AutoContentError:
       description: Normalized AutoContent error; provider payloads are never returned.

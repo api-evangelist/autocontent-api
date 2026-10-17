@@ -668,34 +668,6 @@ paths:
     - url: https://api.autocontentapi.com
 components:
   schemas:
-    TranscriptLine:
-      type: object
-      properties:
-        text:
-          type: string
-          description: Transcript line text
-        speaker:
-          type: string
-          description: Speaker label
-        timestamp:
-          type: array
-          description: Start/end time in seconds
-          items:
-            type: number
-    ExplainerTranscript:
-      type: object
-      properties:
-        videoId:
-          type: string
-          description: Explainer video identifier (request ID)
-        createdOn:
-          type: string
-          format: date-time
-          description: Transcript creation timestamp
-        transcript:
-          type: array
-          items:
-            $ref: '#/components/schemas/TranscriptLine'
     Avatar:
       type: object
       properties:
@@ -711,6 +683,34 @@ components:
           - M
           - F
           description: Avatar gender (M = Male, F = Female)
+    ExplainerTranscript:
+      type: object
+      properties:
+        videoId:
+          type: string
+          description: Explainer video identifier (request ID)
+        createdOn:
+          type: string
+          format: date-time
+          description: Transcript creation timestamp
+        transcript:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranscriptLine'
+    TranscriptLine:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Transcript line text
+        speaker:
+          type: string
+          description: Speaker label
+        timestamp:
+          type: array
+          description: Start/end time in seconds
+          items:
+            type: number
     Short:
       type: object
       properties:

@@ -174,19 +174,80 @@ paths:
           $ref: '#/components/responses/AutoContentError'
 components:
   schemas:
-    ResourceError:
+    Voice:
       type: object
       additionalProperties: false
       required:
-      - code
-      - message
+      - id
+      - project_id
+      - display_name
+      - kind
+      - status
+      - compatibility
+      - created_at
+      - error
       properties:
-        code:
+        id:
+          type: string
+          pattern: ^voice_[A-Za-z0-9_-]+$
+        project_id:
+          oneOf:
+          - type: string
+            pattern: ^prj_[A-Za-z0-9_-]+$
+          - type: 'null'
+        display_name:
           type: string
           minLength: 1
-        message:
+          maxLength: 80
+        kind:
           type: string
-          minLength: 1
+          enum:
+          - stock
+          - custom
+        status:
+          type: string
+          enum:
+          - processing
+          - ready
+          - failed
+          - revoked
+        compatibility:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - asset_type
+            - model_id
+            - language
+            properties:
+              asset_type:
+                $ref: '#/components/schemas/AssetType'
+              model_id:
+                type: string
+                minLength: 1
+              language:
+                type: string
+                minLength: 2
+                maxLength: 255
+                format: bcp47
+        created_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        error:
+          oneOf:
+          - $ref: '#/components/schemas/ResourceError'
+          - type: 'null'
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
     ErrorDetail:
       type: object
       additionalProperties: false
@@ -259,72 +320,19 @@ components:
         doc_url:
           type: string
           format: uri
-    Voice:
+    ResourceError:
       type: object
       additionalProperties: false
       required:
-      - id
-      - project_id
-      - display_name
-      - kind
-      - status
-      - compatibility
-      - created_at
-      - error
+      - code
+      - message
       properties:
-        id:
-          type: string
-          pattern: ^voice_[A-Za-z0-9_-]+$
-        project_id:
-          oneOf:
-          - type: string
-            pattern: ^prj_[A-Za-z0-9_-]+$
-          - type: 'null'
-        display_name:
+        code:
           type: string
           minLength: 1
-          maxLength: 80
-        kind:
+        message:
           type: string
-          enum:
-          - stock
-          - custom
-        status:
-          type: string
-          enum:
-          - processing
-          - ready
-          - failed
-          - revoked
-        compatibility:
-          type: array
-          items:
-            type: object
-            additionalProperties: false
-            required:
-            - asset_type
-            - model_id
-            - language
-            properties:
-              asset_type:
-                $ref: '#/components/schemas/AssetType'
-              model_id:
-                type: string
-                minLength: 1
-              language:
-                type: string
-                minLength: 2
-                maxLength: 255
-                format: bcp47
-        created_at:
-          oneOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-        error:
-          oneOf:
-          - $ref: '#/components/schemas/ResourceError'
-          - type: 'null'
+          minLength: 1
     AssetType:
       type: string
       enum:
@@ -340,14 +348,6 @@ components:
       - launch_video
       - product_demo_video
       - ad_video
-    ErrorEnvelope:
-      type: object
-      additionalProperties: false
-      required:
-      - error
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorBody'
   responses:
     AutoContentError:
       description: Normalized AutoContent error; provider payloads are never returned.

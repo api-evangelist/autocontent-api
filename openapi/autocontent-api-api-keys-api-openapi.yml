@@ -144,6 +144,72 @@ paths:
           $ref: '#/components/responses/AutoContentError'
 components:
   schemas:
+    ApiKey:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - prefix
+      - name
+      - scopes
+      - created_at
+      properties:
+        id:
+          type: string
+          pattern: ^key_[A-Za-z0-9_-]+$
+        prefix:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        scopes:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        last_used_at:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+        secret:
+          oneOf:
+          - type: string
+            pattern: ^acp_
+          - type: 'null'
+        secret_unavailable:
+          type: boolean
+        rotate_guidance:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+    ApiKeyRevocation:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - revoked_at
+      properties:
+        id:
+          type: string
+          pattern: ^key_[A-Za-z0-9_-]+$
+        revoked_at:
+          type: string
+          format: date-time
     ErrorDetail:
       type: object
       additionalProperties: false
@@ -216,72 +282,6 @@ components:
         doc_url:
           type: string
           format: uri
-    ErrorEnvelope:
-      type: object
-      additionalProperties: false
-      required:
-      - error
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorBody'
-    ApiKey:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - prefix
-      - name
-      - scopes
-      - created_at
-      properties:
-        id:
-          type: string
-          pattern: ^key_[A-Za-z0-9_-]+$
-        prefix:
-          type: string
-          minLength: 1
-        name:
-          type: string
-          minLength: 1
-          maxLength: 80
-        scopes:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-        created_at:
-          type: string
-          format: date-time
-        last_used_at:
-          oneOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-        secret:
-          oneOf:
-          - type: string
-            pattern: ^acp_
-          - type: 'null'
-        secret_unavailable:
-          type: boolean
-        rotate_guidance:
-          oneOf:
-          - type: string
-            minLength: 1
-          - type: 'null'
-    ApiKeyRevocation:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - revoked_at
-      properties:
-        id:
-          type: string
-          pattern: ^key_[A-Za-z0-9_-]+$
-        revoked_at:
-          type: string
-          format: date-time
   responses:
     AutoContentError:
       description: Normalized AutoContent error; provider payloads are never returned.

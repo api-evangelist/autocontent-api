@@ -858,103 +858,6 @@ paths:
           $ref: '#/components/responses/AutoContentError'
 components:
   schemas:
-    ErrorDetail:
-      type: object
-      additionalProperties: false
-      required:
-      - reason
-      properties:
-        field:
-          type: string
-        reason:
-          type: string
-    AssetFeedback:
-      type: object
-      additionalProperties: false
-      required:
-      - revision
-      - rating
-      - reason
-      - created_at
-      properties:
-        revision:
-          type: integer
-          minimum: 1
-        rating:
-          type: string
-          enum:
-          - useful
-          - not_useful
-        reason:
-          oneOf:
-          - type: string
-            maxLength: 1000
-          - type: 'null'
-        created_at:
-          type: string
-          format: date-time
-    ErrorBody:
-      type: object
-      additionalProperties: false
-      required:
-      - code
-      - message
-      - correlation_id
-      - doc_url
-      properties:
-        code:
-          type: string
-          enum:
-          - invalid_request
-          - unknown_asset_type
-          - invalid_asset_options
-          - invalid_model_options
-          - model_not_supported
-          - model_retired
-          - project_not_ready
-          - project_limit_exceeded
-          - provider_operation_limit_exceeded
-          - source_not_ready
-          - source_unreachable
-          - source_paywalled
-          - product_visual_required
-          - no_qualified_trend
-          - no_qualified_knowledge
-          - input_resolution_failed
-          - max_cost_exceeded
-          - payment_required
-          - content_loop_budget_exceeded
-          - content_loop_limit_exceeded
-          - idempotency_conflict
-          - idempotency_in_progress
-          - consent_required
-          - voice_not_found
-          - voice_not_ready
-          - voice_not_supported
-          - avatar_not_found
-          - avatar_not_ready
-          - avatar_not_supported
-          - artifact_verification_failed
-          - rate_limited
-          - webhook_limit_exceeded
-          - not_found
-          - unauthorized
-          - forbidden
-          - internal_error
-        message:
-          type: string
-        details:
-          oneOf:
-          - type: array
-            items:
-              $ref: '#/components/schemas/ErrorDetail'
-          - type: object
-        correlation_id:
-          type: string
-          pattern: ^corr_[A-Za-z0-9_-]+$
-        doc_url:
-          type: string
-          format: uri
     Asset:
       type: object
       additionalProperties: false
@@ -1436,21 +1339,6 @@ components:
           - type: object
             additionalProperties: true
           - type: 'null'
-    AssetType:
-      type: string
-      enum:
-      - article
-      - lead_magnet
-      - ebook
-      - slides
-      - infographic
-      - quiz
-      - podcast_episode
-      - short_video
-      - explainer_video
-      - launch_video
-      - product_demo_video
-      - ad_video
     ErrorEnvelope:
       type: object
       additionalProperties: false
@@ -1459,63 +1347,6 @@ components:
       properties:
         error:
           $ref: '#/components/schemas/ErrorBody'
-    GenerationAssetSummary:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - asset_type
-      - status
-      properties:
-        id:
-          type: string
-          pattern: ^ast_[A-Za-z0-9_-]+$
-        asset_type:
-          $ref: '#/components/schemas/AssetType'
-        status:
-          type: string
-          enum:
-          - queued
-          - generating
-          - succeeded
-          - failed
-          - cancelled
-        title:
-          oneOf:
-          - type: string
-            minLength: 1
-          - type: 'null'
-        reserved_cost_usd:
-          type: string
-          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
-        cost_usd:
-          type: string
-          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
-        requested_model:
-          oneOf:
-          - type: string
-            minLength: 1
-          - type: 'null'
-        model_used:
-          oneOf:
-          - type: string
-            minLength: 1
-          - type: 'null'
-        voice_id:
-          oneOf:
-          - type: string
-            pattern: ^voice_[A-Za-z0-9_-]+$
-          - type: 'null'
-        avatar_id:
-          oneOf:
-          - type: string
-            pattern: ^avatar_[A-Za-z0-9_-]+$
-          - type: 'null'
-        logo_revision_id:
-          oneOf:
-          - type: string
-            minLength: 1
-          - type: 'null'
     Generation:
       type: object
       additionalProperties: false
@@ -1768,7 +1599,7 @@ components:
             oneOf:
             - $ref: '#/components/schemas/GenerationAssetSummary'
             - $ref: '#/components/schemas/Asset'
-    GenerationPreview:
+    GenerationEditPreview:
       type: object
       additionalProperties: false
       required:
@@ -1779,6 +1610,7 @@ components:
       - input_contract_version
       - project_id
       - input
+      - edited_from_generation_id
       - assets
       properties:
         currency:
@@ -1889,6 +1721,9 @@ components:
             required:
             - type
             additionalProperties: false
+        edited_from_generation_id:
+          type: string
+          pattern: ^gen_[A-Za-z0-9_-]+$
         assets:
           type: array
           minItems: 1
@@ -1908,6 +1743,7 @@ components:
             - effective_avatar_id
             - logo
             - product_visual_source_ids
+            - original_asset_id
             properties:
               asset_type:
                 $ref: '#/components/schemas/AssetType'
@@ -2279,7 +2115,176 @@ components:
               original_asset_id:
                 type: string
                 pattern: ^ast_[A-Za-z0-9_-]+$
-    GenerationEditPreview:
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required:
+      - reason
+      properties:
+        field:
+          type: string
+        reason:
+          type: string
+    AssetFeedback:
+      type: object
+      additionalProperties: false
+      required:
+      - revision
+      - rating
+      - reason
+      - created_at
+      properties:
+        revision:
+          type: integer
+          minimum: 1
+        rating:
+          type: string
+          enum:
+          - useful
+          - not_useful
+        reason:
+          oneOf:
+          - type: string
+            maxLength: 1000
+          - type: 'null'
+        created_at:
+          type: string
+          format: date-time
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      - correlation_id
+      - doc_url
+      properties:
+        code:
+          type: string
+          enum:
+          - invalid_request
+          - unknown_asset_type
+          - invalid_asset_options
+          - invalid_model_options
+          - model_not_supported
+          - model_retired
+          - project_not_ready
+          - project_limit_exceeded
+          - provider_operation_limit_exceeded
+          - source_not_ready
+          - source_unreachable
+          - source_paywalled
+          - product_visual_required
+          - no_qualified_trend
+          - no_qualified_knowledge
+          - input_resolution_failed
+          - max_cost_exceeded
+          - payment_required
+          - content_loop_budget_exceeded
+          - content_loop_limit_exceeded
+          - idempotency_conflict
+          - idempotency_in_progress
+          - consent_required
+          - voice_not_found
+          - voice_not_ready
+          - voice_not_supported
+          - avatar_not_found
+          - avatar_not_ready
+          - avatar_not_supported
+          - artifact_verification_failed
+          - rate_limited
+          - webhook_limit_exceeded
+          - not_found
+          - unauthorized
+          - forbidden
+          - internal_error
+        message:
+          type: string
+        details:
+          oneOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/ErrorDetail'
+          - type: object
+        correlation_id:
+          type: string
+          pattern: ^corr_[A-Za-z0-9_-]+$
+        doc_url:
+          type: string
+          format: uri
+    GenerationAssetSummary:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - asset_type
+      - status
+      properties:
+        id:
+          type: string
+          pattern: ^ast_[A-Za-z0-9_-]+$
+        asset_type:
+          $ref: '#/components/schemas/AssetType'
+        status:
+          type: string
+          enum:
+          - queued
+          - generating
+          - succeeded
+          - failed
+          - cancelled
+        title:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        reserved_cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        cost_usd:
+          type: string
+          pattern: ^(?:0|[1-9][0-9]{0,5})\.[0-9]{2}$
+        requested_model:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        model_used:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+        voice_id:
+          oneOf:
+          - type: string
+            pattern: ^voice_[A-Za-z0-9_-]+$
+          - type: 'null'
+        avatar_id:
+          oneOf:
+          - type: string
+            pattern: ^avatar_[A-Za-z0-9_-]+$
+          - type: 'null'
+        logo_revision_id:
+          oneOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+    AssetType:
+      type: string
+      enum:
+      - article
+      - lead_magnet
+      - ebook
+      - slides
+      - infographic
+      - quiz
+      - podcast_episode
+      - short_video
+      - explainer_video
+      - launch_video
+      - product_demo_video
+      - ad_video
+    GenerationPreview:
       type: object
       additionalProperties: false
       required:
@@ -2290,7 +2295,6 @@ components:
       - input_contract_version
       - project_id
       - input
-      - edited_from_generation_id
       - assets
       properties:
         currency:
@@ -2401,9 +2405,6 @@ components:
             required:
             - type
             additionalProperties: false
-        edited_from_generation_id:
-          type: string
-          pattern: ^gen_[A-Za-z0-9_-]+$
         assets:
           type: array
           minItems: 1
@@ -2423,7 +2424,6 @@ components:
             - effective_avatar_id
             - logo
             - product_visual_source_ids
-            - original_asset_id
             properties:
               asset_type:
                 $ref: '#/components/schemas/AssetType'

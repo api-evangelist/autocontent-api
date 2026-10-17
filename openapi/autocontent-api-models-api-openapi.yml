@@ -82,16 +82,6 @@ paths:
           $ref: '#/components/responses/AutoContentError'
 components:
   schemas:
-    ErrorDetail:
-      type: object
-      additionalProperties: false
-      required:
-      - reason
-      properties:
-        field:
-          type: string
-        reason:
-          type: string
     Model:
       type: object
       additionalProperties: false
@@ -197,6 +187,24 @@ components:
             rate_card_version:
               type: integer
               minimum: 1
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required:
+      - reason
+      properties:
+        field:
+          type: string
+        reason:
+          type: string
     ErrorBody:
       type: object
       additionalProperties: false
@@ -274,14 +282,6 @@ components:
       - launch_video
       - product_demo_video
       - ad_video
-    ErrorEnvelope:
-      type: object
-      additionalProperties: false
-      required:
-      - error
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorBody'
   responses:
     AutoContentError:
       description: Normalized AutoContent error; provider payloads are never returned.
