@@ -768,3 +768,9 @@ components:
 x-refined-from:
 - autocontent-api-legacy-content-openapi.json
 - autocontent-api-openapi.yml
+x-provenance:
+  method: harvested
+  publisher: AutoContent API
+  source: https://api.autocontentapi.com/api-docs.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)

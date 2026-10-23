@@ -279,3 +279,9 @@ components:
       type: http
       scheme: bearer
       bearerFormat: acp_ Platform API key
+x-provenance:
+  method: harvested
+  publisher: AutoContent API
+  source: https://autocontentapi.com/openapi/autocontent-platform-v1.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
