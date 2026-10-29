@@ -1,4 +1,4 @@
-# AutoContent API (autocontent-api)
+# AutoContent API
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,122 +66,184 @@
 
 AutoContent API is an AI-powered content generation platform that enables developers and content teams to programmatically produce podcasts, explainer videos, video shorts, deep research reports, infographics, and quizzes from diverse input sources including URLs, PDFs, YouTube videos, plain text, and social data feeds. Built on NotebookLM-style AI technology, it provides REST API endpoints with a credit-based pricing model and integrations with Make.com, Zapier, and WordPress.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/autocontent-api/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/autocontent-api/refs/heads/main/apis.yml)
+**Areas:** Artificial Intelligence · Audio · Content Generation · Podcasts · Video · Generative AI · Text-to-Speech · Automation
 
-## Scope
+## AutoContent API on APIs.io
 
-- **Type:** Index
+Everything profiled for AutoContent API is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/autocontent-api/](https://apis.io/providers/autocontent-api/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (34)
 
-- AI
-- Audio
-- Content Generation
-- Podcasts
-- Video
-- Generative AI
-- Text to Speech
-- Automation
+- [Podcast Generation API](https://apis.io/apis/autocontent-api/podcast-generation/) — Generate AI-powered podcast episodes from URLs, PDFs, YouTube videos, plain text, or social media feeds. Produces MP3 audio with metadata using…
+- [Video Generation API](https://apis.io/apis/autocontent-api/video-generation/) — Programmatically produce explainer videos and short-form vertical video content (9:16 format) from text, URLs, and other source content. Explainer videos…
+- [Deep Research API](https://apis.io/apis/autocontent-api/deep-research/) — Performs multi-step AI reasoning that browses the live web, reads reputable sources, and synthesizes comprehensive research reports. Supports output as…
+- [Infographics and Quizzes API](https://apis.io/apis/autocontent-api/infographics-quizzes/) — Transform source content into visual infographics and interactive quiz formats. Consumes 10-30 credits per asset. Supports diverse input types and produces…
+- [AutoContent API Content API](https://apis.io/apis/autocontent-api/autocontent-api-content-api/) — The Content API from AutoContent API — 24 operation(s) for content.
+- [AutoContent API Dedicated Account API](https://apis.io/apis/autocontent-api/autocontent-api-dedicated-account-api/) — The Dedicated Account API from AutoContent API — 4 operation(s) for dedicated account.
+- [AutoContent API Podcast API](https://apis.io/apis/autocontent-api/autocontent-api-podcast-api/) — The Podcast API from AutoContent API — 3 operation(s) for podcast.
+- [AutoContent API Share API](https://apis.io/apis/autocontent-api/autocontent-api-share-api/) — The Share API from AutoContent API — 5 operation(s) for share.
+- [AutoContent API Video API](https://apis.io/apis/autocontent-api/autocontent-api-video-api/) — The Video API from AutoContent API — 12 operation(s) for video.
+- [AutoContent API Account API](https://apis.io/apis/autocontent-api/autocontent-api-account-api/) — The account API from AutoContent API — 1 operation(s) for account.
+- [AutoContent API API Keys API](https://apis.io/apis/autocontent-api/autocontent-api-api-keys-api/) — The api-keys API from AutoContent API — 2 operation(s) for api-keys.
+- [AutoContent API Asset Types API](https://apis.io/apis/autocontent-api/autocontent-api-asset-types-api/) — The asset-types API from AutoContent API — 1 operation(s) for asset-types.
+- [AutoContent API Assets API](https://apis.io/apis/autocontent-api/autocontent-api-assets-api/) — The assets API from AutoContent API — 3 operation(s) for assets.
+- [AutoContent API Avatars API](https://apis.io/apis/autocontent-api/autocontent-api-avatars-api/) — The avatars API from AutoContent API — 2 operation(s) for avatars.
+- [AutoContent API Billing API](https://apis.io/apis/autocontent-api/autocontent-api-billing-api/) — Billing and invoices operations
+- [AutoContent API Collections API](https://apis.io/apis/autocontent-api/autocontent-api-collections-api/) — The collections API from AutoContent API — 1 operation(s) for collections.
+- [AutoContent API Content Loop Runs API](https://apis.io/apis/autocontent-api/autocontent-api-content-loop-runs-api/) — The content-loop-runs API from AutoContent API — 2 operation(s) for content-loop-runs.
+- [AutoContent API Content Loops API](https://apis.io/apis/autocontent-api/autocontent-api-content-loops-api/) — The content-loops API from AutoContent API — 4 operation(s) for content-loops.
+- [AutoContent API Data Tables API](https://apis.io/apis/autocontent-api/autocontent-api-data-tables-api/) — Data table assets generated per token
+- [AutoContent API Deep Research API](https://apis.io/apis/autocontent-api/autocontent-api-deep-research-api/) — Advanced research operations
+- [AutoContent API Documents API](https://apis.io/apis/autocontent-api/autocontent-api-documents-api/) — Briefing document assets generated per token
+- [AutoContent API Feeds API](https://apis.io/apis/autocontent-api/autocontent-api-feeds-api/) — Social media feed management operations
+- [AutoContent API Files API](https://apis.io/apis/autocontent-api/autocontent-api-files-api/) — Upload and manage private files for resources
+- [AutoContent API Generations API](https://apis.io/apis/autocontent-api/autocontent-api-generations-api/) — The generations API from AutoContent API — 6 operation(s) for generations.
+- [AutoContent API Infographics API](https://apis.io/apis/autocontent-api/autocontent-api-infographics-api/) — Infographic assets generated per token
+- [AutoContent API Models API](https://apis.io/apis/autocontent-api/autocontent-api-models-api/) — The models API from AutoContent API — 1 operation(s) for models.
+- [AutoContent API Projects API](https://apis.io/apis/autocontent-api/autocontent-api-projects-api/) — Project context management for content generation
+- [AutoContent API Public API](https://apis.io/apis/autocontent-api/autocontent-api-public-api/) — The Public API from AutoContent API — 4 operation(s) for public.
+- [AutoContent API Quizzes API](https://apis.io/apis/autocontent-api/autocontent-api-quizzes-api/) — Quiz assets generated per token
+- [AutoContent API Slide Decks API](https://apis.io/apis/autocontent-api/autocontent-api-slide-decks-api/) — Slide deck assets generated per token
+- [AutoContent API Sources API](https://apis.io/apis/autocontent-api/autocontent-api-sources-api/) — The sources API from AutoContent API — 2 operation(s) for sources.
+- [AutoContent API Voices API](https://apis.io/apis/autocontent-api/autocontent-api-voices-api/) — The voices API from AutoContent API — 2 operation(s) for voices.
+- [AutoContent API Webhooks API](https://apis.io/apis/autocontent-api/autocontent-api-webhooks-api/) — The webhooks API from AutoContent API — 2 operation(s) for webhooks.
+- [AutoContent API X API](https://apis.io/apis/autocontent-api/autocontent-api-x-api/) — X (Twitter) operations
 
-## Timestamps
+### Published properties
 
-- **Created:** 2025-05-02
-- **Modified:** 2026-04-19
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### AsyncAPI (1)
 
-### Podcast Generation API
+Event-driven and webhook contracts.
 
-Generate AI-powered podcast episodes from URLs, PDFs, YouTube videos, plain text, or social media feeds. Produces MP3 audio with metadata using NotebookLM-style AI with support for standard voices and custom voice cloning. Consumes 10 credits per episode.
+- [Autocontent Api Webhooks](https://apis.io/asyncapis/autocontent-api/autocontent-api-webhooks/)
 
-- **Human URL:** [https://autocontentapi.com](https://autocontentapi.com)
-- **Base URL:** `https://api.autocontentapi.com`
+#### MCP servers (1)
 
-#### Tags
+Model Context Protocol servers that expose the API to agents.
 
-- AI
-- Podcast
-- Audio
-- Content Generation
+- [autocontent-api-mcp.yml](https://apis.io/servers/autocontent-api/autocontent-api-mcp-yml/)
 
-#### Properties
+#### Agentic access (1)
 
-- [Documentation](https://autocontentapi.com/docs)
-- [Authentication](https://autocontentapi.com/docs)
-- [Postman Collection](collections/autocontent-api.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/autocontent-api.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Which operations an agent can call, which act, and which need a human in the loop.
 
-### Video Generation API
+- [Autocontent Api Agentic Access](https://apis.io/agentic-access/autocontent-api/autocontent-api-agentic-access/)
 
-Programmatically produce explainer videos and short-form vertical video content (9:16 format) from text, URLs, and other source content. Explainer videos consume 50 credits; video shorts consume 400 credits. Output is delivered as MP4 video files.
+#### Collections (6)
 
-- **Human URL:** [https://autocontentapi.com](https://autocontentapi.com)
-- **Base URL:** `https://api.autocontentapi.com`
+Postman and Open Collection request collections.
 
-#### Tags
+- [AutoContent API](https://apis.io/collections/autocontent-api/open-autocontent-api/)
+- [AutoContent Content API](https://apis.io/collections/autocontent-api/open-autocontent-api-content-api/)
+- [AutoContent Content Dedicated Account API](https://apis.io/collections/autocontent-api/open-autocontent-api-dedicated-account-api/)
+- [AutoContent Content Podcast API](https://apis.io/collections/autocontent-api/open-autocontent-api-podcast-api/)
+- [AutoContent Content Share API](https://apis.io/collections/autocontent-api/open-autocontent-api-share-api/)
+- [AutoContent Content Video API](https://apis.io/collections/autocontent-api/open-autocontent-api-video-api/)
 
-- AI
-- Video
-- Content Generation
+#### Overlays (2)
 
-#### Properties
+OpenAPI overlays, including conversational phrasing for each operation.
 
-- [Documentation](https://autocontentapi.com/docs)
-- [Postman Collection](collections/autocontent-api.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/autocontent-api.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [Autocontent Api Legacy Content Overlay](https://apis.io/overlays/autocontent-api/autocontent-api-legacy-content-overlay/)
+- [Autocontent Api Platform V1 Overlay](https://apis.io/overlays/autocontent-api/autocontent-api-platform-v1-overlay/)
 
-### Deep Research API
+#### Security (2)
 
-Performs multi-step AI reasoning that browses the live web, reads reputable sources, and synthesizes comprehensive research reports. Supports output as structured JSON, HTML blog posts, and study guides. Consumes 100-200 credits per research session.
+Authentication, trust centre, and vulnerability disclosure.
 
-- **Human URL:** [https://autocontentapi.com](https://autocontentapi.com)
-- **Base URL:** `https://api.autocontentapi.com`
+- [Autocontent Api Authentication](https://apis.io/security/autocontent-api/autocontent-api-authentication/)
+- [Autocontent Api Domain Security](https://apis.io/security/autocontent-api/autocontent-api-domain-security/)
 
-#### Tags
+#### OAuth scopes (1)
 
-- AI
-- Research
-- Content Generation
+The permissions the API asks for.
 
-#### Properties
+- [Autocontent Api Scopes](https://apis.io/scopes/autocontent-api/autocontent-api-scopes/)
 
-- [Documentation](https://autocontentapi.com/docs)
-- [Postman Collection](collections/autocontent-api.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/autocontent-api.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+#### Plans and pricing (1)
 
-### Infographics and Quizzes API
+Published plans, tiers and prices.
 
-Transform source content into visual infographics and interactive quiz formats. Consumes 10-30 credits per asset. Supports diverse input types and produces structured HTML and visual media output.
+- [Autocontent Api Plans Pricing](https://apis.io/plans/autocontent-api/autocontent-api-plans-pricing/)
 
-- **Human URL:** [https://autocontentapi.com](https://autocontentapi.com)
-- **Base URL:** `https://api.autocontentapi.com`
+#### Rate limits (1)
 
-#### Tags
+Published request limits.
 
-- AI
-- Infographics
-- Quizzes
-- Content Generation
+- [Autocontent Api Rate Limits](https://apis.io/rate-limits/autocontent-api/autocontent-api-rate-limits/)
 
-#### Properties
+#### FinOps (1)
 
-- [Documentation](https://autocontentapi.com/docs)
-- [Postman Collection](collections/autocontent-api.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/autocontent-api.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+What the API costs to run, by operation.
 
-## Common Properties
+- [Autocontent Api Finops](https://apis.io/finops/autocontent-api/autocontent-api-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://autocontentapi.com)
-- [Documentation](https://autocontentapi.com/docs)
-- [Sign Up](https://autocontentapi.com)
+- [Documentation](https://docs.autocontentapi.com/)
+- [Getting started](https://autocontentapi.com/developers)
+- [API reference](https://autocontentapi.com/developers/api)
 - [Pricing](https://autocontentapi.com/pricing)
-- [Rate Limits](undefined)
-- [Features](undefined)
-- [Use Cases](undefined)
-- [Integrations](undefined)
-- [L L Ms Txt](https://autocontentapi.com/llms.txt)
+- [Blog](https://autocontentapi.com/blog)
+- [Terms of service](https://autocontentapi.com/terms)
+- [Privacy policy](https://autocontentapi.com/privacy-policy)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 59.0** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 80.0 |
+| Contract quality | 55.0 |
+| Contract governance | 18.2 |
+| Operational transparency | 47.4 |
+| Developer ergonomics | 61.3 |
+| Access clarity | 76.3 |
+
+**Agent readiness 66.1** — agent-native
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | documented (partial credit) |
+| MCP Server | verified |
+| Auth Clarity | served (partial credit) |
+| Idempotency | verified |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | verified |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | yes |
+| Agentic Commerce | — |
+| Pagination Ratio | partial |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 31.8** — AI & Biometrics
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/autocontent-api/](https://apis.io/providers/autocontent-api/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for AutoContent API: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/autocontent-api/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
