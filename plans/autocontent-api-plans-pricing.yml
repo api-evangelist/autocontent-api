@@ -1,0 +1,108 @@
+# Pricing transcribed from the provider's own page — see provenance. Numbers are quoted, not derived.
+generated: '2026-10-28'
+method: searched
+source: https://autocontentapi.com/#pricing
+sources:
+- https://autocontentapi.com/#pricing
+- https://autocontentapi.com/pricing
+provenance:
+  tool: engine/economics/harvest_pricing.py
+  run: 20261028T141238
+  grounding: every price_text was found verbatim in the fetched page text
+audience: developer-api
+pricing_basis: per-call
+delivery:
+  delivery: managed
+  method: page
+  read: '2026-10-28'
+  managed_tier: Amateur
+published: true
+note: Homepage with pricing section; credit-based plans (podcast 10 credits, shorts 400 credits, etc.)
+  in EUR with annual billing shown; separate €99/month Private Notebooks license. No free trial stated.
+plan_count: 4
+currency: EUR
+plans:
+- name: Amateur
+  price_text: € 24 per month billed annually
+  price: 24
+  currency: EUR
+  period: month
+  unit: plan
+  included_quota: 1,000 credits/month; 1 concurrent request; Daily limit 15 assets/day
+- name: Professional
+  price_text: € 58 per month billed annually
+  price: 58
+  currency: EUR
+  period: month
+  unit: plan
+  included_quota: 5,000 credits/month; 5 concurrent requests; Daily limit 30 assets/day; 2 Data Feeds;
+    2 custom voices
+- name: Enterprise
+  price_text: € 108 per month billed annually
+  price: 108
+  currency: EUR
+  period: month
+  unit: plan
+  included_quota: 10,000 credits/month; 10 concurrent requests; Daily limit 60 assets/day; 8 Data Feeds
+- name: Private Notebooks
+  price_text: €99 per month
+  price: 99
+  currency: EUR
+  period: month
+  unit: license
+  included_quota: 1 license with 1 dedicated account; 200 notebooks total; 100 sources per notebook; 200
+    questions per rolling 24 hours; 6 audio overviews per rolling 24 hours; 6 video overviews per rolling
+    24 hours
+  overage: No generation credits or per-call fees
+rate_limit_statements:
+- 1 concurrent request
+- Daily limit 15 assets/day
+- 5 concurrent requests
+- Daily limit 30 assets/day
+- 10 concurrent requests
+- Daily limit 60 assets/day
+- 200 grounded questions per rolling 24 hours
+- 200 questions per rolling 24 hours
+- 6 audio overviews per rolling 24 hours
+- 6 video overviews per rolling 24 hours
+x-canonical:
+  generated: '2026-11-01'
+  vocabulary: engine/economics/plans-canonical.yml
+  models:
+  - seat
+  - subscription
+  units:
+  - seat
+  plans:
+  - name: Amateur
+    access: other
+    model: subscription
+    model_how: derived
+    units:
+    - other
+    periods:
+    - month
+  - name: Professional
+    access: other
+    model: subscription
+    model_how: derived
+    units:
+    - other
+    periods:
+    - month
+  - name: Enterprise
+    access: other
+    model: subscription
+    model_how: derived
+    units:
+    - other
+    periods:
+    - month
+  - name: Private Notebooks
+    access: other
+    model: seat
+    model_how: derived
+    units:
+    - seat
+    periods:
+    - month
