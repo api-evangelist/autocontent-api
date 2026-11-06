@@ -66,7 +66,7 @@ rate_limit_statements:
 - 6 audio overviews per rolling 24 hours
 - 6 video overviews per rolling 24 hours
 x-canonical:
-  generated: '2026-11-02'
+  generated: '2026-11-06'
   vocabulary: engine/economics/plans-canonical.yml
   models:
   - seat
